@@ -27,22 +27,26 @@ insertion into DEST."
   "Returns a list of all superclasses of CLASS, up to, but not
 including, class CEILING. The class CEILING defaults to
 STANDARD-OBJECT."
-  #-(or :sbcl :lispworks)
-  (error "ALL-SUPERCLASSES not supported.")
-  #+:sbcl (set-difference (sb-mop:class-precedence-list class)
-                          (sb-mop:class-precedence-list ceiling))
+  #-(or :sbcl :cmu :lispworks)
+  (error "ALL-SUPERCLASSES not supported on this implementation.")
+  #+:sbcl (set-difference (sb-mop:compute-class-precedence-list class)
+                          (sb-mop:compute-class-precedence-list ceiling))
+  #+:cmu (set-difference (mop:compute-class-precedence-list class)
+                         (mop:compute-class-precedence-list ceiling))
   #+:lispworks (set-difference (clos:class-precedence-list class)
                                (clos:class-precedence-list ceiling)))
-  
+
 (defun all-specialized-methods (class &optional
                                 (ceiling (find-class 'standard-object)))
    "Returns a list of all methods specialized on CLASS, up to, but not
 including, class CEILING. The class CEILING defaults to
 STANDARD-OBJECT."
-  #-(or :sbcl :lispworks)
-  (error "ALL-SPECIALIZED-METHODS  not supported.")
-  (apply #'append 
+   #-(or :sbcl :cmu :lispworks)
+   (error "ALL-SPECIALIZED-METHODS not supported on this
+implementation.")
+   (apply #'append
          (mapcar #+:sbcl #'sb-mop:specializer-direct-methods
+                 #+:cmu #'mop:specializer-direct-methods
                  #+:lispworks #'clos:specializer-direct-methods
                  (all-superclasses class ceiling))))
 
@@ -52,9 +56,11 @@ STANDARD-OBJECT."
 "Returns a list of all generic functions specialized on CLASS, up to,
 but not including, class CEILING. The class CEILING defaults to
 STANDARD-OBJECT."
-  #-(or :sbcl :lispworks)
-  (error "ALL-SPECIALIZED-GENERIC-FUNCTIONS not supported.")
+  #-(or :sbcl :cmu :lispworks)
+  (error "ALL-SPECIALIZED-GENERIC-FUNCTIONS not supported on this
+implementation.")
   (mapcar #+:sbcl #'sb-mop:method-generic-function
+          #+:cmu #'mop:method-generic-function
           #+:lispworks #'clos:method-generic-function
           (all-specialized-methods class ceiling)))
 
@@ -92,7 +98,7 @@ slots."))
   (with-slots (proxied-class initargs) p
     (let ((initargs initargs))
       (change-class p proxied-class)
-      (apply 'initialize-instance p initargs))))
+      (apply #'initialize-instance p initargs))))
 
 (defmacro define-lazy-init-method (generic-function)
   "Defines no-applicable-method with an eql specifier on

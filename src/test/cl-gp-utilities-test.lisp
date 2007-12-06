@@ -9,48 +9,66 @@
 
 (defclass x1 ()
   ((slotx1 :initarg :slotx1
-           :accessor slotx1-of)))
+           :reader slotx1-of)))
 
 (defclass y1 ()
   ((sloty1 :initarg :sloty1
-           :accessor sloty1-of)))
+           :reader sloty1-of)))
 
 (defclass x2 (x1)
   ((slotx2 :initarg :slotx2
-           :accessor slotx2-of)))
+           :reader slotx2-of)))
 
 (defclass x3 (x2 y1)
   ((slotx3 :initarg :slotx3
-           :accessor slotx3-of)))
+           :reader slotx3-of)))
 
 (enable-lazy-init (find-class 'x3))
+
+(defun find-slot-reader-method (class-name generic-function)
+  (find-method generic-function '() (list (find-class class-name))))
 
 (in-suite cl-gp-utilities-system:testsuite)
 
 (test all-superclasses/one-arg
   "Test ALL-SUPERCLASSES."
-  (is (find-class 'x1)
-      (all-superclasses 'x1))
-  (is (mapcar #'find-class '(x1 x2))
-      (all-superclasses (find-class 'x2)))
-  (is (mapcar #'find-class '(y1 x1 x2 x3))
-      (all-superclasses (find-class 'x3))))
+  (is (equal (list (find-class 'x1))
+             (all-superclasses (find-class 'x1))))
+  (is (equal (mapcar #'find-class '(x1 x2))
+             (all-superclasses (find-class 'x2))))
+  (is (equal (mapcar #'find-class '(y1 x1 x2 x3))
+             (all-superclasses (find-class 'x3)))))
 
-(test all-specialized-methods/counts
-  "Test ALL-SPECIALIZED-METHODS. At the moment only a count."
-  (is (= 2 (length (all-specialized-methods (find-class 'x1)))))
-  (is (= 4 (length (all-specialized-methods (find-class 'x2)))))
-  (is (= 8 (length (all-specialized-methods (find-class 'x3))))))
+(test all-specialized-methods
+  "Test ALL-SPECIALIZED-METHODS."
+  (is (subsetp (mapcar #'find-slot-reader-method
+                       '(x1) (list #'slotx1-of))
+               (all-specialized-methods (find-class 'x1))))
+  (is (subsetp (mapcar #'find-slot-reader-method
+                       '(x1 x2) (list #'slotx1-of #'slotx2-of))
+               (all-specialized-methods (find-class 'x2))))
+  (is (subsetp (mapcar #'find-slot-reader-method
+                       '(x1 x2 x3 y1) (list #'slotx1-of #'slotx2-of
+                                            #'slotx3-of #'sloty1-of))
+               (all-specialized-methods (find-class 'x3)))))
 
-(test all-specialized-generic-functions/counts
-  "Test ALL-SPECIALIZED-GENERIC-FUNCTIONS. At the moment only a
-count."
-  (is (= 2 (length (all-specialized-generic-functions
-                    (find-class 'x1)))))
-  (is (= 4 (length (all-specialized-generic-functions
-                    (find-class 'x2)))))
-  (is (= 8 (length (all-specialized-generic-functions
-                    (find-class 'x3))))))
+(test all-specialized-generic-functions
+  "Test ALL-SPECIALIZED-GENERIC-FUNCTIONS."
+  (is (subsetp (mapcar #+:sbcl #'sb-mop:method-generic-function
+                       #+:cmu #'mop:method-generic-function
+                       (all-specialized-methods (find-class 'x1)))
+               (all-specialized-generic-functions
+                (find-class 'x1))))
+  (is (subsetp (mapcar #+:sbcl #'sb-mop:method-generic-function
+                       #+:cmu #'mop:method-generic-function
+                       (all-specialized-methods (find-class 'x2)))
+               (all-specialized-generic-functions
+                (find-class 'x2))))
+  (is (subsetp (mapcar #+:sbcl #'sb-mop:method-generic-function
+                       #+:cmu #'mop:method-generic-function
+                       (all-specialized-methods (find-class 'x3)))
+               (all-specialized-generic-functions
+                (find-class 'x3)))))
 
 (test lazy-init
   "Test lazy initialization of LAZY-INIT-PROXY."
