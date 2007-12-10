@@ -7,15 +7,14 @@
    ;; Conditions
 
    ;; Classes
-   #:lazy-init-proxy
+
    ;; Generics
-   #:reify
-   #:initargs-of
-   #:proxied-class-of
+
    ;; Functions
+   #:make-simple-base-string
    #:all-superclasses
    #:all-specialized-methods
    #:all-specialized-generic-functions
-   #:enable-lazy-init
+   #:all-external-generic-functions
    ;; Macros
    #:copy-array))

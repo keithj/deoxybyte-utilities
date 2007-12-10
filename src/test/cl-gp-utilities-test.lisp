@@ -23,10 +23,9 @@
   ((slotx3 :initarg :slotx3
            :reader slotx3-of)))
 
-(enable-lazy-init (find-class 'x3))
-
 (defun find-slot-reader-method (class-name generic-function)
   (find-method generic-function '() (list (find-class class-name))))
+
 
 (in-suite cl-gp-utilities-system:testsuite)
 
@@ -54,32 +53,12 @@
 
 (test all-specialized-generic-functions
   "Test ALL-SPECIALIZED-GENERIC-FUNCTIONS."
-  (is (subsetp (mapcar #+:sbcl #'sb-mop:method-generic-function
-                       #+:cmu #'mop:method-generic-function
-                       (all-specialized-methods (find-class 'x1)))
-               (all-specialized-generic-functions
-                (find-class 'x1))))
-  (is (subsetp (mapcar #+:sbcl #'sb-mop:method-generic-function
-                       #+:cmu #'mop:method-generic-function
-                       (all-specialized-methods (find-class 'x2)))
-               (all-specialized-generic-functions
-                (find-class 'x2))))
-  (is (subsetp (mapcar #+:sbcl #'sb-mop:method-generic-function
-                       #+:cmu #'mop:method-generic-function
-                       (all-specialized-methods (find-class 'x3)))
-               (all-specialized-generic-functions
-                (find-class 'x3)))))
-
-(test lazy-init
-  "Test lazy initialization of LAZY-INIT-PROXY."
-  (let ((proxy (make-instance 'lazy-init-proxy
-                              :proxied-class 'x3
-                              :initargs (list :slotx1 'sx1
-                                              :slotx2 'sx2
-                                              :slotx3 'sx3
-                                              :sloty1 'sy1))))
-    (is (find-class 'lazy-init-proxy)
-        (class-of proxy))
-    (is (eql 'sx1 (slotx1-of proxy)))
-    (is (find-class 'x1)
-        (class-of proxy))))
+  (let ((mgf #+:sbcl #'sb-mop:method-generic-function
+             #+:cmu #'mop:method-generic-function
+             #+:lispworks #'clos:method-generic-function))
+    (is (subsetp (mapcar mgf (all-specialized-methods (find-class 'x1)))
+                 (all-specialized-generic-functions (find-class 'x1))))
+    (is (subsetp (mapcar mgf (all-specialized-methods (find-class 'x2)))
+                 (all-specialized-generic-functions (find-class 'x2))))
+    (is (subsetp (mapcar mgf (all-specialized-methods (find-class 'x3)))
+                 (all-specialized-generic-functions (find-class 'x3))))))
