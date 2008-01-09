@@ -1,12 +1,24 @@
 
 (in-package :cl-gp-utilities)
 
+(defvar *whitespace-chars*
+  (make-array 5 :element-type 'character
+              :initial-contents '(#\Space #\Tab #\Return
+                                  #\Linefeed #\FormFeed))
+  "Whitespace characters.")
+
+(defvar *whitespace-codes*
+  (make-array 5 :element-type '(unsigned-byte 8)
+              :initial-contents (mapcar #'char-code
+                                        '(#\Space #\Tab #\Return
+                                          #\Linefeed #\FormFeed))))
+
 (deftype array-index ()
   "Positive array index type for optimizations."
   '(and fixnum (integer 0 *)))
 
 
-;; Array copying macro
+;;; Array copying macro
 
 (defmacro copy-array (source source-start source-end
                       dest dest-start &optional key)
@@ -22,7 +34,7 @@ insertion into DEST."
                                   `(aref ,source si)))))
 
 
-;; ASSOCDR and RASSOCAR macros
+;;; ASSOCDR and RASSOCAR macros
 
 (defmacro assocdr (key alist &rest args)
   "Returns the cdr of the cons cell returned by calling (assoc KEY
@@ -35,7 +47,93 @@ ALIST ARGS)."
   `(car (rassoc ,val ,alist ,@args)))
 
 
-;; Byte array utility functions
+;;; Vector utilties
+
+(defun vector-positions (elt vector &key (start 0) end (test #'eql))
+  "Returns a list of indices into VECTOR between START and END where
+ELT is present according to TEST (which defaults to EQL)."
+  (declare (optimize (speed 3) (debug 0)))
+  (declare (type vector vector)
+           (type function test))
+  (let ((end (or end (length vector))))
+    (declare (type array-index start end))
+    (unless (<= 0 start end (length vector))
+      (error "illegal start and end coordinates (~a ~a)" start end))
+    (loop for i from start below end
+       when (funcall test elt (aref vector i))
+       collect i)))
+
+(defun vector-split-indices (elt vector &key (start 0) end (test #'eql))
+  "Returns two values; a list start indices and a list of end indices
+into VECTOR between START and END such that if used as start/end
+arguments to subseq, VECTOR will be split on ELT. ELT is compared with
+elements in VECTOR using TEST, which defaults to EQL."
+  (declare (optimize (speed 3) (debug 0)))
+  (let ((end (or end (length vector))))
+    (unless (<= 0 start end (length vector))
+      (error "illegal start and end coordinates (~a ~a)" start end))
+    (let ((positions (vector-positions elt vector
+                                       :start start :end end :test test)))
+      (if positions
+          (loop
+             for pos in positions
+             and prev = start then (1+ pos)
+             maximize pos into last-pos
+             collect prev into starts
+             collect pos into ends
+             finally (return (values (nconc starts (list (1+ last-pos)))
+                                     (nconc ends (list end)))))
+        nil))))
+
+(defun vector-split (elt vector &key (start 0) end (test #'eql)
+                     remove-empty-subseqs displace-to-vector)
+  "Returns a list of vectors made by splitting VECTOR at ELT, between
+START and END. ELT is compared with elements in VECTOR using TEST,
+which defaults to EQL. If REMOVE-EMPTY-SUBSEQS is T, any empty
+subsequeneces will be omitted from the returned list. If
+DISPLACE-TO-VECTOR id T, the returned subsequences will be displaced
+to the actual subsequences within VECTOR and will therefore share
+structure with VECTOR."
+  (let ((end (or end (length vector)))
+        (elt-type (array-element-type vector)))
+    (unless (<= 0 start end (length vector))
+      (error "illegal start and end coordinates (~a ~a)" start end))
+    (multiple-value-bind (starts ends)
+        (vector-split-indices elt vector :start start :end end :test test)
+      (cond ((and starts ends)
+             (loop
+                for i in starts
+                for j in ends  
+                when (not (and remove-empty-subseqs
+                               (= i j)))
+                collect (if displace-to-vector
+                             (make-array (- j i)
+                                         :element-type elt-type
+                                         :displaced-to vector
+                                         :displaced-index-offset i)
+                          (subseq vector i j))))
+            (displace-to-vector
+             (make-array (- end start)
+                         :element-type elt-type
+                         :displaced-to vector
+                         :displaced-index-offset start))
+            (t
+             (list (subseq vector start end)))))))
+
+;;; Byte array utility functions
+
+(defun whitespace-byte-p (byte)
+  "Returns T if BYTE is one of the currently bound set of whitespace
+codes (defaults to codes of #\Space #\Tab #\Return #\Linefeed and
+#\FormFeed), or NIL otherwise."
+  (loop for w across *whitespace-codes*
+     thereis (= w byte)))
+
+(defun whitespace-bytes-p (bytes)
+  "Returns T if all the bytes in BYTES are whitespace code as defined
+by WHITESPACE-BYTE-P, or NIL otherwise."
+  (loop for b across bytes
+       always (whitespace-byte-p b)))
 
 (defun has-byte-at-p (byte-array byte index)
   "Returns T if BYTE-ARRAY has BYTE at INDEX."
@@ -53,27 +151,27 @@ SOURCE-START and SOURCE-END, inclusive. SOURCE start defaults to 0 and
 SOURCE-END defaults to NIL. The elements of the returned string are
 the result of calling code-char on the respective elements of
 BYTE-ARRAY."
-  (declare (optimize (speed 3) (safety 0)))
+  (declare (optimize (speed 3) (debug 0)))
   (declare (type (simple-array (unsigned-byte 8)) byte-array))
-  (let ((s-end (or source-end (1- (length byte-array)))))
-    (declare (type array-index source-start s-end))
+  (let ((source-end (or source-end (1- (length byte-array)))))
+    (declare (type array-index source-start source-end))
     (let ((source-len (length byte-array)))
       (cond ((zerop source-len)
              (make-string 0 :element-type 'base-char))
             ((or (< source-start 0)
-                 (> source-start s-end)
+                 (> source-start source-end)
                  (>= source-start source-len))
              (error "invalid source-start index ~a for array of length
 ~a" source-start source-len))
-            ((>= s-end source-len)
+            ((>= source-end source-len)
              (error "invalid source-end index ~a for array of length ~a"
-                    s-end source-len))
+                    source-end source-len))
             (t
-             (let ((dest-length (1+ (- s-end source-start))))
+             (let ((dest-length (1+ (- source-end source-start))))
                (declare (type array-index dest-length))
                (let ((string (make-string dest-length
                                           :element-type 'base-char)))
-                 (copy-array byte-array source-start s-end
+                 (copy-array byte-array source-start source-end
                              string 0 #'code-char)
                  string)))))))
 
@@ -97,27 +195,47 @@ of BYTE-ARRAYS."
     string))
 
 
-;; String utility functions
+;;; String utility functions
+
+(defun control-char-p (char)
+  "Returns T if CHAR is an ASCII control character (all characters
+with codes 0-31, inclusive, and the character with code 127), or NIL
+otherwise."
+  (and (< 31 (char-code char))
+       (\= 127 (char-code char))))
+
+(defun whitespace-char-p (char)
+  "Returns T if CHAR is one of the currently bound set of whitespace
+characters (defaults to #\Space #\Tab #\Return #\Linefeed and
+#\FormFeed), or NIL otherwise."
+  (loop for w across *whitespace-chars*
+     thereis (char= w char)))
+
+(defun whitespace-string-p (str)
+  "Returns T if all the characters in STR are whitespace as defined by
+WHITESPACE-CHAR-P, or NIL otherwise."
+  (loop for c across str
+       always (whitespace-char-p c)))
 
 (defun has-char-at-p (str char index)
   "Returns T if STR has CHAR at INDEX."
   (and (not (zerop (length str)))
-       (eql char (char str 0))))
+       (char= char (char str index))))
 
 (defun starts-with-char-p (str char)
   "Returns T if STR has CHAR at index 0."
   (has-char-at-p str char 0))
 
-(defun every-char-p (str predicate &rest indices)
-  "Applies PREDICATE to characters of string STR indicated by INDICES
-and returns T if all those characters match PREDICATE."
+(defun every-char-p (str test &rest indices)
+  "Applies predicate TEST to characters of string STR indicated by
+INDICES and returns T if all those characters match TEST."
   (loop for i in indices
-     always (funcall predicate (char str i))))
+     always (funcall test (char str i))))
 
 (defun concat-strings (strs)
   "Returns a new simple-string created by concatenating, in the order
 supplied, the simple-strings contained in the vector STRS."
-  (declare (optimize (speed 3) (safety 0)))
+  (declare (optimize (speed 3) (debug 0)))
   (let ((string (make-string (reduce #'+ strs :key #'length)
                              :element-type 'character)))
     (declare (type simple-string string))
@@ -134,7 +252,7 @@ supplied, the simple-strings contained in the vector STRS."
     string))
 
 (defun write-wrapped-string (str line-width &optional output-stream)
-  (declare (optimize (speed 3) (safety 1) (debug 0)))
+  (declare (optimize (speed 3) (debug 0)))
   (declare (type simple-string str)
            (type (and fixnum (integer 0 *)) line-width))
   (when (zerop line-width)
@@ -147,8 +265,7 @@ supplied, the simple-strings contained in the vector STRS."
     (write-line str output-stream :start write-start :end write-end)))
 
 
-
-;; Introspection utility functions
+;;; Introspection utility functions
 
 (defun all-superclasses (class &optional
                          (ceiling (find-class 'standard-object)))
