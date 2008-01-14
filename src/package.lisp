@@ -14,6 +14,10 @@
    ;; Generics
 
    ;; Functions
+   #:collect-args
+   #:arg-value
+   #:remove-args
+   #:modify-arg
    #:vector-positions
    #:vector-split-indices
    #:vector-split

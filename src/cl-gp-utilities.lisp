@@ -34,7 +34,7 @@ insertion into DEST."
                                   `(aref ,source si)))))
 
 
-;;; ASSOCDR and RASSOCAR macros
+;;; Cons utilities
 
 (defmacro assocdr (key alist &rest args)
   "Returns the cdr of the cons cell returned by calling (assoc KEY
@@ -45,6 +45,54 @@ ALIST ARGS)."
   "Returns the car of the cons cell returned by calling (rassoc KEY
 ALIST ARGS)."
   `(car (rassoc ,val ,alist ,@args)))
+
+(defun collect-args (args arglist)
+  "For all arguments in list ARGS, finds the argument and its value in
+list ARGLIST. Returns two values, a list of matched arguments and a
+list of their corresponding values."
+  (loop
+     for arg in arglist by #'cddr
+     for val in (rest arglist) by #'cddr
+     when (member arg args)
+     collect arg into matched-args
+     and collect val into vals
+     finally (return (values matched-args vals))))
+
+(defun arg-value (arg arglist)
+  "Returns the current value of ARG in list ARGLIST."
+  (loop
+     for arg-n in arglist by #'cddr
+     for val in (rest arglist) by #'cddr
+     when (eql arg arg-n)
+     return val))
+
+(defun remove-args (args arglist)
+  "Returns two values, an alist containing ARGS and their
+corresponding values and a copy of ARGLIST with ARGS and their values
+removed."
+  (loop
+     for arg-n in arglist by #'cddr
+     for val in (rest arglist) by #'cddr
+     if (not (member arg-n args))
+     nconc (list arg-n val) into new-arglist
+     else
+     collect arg-n into removed-args
+     and collect val into removed-vals
+     finally (return (values (pairlis removed-args removed-vals)
+                             new-arglist))))
+
+(defun modify-arg (arg arglist mod-fn &rest fn-args)
+  "Returns a copy of ARGLIST where the value corresponding to ARG has
+been replaced by the result of applying MOD-FN to that value. MOD-FN
+must be a function that accepts ARG's value and may accept additional
+arguments supplied in FN-ARGS."
+  (loop
+     for arg-n in arglist by #'cddr
+     for val in (rest arglist) by #'cddr
+     if (eql arg arg-n)
+     nconc (list arg-n (apply mod-fn val fn-args))
+     else
+     nconc (list arg-n val)))
 
 
 ;;; Vector utilties
@@ -119,6 +167,7 @@ structure with VECTOR."
                          :displaced-index-offset start))
             (t
              (list (subseq vector start end)))))))
+
 
 ;;; Byte array utility functions
 
