@@ -12,7 +12,6 @@
               :initial-contents (mapcar #'char-code
                                         '(#\Space #\Tab #\Return
                                           #\Linefeed #\FormFeed))))
-
 (deftype array-index ()
   "Positive array index type for optimizations."
   '(and fixnum (integer 0 *)))
@@ -45,6 +44,38 @@ ALIST ARGS)."
   "Returns the car of the cons cell returned by calling (rassoc KEY
 ALIST ARGS)."
   `(car (rassoc ,val ,alist ,@args)))
+
+(defmacro rplassoc (key alist val &rest args)
+  "Performs destructive replacement with VAL (using RPLACD) of the cdr
+of the cons returned when calling assoc on ALIST with KEY and ARGS."
+`(rplacd (assoc ,key ,alist ,@args) ,val))
+
+(defmacro assocpush (key alist val &rest args)
+  "Pushes VAL onto the cdr of the cons returned from ALIST by calling
+assoc with KEY and ARGS."
+  `(push ,val (assocdr ,key ,alist ,@args)))
+
+(defmacro assocpop (key alist &rest args)
+   "Pops a value from the cdr of the cons returned from ALIST by
+calling assoc with KEY and ARGS."
+   `(pop (assocdr ,key ,alist ,@args)))
+
+(defmacro assocpush+ (key alist val &rest args)
+  "Operates as ASSOCPUSH, except that if the cdr to be pushed onto is
+an atom, it is first wrapped in a new list."
+  (let ((current-val (gensym)))
+  `(let ((,current-val (assocdr ,key ,alist ,@args)))
+     (if (consp ,current-val)
+         (assocpush ,key ,alist ,val ,@args)
+       (rplassoc ,key ,alist (list ,val ,current-val) ,@args)))))
+
+(defun interleave (list obj)
+  "Returns a list containing the members of LIST interleaved with
+OBJ."
+  (if (endp (rest list))
+      list
+    (append (list (car list) obj)
+            (interleave (rest list) obj))))
 
 (defun collect-args (args arglist)
   "For all arguments in list ARGS, finds the argument and its value in
@@ -106,7 +137,7 @@ ELT is present according to TEST (which defaults to EQL)."
   (let ((end (or end (length vector))))
     (declare (type array-index start end))
     (unless (<= 0 start end (length vector))
-      (error "illegal start and end coordinates (~a ~a)" start end))
+      (error "Invalid start and end coordinates (~a ~a)." start end))
     (loop for i from start below end
        when (funcall test elt (aref vector i))
        collect i)))
@@ -119,7 +150,7 @@ elements in VECTOR using TEST, which defaults to EQL."
   (declare (optimize (speed 3) (debug 0)))
   (let ((end (or end (length vector))))
     (unless (<= 0 start end (length vector))
-      (error "illegal start and end coordinates (~a ~a)" start end))
+      (error "Invalid start and end coordinates (~a ~a)." start end))
     (let ((positions (vector-positions elt vector
                                        :start start :end end :test test)))
       (if positions
@@ -145,7 +176,7 @@ structure with VECTOR."
   (let ((end (or end (length vector)))
         (elt-type (array-element-type vector)))
     (unless (<= 0 start end (length vector))
-      (error "illegal start and end coordinates (~a ~a)" start end))
+      (error "Invalid start and end coordinates (~a ~a)." start end))
     (multiple-value-bind (starts ends)
         (vector-split-indices elt vector :start start :end end :test test)
       (cond ((and starts ends)
@@ -210,10 +241,10 @@ BYTE-ARRAY."
             ((or (< source-start 0)
                  (> source-start source-end)
                  (>= source-start source-len))
-             (error "invalid source-start index ~a for array of length
-~a" source-start source-len))
+             (error "Invalid source-start index ~a for array of length ~a."
+                    source-start source-len))
             ((>= source-end source-len)
-             (error "invalid source-end index ~a for array of length ~a"
+             (error "Invalid source-end index ~a for array of length ~a."
                     source-end source-len))
             (t
              (let ((dest-length (1+ (- source-end source-start))))
@@ -305,13 +336,22 @@ supplied, the simple-strings contained in the vector STRS."
   (declare (type simple-string str)
            (type (and fixnum (integer 0 *)) line-width))
   (when (zerop line-width)
-    (error "invalid line-with 0"))
+    (error "Invalid line-with 0."))
   (do* ((write-start 0 (+ line-width write-start))
         (write-end (min line-width (length str))
                    (min (+ write-start line-width) (length str)))
         (line-count 0 (1+ line-count)))
        ((>= write-start (length str)) line-count)
     (write-line str output-stream :start write-start :end write-end)))
+
+
+;;; Condition utility functions
+
+(defun msg (&rest strings)
+  (concat-strings
+   (coerce (interleave strings (make-string 1 :initial-element #\space))
+           'simple-vector)))
+
 
 
 ;;; Introspection utility functions
@@ -336,8 +376,8 @@ STANDARD-OBJECT."
 including, class CEILING. The class CEILING defaults to
 STANDARD-OBJECT."
    #-(or :sbcl :cmu :lispworks)
-   (error "ALL-SPECIALIZED-METHODS not supported on this
-implementation.")
+   (error msg("ALL-SPECIALIZED-METHODS not supported"
+              "on this implementation."))
    (apply #'append
           (mapcar #+:sbcl #'sb-mop:specializer-direct-methods
                   #+:cmu #'mop:specializer-direct-methods
@@ -351,8 +391,8 @@ implementation.")
 but not including, class CEILING. The class CEILING defaults to
 STANDARD-OBJECT."
   #-(or :sbcl :cmu :lispworks)
-  (error "ALL-SPECIALIZED-GENERIC-FUNCTIONS not supported on this
-implementation.")
+  (error msg("ALL-SPECIALIZED-GENERIC-FUNCTIONS not supported"
+             "on this implementation."))
   (mapcar #+:sbcl #'sb-mop:method-generic-function
           #+:cmu #'mop:method-generic-function
           #+:lispworks #'clos:method-generic-function

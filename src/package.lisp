@@ -18,6 +18,7 @@
    #:arg-value
    #:remove-args
    #:modify-arg
+   #:interleave
    #:vector-positions
    #:vector-split-indices
    #:vector-split
@@ -35,6 +36,7 @@
    #:every-char-p
    #:concat-strings
    #:write-wrapped-string
+   #:msg
    #:all-superclasses
    #:all-specialized-methods
    #:all-specialized-generic-functions
@@ -43,5 +45,9 @@
    #:copy-array
    #:assocdr
    #:rassocar
+   #:rplassoc
+   #:assocpush
+   #:assocpop
+   #:assocpush+
    ;;Types
    #:array-index))
