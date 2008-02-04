@@ -1,3 +1,19 @@
+;;;
+;;; Copyright (C) 2007-2008, Keith James. All rights reserved.
+;;;
+;;; This program is free software: you can redistribute it and/or modify
+;;; it under the terms of the GNU General Public License as published by
+;;; the Free Software Foundation, either version 3 of the License, or
+;;; (at your option) any later version.
+;;;
+;;; This program is distributed in the hope that it will be useful,
+;;; but WITHOUT ANY WARRANTY; without even the implied warranty of
+;;; MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+;;; GNU General Public License for more details.
+;;;
+;;; You should have received a copy of the GNU General Public License
+;;; along with this program.  If not, see <http://www.gnu.org/licenses/>.
+;;;
 
 (in-package :cl-gp-utilities)
 
@@ -18,7 +34,6 @@
 
 
 ;;; Array copying macro
-
 (defmacro copy-array (source source-start source-end
                       dest dest-start &optional key)
   "Copies elements SOURCE indices SOURCE-START and SOURCE-END to DEST,
@@ -34,7 +49,6 @@ insertion into DEST."
 
 
 ;;; Cons utilities
-
 (defmacro assocdr (key alist &rest args)
   "Returns the cdr of the cons cell returned by calling (assoc KEY
 ALIST ARGS)."
@@ -126,8 +140,7 @@ arguments supplied in FN-ARGS."
      nconc (list arg-n val)))
 
 
-;;; Vector utilties
-
+;;; vector utilties
 (defun vector-positions (elt vector &key (start 0) end (test #'eql))
   "Returns a list of indices into VECTOR between START and END where
 ELT is present according to TEST (which defaults to EQL)."
@@ -148,7 +161,9 @@ into VECTOR between START and END such that if used as start/end
 arguments to subseq, VECTOR will be split on ELT. ELT is compared with
 elements in VECTOR using TEST, which defaults to EQL."
   (declare (optimize (speed 3) (debug 0)))
+  (declare (type vector vector))
   (let ((end (or end (length vector))))
+    (declare (type array-index start end))
     (unless (<= 0 start end (length vector))
       (error "Invalid start and end coordinates (~a ~a)." start end))
     (let ((positions (vector-positions elt vector
@@ -201,7 +216,6 @@ structure with VECTOR."
 
 
 ;;; Byte array utility functions
-
 (defun whitespace-byte-p (byte)
   "Returns T if BYTE is one of the currently bound set of whitespace
 codes (defaults to codes of #\Space #\Tab #\Return #\Linefeed and
@@ -255,28 +269,49 @@ BYTE-ARRAY."
                              string 0 #'code-char)
                  string)))))))
 
+;; (defun concat-into-sb-string (byte-arrays)
+;;   "Returns a new simple-base-string created by concatenating, in the
+;; order supplied, the simple-arrays of (unsigned-byte 8) contained in
+;; the vector BYTE-ARRAYS. The elements of the returned string are the
+;; result of calling code-char on the contents of the respective elements
+;; of BYTE-ARRAYS."
+;;   (declare (optimize (speed 3) (debug 0)))
+;;   (let ((string (make-string (reduce #'+ byte-arrays :key #'length)
+;;                              :element-type 'base-char)))
+;;     (loop
+;;        for byte-array of-type (simple-array (unsigned-byte 8))
+;;        across byte-arrays
+;;        for array-length = (length byte-array)
+;;        with offset = 0
+;;        do (unless (zerop array-length)
+;;             (copy-array byte-array 0 (1- array-length)
+;;                         string offset #'code-char)
+;;             (incf offset array-length)))
+;;     string))
+
 (defun concat-into-sb-string (byte-arrays)
   "Returns a new simple-base-string created by concatenating, in the
 order supplied, the simple-arrays of (unsigned-byte 8) contained in
 the vector BYTE-ARRAYS. The elements of the returned string are the
 result of calling code-char on the contents of the respective elements
 of BYTE-ARRAYS."
-  (let ((string (make-string (reduce #'+ byte-arrays :key #'length)
-                             :element-type 'base-char)))
-    (loop
-       for byte-array of-type (simple-array (unsigned-byte 8))
-       across byte-arrays
-       for array-length = (length byte-array)
-       with offset = 0
-       do (unless (zerop array-length)
-            (copy-array byte-array 0 (1- array-length)
-                        string offset #'code-char)
-            (incf offset array-length)))
-    string))
-
+  (declare (optimize (speed 3) (debug 0)))
+  (declare (type vector byte-arrays))
+  (let ((new-str (make-string (reduce #'+ byte-arrays :key #'length)
+                              :element-type 'base-char))
+        (num-arrays (length byte-arrays)))
+    (do ((i 0 (1+ i))
+         (offset 0))
+        ((= i num-arrays) new-str)
+      (let ((byte-array (aref byte-arrays i)))
+        (declare (type (simple-array (unsigned-byte 8)) byte-array)
+                 (type array-index offset))
+        (unless (zerop (length byte-array))
+          (copy-array byte-array 0 (1- (length byte-array))
+                      new-str offset #'code-char)
+          (incf offset (length byte-array)))))))
 
 ;;; String utility functions
-
 (defun control-char-p (char)
   "Returns T if CHAR is an ASCII control character (all characters
 with codes 0-31, inclusive, and the character with code 127), or NIL
@@ -312,40 +347,57 @@ INDICES and returns T if all those characters match TEST."
   (loop for i in indices
      always (funcall test (char str i))))
 
+;; (defun concat-strings (strs)
+;;   "Returns a new simple-string created by concatenating, in the order
+;; supplied, the simple-strings contained in the vector STRS."
+;;   (let ((string (make-string (reduce #'+ strs :key #'length)
+;;                              :element-type 'character)))
+;;     (declare (optimize (speed 3) (debug 0)))
+;;     (declare (type simple-string string))
+;;     (loop
+;;        for str of-type simple-string across strs
+;;        for str-len = (length str)
+;;        with offset of-type array-index = 0
+;;        do (unless (zerop str-len)
+;;             (copy-array str 0 (1- str-len)
+;;                         string offset) ; copy-array faster than
+;; 				       ; replace at (speed 3) (safety
+;; 				       ; 0)
+;;             (incf offset str-len)))
+;;     string))
+
 (defun concat-strings (strs)
   "Returns a new simple-string created by concatenating, in the order
 supplied, the simple-strings contained in the vector STRS."
   (declare (optimize (speed 3) (debug 0)))
-  (let ((string (make-string (reduce #'+ strs :key #'length)
-                             :element-type 'character)))
-    (declare (type simple-string string))
-    (loop
-       for str of-type simple-string across strs
-       for str-len = (length str)
-       with offset of-type array-index = 0
-       do (unless (zerop str-len)
-            (copy-array str 0 (1- str-len)
-                        string offset) ; copy-array faster than
-				       ; replace at (speed 3) (safety
-				       ; 0)
-            (incf offset str-len)))
-    string))
+  (declare (type vector strs))
+  (let ((new-str (make-string (reduce #'+ strs :key #'length)
+                              :element-type 'character))
+        (num-strs (length strs)))
+    (do ((i 0 (1+ i))
+         (offset 0))
+        ((= i num-strs) new-str)
+      (let ((str (aref strs i)))
+        (declare (type simple-string str)
+                 (type array-index offset))
+        (unless (zerop (length str))
+          (copy-array str 0 (1- (length str))
+                      new-str offset)
+          (incf offset (length str)))))))
 
 (defun write-wrapped-string (str line-width &optional output-stream)
-  (declare (optimize (speed 3) (debug 0)))
+  (declare (optimize (speed 3) (debug 0) (safety 0)))
   (declare (type simple-string str)
            (type (and fixnum (integer 0 *)) line-width))
   (when (zerop line-width)
-    (error "Invalid line-with 0."))
+    (error "Invalid line-width 0."))
   (do* ((write-start 0 (+ line-width write-start))
         (write-end (min line-width (length str))
                    (min (+ write-start line-width) (length str)))
-        (line-count 0 (1+ line-count)))
+        (line-count 0 (the fixnum (1+ line-count))))
        ((>= write-start (length str)) line-count)
+    (declare (type fixnum line-count))
     (write-line str output-stream :start write-start :end write-end)))
-
-
-;;; Condition utility functions
 
 (defun msg (&rest strings)
   (concat-strings
@@ -353,9 +405,7 @@ supplied, the simple-strings contained in the vector STRS."
            'simple-vector)))
 
 
-
 ;;; Introspection utility functions
-
 (defun all-superclasses (class &optional
                          (ceiling (find-class 'standard-object)))
   "Returns a list of all superclasses of CLASS, up to, but not
