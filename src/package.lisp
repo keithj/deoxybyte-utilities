@@ -40,6 +40,7 @@
    #:vector-split
    #:whitespace-byte-p
    #:whitespace-bytes-p
+   #:content-bytes-p
    #:has-byte-at-p
    #:starts-with-byte-p
    #:make-sb-string
@@ -47,17 +48,21 @@
    #:control-char-p
    #:whitespace-char-p
    #:whitespace-string-p
+   #:content-string-p
+   #:contains-char-p
    #:has-char-at-p
    #:starts-with-char-p
    #:every-char-p
    #:concat-strings
    #:write-wrapped-string
    #:msg
+   #:iota
    #:all-superclasses
    #:all-specialized-methods
    #:all-specialized-generic-functions
    #:all-external-generic-functions
    ;; Macros
+   #:with-gensyms
    #:copy-array
    #:assocdr
    #:rassocar

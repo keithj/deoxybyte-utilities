@@ -33,6 +33,16 @@
   '(and fixnum (integer 0 *)))
 
 
+;;; Core macros
+(eval-when (:compile-toplevel :load-toplevel :execute)
+  ;; eval-when to ensure with-gensyms is available at compile-time,
+  ;; for use in other macros (i.e. when we expect to use it!)
+  (defmacro with-gensyms ((&rest names) &body body)
+    `(let ,(loop for n in names
+              collect `(,n (gensym)))
+       ,@body)))
+
+
 ;;; Array copying macro
 (defmacro copy-array (source source-start source-end
                       dest dest-start &optional key)
@@ -40,7 +50,8 @@
 inserting them into DEST at DEST-START onwards. If the function KEY is
 supplied, it is applied to each element of SOURCE prior to its
 insertion into DEST."
-  `(loop for si of-type array-index from ,source-start to ,source-end
+  `(loop
+      for si of-type array-index from ,source-start to ,source-end
       for di of-type array-index = ,dest-start
       then (the array-index (1+ di))
       do (setf (aref ,dest di) ,(if key
@@ -48,7 +59,7 @@ insertion into DEST."
                                   `(aref ,source si)))))
 
 
-;;; Cons utilities
+;;; cons utilities
 (defmacro assocdr (key alist &rest args)
   "Returns the cdr of the cons cell returned by calling (assoc KEY
 ALIST ARGS)."
@@ -215,7 +226,7 @@ structure with VECTOR."
              (list (subseq vector start end)))))))
 
 
-;;; Byte array utility functions
+;;; byte array utility functions
 (defun whitespace-byte-p (byte)
   "Returns T if BYTE is one of the currently bound set of whitespace
 codes (defaults to codes of #\Space #\Tab #\Return #\Linefeed and
@@ -224,10 +235,16 @@ codes (defaults to codes of #\Space #\Tab #\Return #\Linefeed and
      thereis (= w byte)))
 
 (defun whitespace-bytes-p (bytes)
-  "Returns T if all the bytes in BYTES are whitespace code as defined
+  "Returns T if all the bytes in BYTES are whitespace codes as defined
 by WHITESPACE-BYTE-P, or NIL otherwise."
   (loop for b across bytes
        always (whitespace-byte-p b)))
+
+(defun content-bytes-p (bytes)
+  "Returns T if any of BYTES are not whitespace codes as defined by
+WHITESPACE-BYTE-P, or NIL otherwise."
+  (loop for b across bytes
+     thereis (not (whitespace-byte-p b))))
 
 (defun has-byte-at-p (byte-array byte index)
   "Returns T if BYTE-ARRAY has BYTE at INDEX."
@@ -269,26 +286,6 @@ BYTE-ARRAY."
                              string 0 #'code-char)
                  string)))))))
 
-;; (defun concat-into-sb-string (byte-arrays)
-;;   "Returns a new simple-base-string created by concatenating, in the
-;; order supplied, the simple-arrays of (unsigned-byte 8) contained in
-;; the vector BYTE-ARRAYS. The elements of the returned string are the
-;; result of calling code-char on the contents of the respective elements
-;; of BYTE-ARRAYS."
-;;   (declare (optimize (speed 3) (debug 0)))
-;;   (let ((string (make-string (reduce #'+ byte-arrays :key #'length)
-;;                              :element-type 'base-char)))
-;;     (loop
-;;        for byte-array of-type (simple-array (unsigned-byte 8))
-;;        across byte-arrays
-;;        for array-length = (length byte-array)
-;;        with offset = 0
-;;        do (unless (zerop array-length)
-;;             (copy-array byte-array 0 (1- array-length)
-;;                         string offset #'code-char)
-;;             (incf offset array-length)))
-;;     string))
-
 (defun concat-into-sb-string (byte-arrays)
   "Returns a new simple-base-string created by concatenating, in the
 order supplied, the simple-arrays of (unsigned-byte 8) contained in
@@ -311,7 +308,7 @@ of BYTE-ARRAYS."
                       new-str offset #'code-char)
           (incf offset (length byte-array)))))))
 
-;;; String utility functions
+;;; string utility functions
 (defun control-char-p (char)
   "Returns T if CHAR is an ASCII control character (all characters
 with codes 0-31, inclusive, and the character with code 127), or NIL
@@ -332,6 +329,23 @@ WHITESPACE-CHAR-P, or NIL otherwise."
   (loop for c across str
        always (whitespace-char-p c)))
 
+(defun content-string-p (str)
+  "Returns T if any of the characters in STR are not whitespace as
+defined by WHITESPACE-CHAR-P, or NIL otherwise."
+  (loop for c across str
+     thereis (not (whitespace-char-p c))))
+
+(defun empty-string-p (str)
+  "Returns T if STR is a zero-length string or contains only
+whitespace as defined by WHITESPACE-CHAR-P, or NIL otherwise."
+  (or (zerop (length str))
+      (whitespace-string-p str)))
+
+(defun contains-char-p (str char)
+  "Returns T if STR contains CHAR, or NIL otherwise"
+  (loop for c across str
+     thereis (char= char c)))
+
 (defun has-char-at-p (str char index)
   "Returns T if STR has CHAR at INDEX."
   (and (not (zerop (length str)))
@@ -346,25 +360,6 @@ WHITESPACE-CHAR-P, or NIL otherwise."
 INDICES and returns T if all those characters match TEST."
   (loop for i in indices
      always (funcall test (char str i))))
-
-;; (defun concat-strings (strs)
-;;   "Returns a new simple-string created by concatenating, in the order
-;; supplied, the simple-strings contained in the vector STRS."
-;;   (let ((string (make-string (reduce #'+ strs :key #'length)
-;;                              :element-type 'character)))
-;;     (declare (optimize (speed 3) (debug 0)))
-;;     (declare (type simple-string string))
-;;     (loop
-;;        for str of-type simple-string across strs
-;;        for str-len = (length str)
-;;        with offset of-type array-index = 0
-;;        do (unless (zerop str-len)
-;;             (copy-array str 0 (1- str-len)
-;;                         string offset) ; copy-array faster than
-;; 				       ; replace at (speed 3) (safety
-;; 				       ; 0)
-;;             (incf offset str-len)))
-;;     string))
 
 (defun concat-strings (strs)
   "Returns a new simple-string created by concatenating, in the order
@@ -403,6 +398,24 @@ supplied, the simple-strings contained in the vector STRS."
   (concat-strings
    (coerce (interleave strings (make-string 1 :initial-element #\space))
            'simple-vector)))
+
+
+;;; Numeric utility functions
+(defun iota (count &optional (start 0) (step 1))
+  "Generates a list of COUNT integers from START (defaults to 0) with
+subsequent integers STEP (defaults to 1) greater than the last (or
+less, if a negative STEP is given)."
+  (cond ((zerop step)
+         (loop repeat count
+            collect 0))
+        ((minusp step)
+         (loop repeat count
+            for i downfrom start by (abs step)
+            collect i))
+        (t
+         (loop repeat count
+            for i upfrom start by step
+            collect i))))
 
 
 ;;; Introspection utility functions
