@@ -27,7 +27,9 @@
   (make-array 5 :element-type '(unsigned-byte 8)
               :initial-contents (mapcar #'char-code
                                         '(#\Space #\Tab #\Return
-                                          #\Linefeed #\FormFeed))))
+                                          #\Linefeed #\FormFeed)))
+  "Character codes of whitespace characters.")
+
 (deftype array-index ()
   "Positive array index type for optimizations."
   '(and fixnum (integer 0 *)))
@@ -94,6 +96,23 @@ an atom, it is first wrapped in a new list."
          (assocpush ,key ,alist ,val ,@args)
        (rplassoc ,key ,alist (list ,val ,current-val) ,@args)))))
 
+(defun splice (list obj n)
+  "Splices atom or (a copy of) list OBJ into a copy of LIST at
+position N."
+  (if (atom obj)
+      (nsplice (copy-list list) obj n)
+    (nsplice (copy-list list) (copy-list obj) n)))
+
+(defun nsplice (list obj n)
+  "Destructively splices atom or list OBJ into LIST at position N."
+  (let ((join (nthcdr n list)))
+    (if (atom obj)
+        (setf (cdr join)
+              (cons obj (cdr join)))
+      (setf (cdr join)
+            (nconc obj (cdr join)))))
+  list)
+  
 (defun interleave (list obj)
   "Returns a list containing the members of LIST interleaved with
 OBJ."
@@ -181,13 +200,15 @@ elements in VECTOR using TEST, which defaults to EQL."
                                        :start start :end end :test test)))
       (if positions
           (loop
-             for pos in positions
+             for pos of-type fixnum in positions
              and prev = start then (1+ pos)
              maximize pos into last-pos
              collect prev into starts
              collect pos into ends
-             finally (return (values (nconc starts (list (1+ last-pos)))
-                                     (nconc ends (list end)))))
+             finally (return
+                       (values
+                        (nconc starts (list (1+ last-pos)))
+                        (nconc ends (list end)))))
         nil))))
 
 (defun vector-split (elt vector &key (start 0) end (test #'eql)
@@ -231,29 +252,39 @@ structure with VECTOR."
   "Returns T if BYTE is one of the currently bound set of whitespace
 codes (defaults to codes of #\Space #\Tab #\Return #\Linefeed and
 #\FormFeed), or NIL otherwise."
+  (declare (optimize (speed 3) (debug 0)))
+  (declare (type (simple-array (unsigned-byte 8)) *whitespace-codes*)
+           (type (unsigned-byte 8) byte))
   (loop for w across *whitespace-codes*
      thereis (= w byte)))
 
 (defun whitespace-bytes-p (bytes)
   "Returns T if all the bytes in BYTES are whitespace codes as defined
 by WHITESPACE-BYTE-P, or NIL otherwise."
+  (declare (optimize (speed 3) (debug 0)))
+  (declare (type (simple-array (unsigned-byte 8)) bytes))
   (loop for b across bytes
-       always (whitespace-byte-p b)))
+     always (whitespace-byte-p b)))
 
 (defun content-bytes-p (bytes)
   "Returns T if any of BYTES are not whitespace codes as defined by
 WHITESPACE-BYTE-P, or NIL otherwise."
+  (declare (optimize (speed 3) (debug 0)))
+  (declare (type (simple-array (unsigned-byte 8)) bytes))
   (loop for b across bytes
      thereis (not (whitespace-byte-p b))))
 
-(defun has-byte-at-p (byte-array byte index)
-  "Returns T if BYTE-ARRAY has BYTE at INDEX."
-  (and (not (zerop (length byte-array)))
-       (= byte (aref byte-array index))))
+(defun has-byte-at-p (bytes byte index)
+  "Returns T if array BYTES has BYTE at INDEX."
+  (declare (optimize (speed 3) (debug 0)))
+  (declare (type (simple-array (unsigned-byte 8)) bytes)
+           (type (unsigned-byte 8) byte))
+  (and (not (zerop (length bytes)))
+       (= byte (aref bytes index))))
 
-(defun starts-with-byte-p (byte-array byte)
-  "Returns T if BYTE-ARRAY has BYTE at index 0."
-  (has-byte-at-p byte-array byte 0))
+(defun starts-with-byte-p (bytes byte)
+  "Returns T if array BYTES has BYTE at index 0."
+  (has-byte-at-p bytes byte 0))
 
 (defun make-sb-string (byte-array &optional (source-start 0) source-end)
   "Returns a new simple-base-string created from the values in
@@ -320,18 +351,24 @@ otherwise."
   "Returns T if CHAR is one of the currently bound set of whitespace
 characters (defaults to #\Space #\Tab #\Return #\Linefeed and
 #\FormFeed), or NIL otherwise."
+  (declare (optimize (speed 3) (debug 0)))
+  (declare (type simple-base-string *whitespace-chars*))
   (loop for w across *whitespace-chars*
      thereis (char= w char)))
 
 (defun whitespace-string-p (str)
   "Returns T if all the characters in STR are whitespace as defined by
 WHITESPACE-CHAR-P, or NIL otherwise."
+  (declare (optimize (speed 3) (debug 0)))
+  (declare (type string str))
   (loop for c across str
        always (whitespace-char-p c)))
 
 (defun content-string-p (str)
   "Returns T if any of the characters in STR are not whitespace as
 defined by WHITESPACE-CHAR-P, or NIL otherwise."
+  (declare (optimize (speed 3) (debug 0)))
+  (declare (type string str))
   (loop for c across str
      thereis (not (whitespace-char-p c))))
 
@@ -343,11 +380,15 @@ whitespace as defined by WHITESPACE-CHAR-P, or NIL otherwise."
 
 (defun contains-char-p (str char)
   "Returns T if STR contains CHAR, or NIL otherwise"
+  (declare (optimize (speed 3) (debug 0)))
+  (declare (type string str))
   (loop for c across str
      thereis (char= char c)))
 
 (defun has-char-at-p (str char index)
   "Returns T if STR has CHAR at INDEX."
+  (declare (optimize (speed 3) (debug 0)))
+  (declare (type string str))
   (and (not (zerop (length str)))
        (char= char (char str index))))
 
@@ -358,6 +399,9 @@ whitespace as defined by WHITESPACE-CHAR-P, or NIL otherwise."
 (defun every-char-p (str test &rest indices)
   "Applies predicate TEST to characters of string STR indicated by
 INDICES and returns T if all those characters match TEST."
+  (declare (optimize (speed 3) (debug 0)))
+  (declare (type string str)
+           (type function test))
   (loop for i in indices
      always (funcall test (char str i))))
 
