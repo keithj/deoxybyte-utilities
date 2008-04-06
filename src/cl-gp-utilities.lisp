@@ -180,7 +180,9 @@ ELT is present according to TEST (which defaults to EQL)."
   (let ((end (or end (length vector))))
     (declare (type array-index start end))
     (unless (<= 0 start end (length vector))
-      (error "Invalid start and end coordinates (~a ~a)." start end))
+      (error 'invalid-argument-error
+             :params '(start end) :args (list start end)
+             :text "start must be >= 0 and be <= end"))
     (loop for i from start below end
        when (funcall test elt (aref vector i))
        collect i)))
@@ -195,7 +197,9 @@ elements in VECTOR using TEST, which defaults to EQL."
   (let ((end (or end (length vector))))
     (declare (type array-index start end))
     (unless (<= 0 start end (length vector))
-      (error "Invalid start and end coordinates (~a ~a)." start end))
+      (error 'invalid-argument-error
+             :params '(start end) :args (list start end)
+             :text "start must be >= 0 and be <= end"))
     (let ((positions (vector-positions elt vector
                                        :start start :end end :test test)))
       (if positions
@@ -223,7 +227,9 @@ structure with VECTOR."
   (let ((end (or end (length vector)))
         (elt-type (array-element-type vector)))
     (unless (<= 0 start end (length vector))
-      (error "Invalid start and end coordinates (~a ~a)." start end))
+      (error 'invalid-argument-error
+             :params '(start end) :args (list start end)
+             :text "start must be >= 0 and be <= end"))
     (multiple-value-bind (starts ends)
         (vector-split-indices elt vector :start start :end end :test test)
       (cond ((and starts ends)
@@ -301,13 +307,25 @@ BYTE-ARRAY."
       (cond ((zerop source-len)
              (make-string 0 :element-type 'base-char))
             ((or (< source-start 0)
-                 (> source-start source-end)
                  (>= source-start source-len))
-             (error "Invalid source-start index ~a for array of length ~a."
-                    source-start source-len))
+             (error 'invalid-argument-error
+                    :params 'source-start
+                    :args source-start
+                    :text
+                    (format nil "source-start must be >= 0 and be <= ~a"
+                            source-len)))
+            ((> source-start source-end)
+             (error 'invalid-argument-error
+                    :params '(source-start source-end)
+                    :args (list source-start source-end)
+                    :text "source-start must be <= source-end"))
             ((>= source-end source-len)
-             (error "Invalid source-end index ~a for array of length ~a."
-                    source-end source-len))
+             (error 'invalid-argument-error
+                    :params 'source-end
+                    :args source-end
+                    :text
+                    (format nil "source-end must be >= 0 and be <= ~a"
+                            source-len)))
             (t
              (let ((dest-length (1+ (- source-end source-start))))
                (declare (type array-index dest-length))

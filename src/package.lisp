@@ -24,7 +24,8 @@
    #:+whitespace-chars+
    #:+whitespace-codes+
    ;; Conditions
-
+   #:invalid-argument-error
+   #:invalid-operation-error
    ;; Classes
 
    ;; Generics

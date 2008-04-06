@@ -34,6 +34,7 @@
               :serial t
               :pathname "src/"
               :components ((:file "package")
+                           (:file "conditions")
                            (:file "cl-gp-utilities")))))
 
 
