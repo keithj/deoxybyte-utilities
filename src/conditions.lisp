@@ -31,10 +31,14 @@
          :reader text-of
          :documentation "Error message text."))
   (:report (lambda (condition stream)
-             (format stream "Invalid ~a argument~:p ~@[~a~]~@[: ~a~]."
+             (format stream
+                     "Invalid ~a argument~:[s~;~] ~@[~a~]~@[: ~a~]."
                      (parameters-of condition)
+                     (atom (parameters-of condition))
                      (arguments-of condition)
-                     (text-of condition)))))
+                     (text-of condition))))
+  (:documentation "An error that is raised when an invalid argument is
+passed to a function."))
 
 (define-condition invalid-operation-error (error)
   ((text :initform nil
@@ -43,4 +47,6 @@
          :documentation "Error message text."))
   (:report (lambda (condition stream)
              (format stream "Invalid operation~@[: ~a~]."
-                     (text-of condition)))))
+                     (text-of condition))))
+  (:documentation "An error that is raised when an invalid operation
+is attempted."))

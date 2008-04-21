@@ -31,7 +31,7 @@
   "Character codes of whitespace characters.")
 
 (deftype array-index ()
-  "Positive array index type for optimizations."
+  "Array index type."
   '(and fixnum (integer 0 *)))
 
 
@@ -112,7 +112,7 @@ position N."
       (setf (cdr join)
             (nconc obj (cdr join)))))
   list)
-  
+
 (defun interleave (list obj)
   "Returns a list containing the members of LIST interleaved with
 OBJ."
