@@ -142,9 +142,9 @@ list of their corresponding values."
      return val))
 
 (defun remove-args (args arglist)
-  "Returns two values, an alist containing ARGS and their
-corresponding values and a copy of ARGLIST with ARGS and their values
-removed."
+  "Returns two values, a copy of ARGLIST with ARGS and their values
+removed and an alist containing ARGS and their corresponding values
+and ."
   (loop
      for arg-n in arglist by #'cddr
      for val in (rest arglist) by #'cddr
@@ -153,8 +153,8 @@ removed."
      else
      collect arg-n into removed-args
      and collect val into removed-vals
-     finally (return (values (pairlis removed-args removed-vals)
-                             new-arglist))))
+     finally (return (values new-arglist
+                             (pairlis removed-args removed-vals)))))
 
 (defun modify-arg (arg arglist mod-fn &rest fn-args)
   "Returns a copy of ARGLIST where the value corresponding to ARG has
