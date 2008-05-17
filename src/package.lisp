@@ -58,6 +58,7 @@
    #:write-wrapped-string
    #:msg
    #:iota
+   #:number-generator
    #:all-superclasses
    #:all-specialized-methods
    #:all-specialized-generic-functions

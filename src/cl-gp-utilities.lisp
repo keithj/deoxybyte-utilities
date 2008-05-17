@@ -370,7 +370,7 @@ otherwise."
 characters (defaults to #\Space #\Tab #\Return #\Linefeed and
 #\FormFeed), or NIL otherwise."
   (declare (optimize (speed 3) (debug 0)))
-  (declare (type simple-base-string *whitespace-chars*))
+  (declare (type string *whitespace-chars*))
   (loop for w across *whitespace-chars*
      thereis (char= w char)))
 
@@ -478,6 +478,17 @@ less, if a negative STEP is given)."
          (loop repeat count
             for i upfrom start by step
             collect i))))
+
+(defun number-generator (&optional (start 0) (step 1))
+  "Returns a function of zero arity that returns an integer from START
+(defaults to 0) with subsequent integers incrementing by STEP
+(defaults to 1) greater than the last, or less, is a negative step is
+given."
+  (let ((current start))
+    (lambda ()
+      (prog1
+          current
+        (incf current step)))))
 
 
 ;;; Introspection utility functions
