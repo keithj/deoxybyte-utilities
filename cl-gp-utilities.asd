@@ -35,7 +35,12 @@
               :pathname "src/"
               :components ((:file "package")
                            (:file "conditions")
-                           (:file "cl-gp-utilities")))))
+                           (:file "cl-gp-utilities")
+                           (:file "cons-utilities")
+                           (:file "vector-utilities")
+                           (:file "string-utilities")
+                           (:file "byte-array-utilities")
+                           (:file "clos-utilities")))))
 
 
 (in-package #:asdf)

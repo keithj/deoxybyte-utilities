@@ -26,6 +26,7 @@
    ;; Conditions
    #:invalid-argument-error
    #:invalid-operation-error
+
    ;; Classes
 
    ;; Generics
@@ -55,14 +56,19 @@
    #:starts-with-char-p
    #:every-char-p
    #:concat-strings
-   #:write-wrapped-string
    #:msg
+
    #:iota
-   #:number-generator
+   #:current
+   #:next
+   #:has-more-p
+   #:make-number-gen
+
    #:all-superclasses
    #:all-specialized-methods
    #:all-specialized-generic-functions
    #:all-external-generic-functions
+
    ;; Macros
    #:with-gensyms
    #:copy-array
@@ -72,5 +78,6 @@
    #:assocpush
    #:assocpop
    #:assocpush+
+
    ;;Types
    #:array-index))
