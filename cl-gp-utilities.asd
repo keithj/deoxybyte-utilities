@@ -36,6 +36,7 @@
               :components ((:file "package")
                            (:file "conditions")
                            (:file "cl-gp-utilities")
+                           (:file "numeric-utilities")
                            (:file "cons-utilities")
                            (:file "vector-utilities")
                            (:file "string-utilities")
@@ -59,7 +60,8 @@
                                            :cl-gp-utilities))))
   (unless (find-package :cl-gp-utilities)
     (operate 'load-op :cl-gp-utilities))
+
   (let ((*default-pathname-defaults* (component-pathname c))
-        (fn-sym (intern (string ":extract-documentation") (string ":cldoc")))
-        (op-sym (intern (string ":html") (string ":cldoc"))))
+        (fn-sym (intern (string :extract-documentation) (string :cldoc)))
+        (op-sym (intern (string :html) (string :cldoc))))
     (funcall fn-sym op-sym "./doc/html" c)))

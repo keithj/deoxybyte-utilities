@@ -23,4 +23,10 @@
                           :serial t
                           :pathname "src/test/"
                           :components ((:file "package")
-                                       (:file "cl-gp-utilities-test")))))
+                                       (:file "cl-gp-utilities-test")
+                                       (:file "cons-utilities-test")
+                                       (:file "numeric-utilities-test")
+                                       (:file "vector-utilities-test")
+                                       (:file "byte-array-utilities-test")
+                                       (:file "string-utilities-test")
+                                       (:file "clos-utilities-test")))))

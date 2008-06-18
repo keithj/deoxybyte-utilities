@@ -17,7 +17,6 @@
 
 (in-package :cl-gp-utilities)
 
-;;; vector utilties
 (defun vector-positions (elt vector &key (start 0) end (test #'eql))
   "Returns a list of indices into VECTOR between START and END where
 ELT is present according to TEST (which defaults to EQL)."
@@ -35,10 +34,10 @@ ELT is present according to TEST (which defaults to EQL)."
        collect i)))
 
 (defun vector-split-indices (elt vector &key (start 0) end (test #'eql))
-  "Returns two values; a list start indices and a list of end indices
-into VECTOR between START and END such that if used as start/end
-arguments to subseq, VECTOR will be split on ELT. ELT is compared with
-elements in VECTOR using TEST, which defaults to EQL."
+  "Returns two values, a list of start indices and a list of end
+indices into VECTOR between START and END such that if used as
+start/end arguments to subseq, VECTOR will be split on ELT. ELT is
+compared with elements in VECTOR using TEST, which defaults to EQL."
   (declare (optimize (speed 3) (debug 0)))
   (declare (type vector vector))
   (let ((end (or end (length vector))))

@@ -62,7 +62,7 @@ STANDARD-OBJECT."
 
 (defun all-external-generic-functions (package)
   "Returns a list of all the external generic functions in PACKAGE."
-  (let ((generic-fns))
+  (let ((generic-fns ()))
     (do-external-symbols (s (find-package package) generic-fns)
       (when (fboundp s)
         (let ((fn (symbol-function s)))

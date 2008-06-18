@@ -17,7 +17,6 @@
 
 (in-package :cl-gp-utilities)
 
-;;; cons utilities
 (defmacro assocdr (key alist &rest args)
   "Returns the cdr of the cons cell returned by calling (assoc KEY
 ALIST ARGS)."
@@ -61,13 +60,18 @@ position N."
 
 (defun nsplice (list obj n)
   "Destructively splices atom or list OBJ into LIST at position N."
-  (let ((join (nthcdr n list)))
-    (if (atom obj)
-        (setf (cdr join)
-              (cons obj (cdr join)))
-      (setf (cdr join)
-            (nconc obj (cdr join)))))
-  list)
+  (cond ((and (zerop n) (atom obj))
+         (cons obj list))
+        ((and (zerop n) (listp obj))
+         (nconc obj list))
+        (t
+         (let ((join (nthcdr (1- n) list)))
+           (if (atom obj)
+               (setf (cdr join)
+                     (cons obj (cdr join)))
+             (setf (cdr join)
+                   (nconc obj (cdr join)))))
+         list)))
 
 (defun interleave (list obj)
   "Returns a list containing the members of LIST interleaved with
@@ -99,8 +103,7 @@ list of their corresponding values."
 
 (defun remove-args (args arglist)
   "Returns two values, a copy of ARGLIST with ARGS and their values
-removed and an alist containing ARGS and their corresponding values
-and ."
+removed and an alist containing ARGS and their corresponding values."
   (loop
      for arg-n in arglist by #'cddr
      for val in (rest arglist) by #'cddr

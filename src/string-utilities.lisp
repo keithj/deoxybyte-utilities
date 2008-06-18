@@ -23,13 +23,12 @@
                                   #\Linefeed #\FormFeed))
   "Whitespace characters.")
 
-;;; string utility functions
 (defun control-char-p (char)
   "Returns T if CHAR is an ASCII control character (all characters
 with codes 0-31, inclusive, and the character with code 127), or NIL
 otherwise."
-  (and (< 31 (char-code char))
-       (\= 127 (char-code char))))
+  (or (<= (char-code char) 31)
+      (= 127 (char-code char))))
 
 (defun whitespace-char-p (char)
   "Returns T if CHAR is one of the currently bound set of whitespace

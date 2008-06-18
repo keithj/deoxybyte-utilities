@@ -21,8 +21,7 @@
   (:documentation "General purpose utilities.")
   (:export
    ;; Constants
-   #:+whitespace-chars+
-   #:+whitespace-codes+
+
    ;; Conditions
    #:invalid-argument-error
    #:invalid-operation-error
@@ -36,6 +35,8 @@
    #:arg-value
    #:remove-args
    #:modify-arg
+   #:splice
+   #:nsplice
    #:interleave
    #:vector-positions
    #:vector-split-indices
@@ -51,6 +52,7 @@
    #:whitespace-char-p
    #:whitespace-string-p
    #:content-string-p
+   #:empty-string-p
    #:contains-char-p
    #:has-char-at-p
    #:starts-with-char-p
@@ -59,6 +61,8 @@
    #:msg
 
    #:iota
+   #:define-numeric-binner
+   #:define-categorical-binner
    #:current
    #:next
    #:has-more-p

@@ -47,24 +47,6 @@ insertion into DEST."
                                     `(funcall ,key (aref ,source si))
                                   `(aref ,source si)))))
 
-
-;;; Numeric utility functions
-(defun iota (count &optional (start 0) (step 1))
-  "Generates a list of COUNT integers from START \(defaults to 0\)
-with subsequent integers STEP \(defaults to 1\) greater than the last
-\(or less, if a negative STEP is given\)."
-  (cond ((zerop step)
-         (loop repeat count
-            collect 0))
-        ((minusp step)
-         (loop repeat count
-            for i downfrom start by (abs step)
-            collect i))
-        (t
-         (loop repeat count
-            for i upfrom start by step
-            collect i))))
-
 ;;; Generator utility functions
 (defun current (gen)
   (funcall gen :current))
@@ -74,18 +56,6 @@ with subsequent integers STEP \(defaults to 1\) greater than the last
 
 (defun has-more-p (gen)
   (funcall gen :more))
-
-(defun make-number-gen (&optional (start 0) (step 1))
-  "Returns a function of zero arity that returns an integer from START
-\(defaults to 0\) with subsequent integers incrementing by STEP
-\(defaults to 1\) greater than the last, or less, is a negative step
-is given."
-  (let ((current start))
-    (lambda (op)
-      (ecase op
-        (:current current)
-        (:next (incf current step))
-        (:more t)))))
 
 ;;; Consumer utility functions
 (defun consume (con &rest args)
