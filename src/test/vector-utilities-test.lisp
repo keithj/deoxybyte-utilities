@@ -67,3 +67,17 @@
                 (vector-split 'a vec1 :start 1 :end 4)))
     (is (equal '("" "bcde" "ghij")
                (vector-split #\a vec2 :test #'char=)))))
+
+(test vector-errors
+  (let ((vec1 (make-array 10 :initial-contents '(a b c d e a g h i j))))
+    (dolist (fn (list #'vector-positions #'vector-split
+                      #'vector-split-indices))
+      (signals error
+        (funcall fn 'a vec1 :start -1))
+      (signals error
+        (funcall fn 'a vec1 :end -1))
+      (signals invalid-argument-error
+        (funcall fn 'a vec1 :end 99))
+      (signals invalid-argument-error
+        (funcall fn 'a vec1 :start 1 :end 0)))))
+
