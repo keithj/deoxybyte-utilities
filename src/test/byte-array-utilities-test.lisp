@@ -17,56 +17,55 @@
 
 (in-package :cl-gp-utilities-test)
 
-(in-suite cl-gp-utilities-system:testsuite)
-
-(test whitespace/content-bytes-p
+(addtest (cl-gp-utilities-tests) whitespace/content-bytes-p
   (let ((ws (mapcar #'char-code '(#\Space #\Tab #\Return
                                   #\Linefeed #\FormFeed)))
         (ct (loop
                for i from 65 to 90
                collect i)))
-    (is-true (loop
-                for c in ws
-                always (whitespace-byte-p c)))
-    (is-true (loop
-                for c in ct
-                never (whitespace-byte-p c)))
-    (is-true (whitespace-bytes-p
-              (make-array 5 :element-type '(unsigned-byte 8)
-                          :initial-contents ws)))
-    (is-false (whitespace-bytes-p
-               (make-array 26 :element-type '(unsigned-byte 8)
-                           :initial-contents ct)))
-    (is-false (content-bytes-p
-               (make-array 5 :element-type '(unsigned-byte 8)
-                           :initial-contents ws)))
-    (is-true (content-bytes-p
-              (make-array 26 :element-type '(unsigned-byte 8)
-                          :initial-contents ct)))
-    (is-true (content-bytes-p
-              (make-array 31 :element-type '(unsigned-byte 8)
-                          :initial-contents (append ws ct))))))
+    (ensure (loop
+               for c in ws
+               always (whitespace-byte-p c)))
+    (ensure (loop
+               for c in ct
+               never (whitespace-byte-p c)))
+    (ensure (whitespace-bytes-p
+             (make-array 5 :element-type '(unsigned-byte 8)
+                         :initial-contents ws)))
+    (ensure (not (whitespace-bytes-p
+                  (make-array 26 :element-type '(unsigned-byte 8)
+                              :initial-contents ct))))
+    (ensure (not (content-bytes-p
+                  (make-array 5 :element-type '(unsigned-byte 8)
+                              :initial-contents ws))))
+    (ensure (content-bytes-p
+             (make-array 26 :element-type '(unsigned-byte 8)
+                         :initial-contents ct)))
+    (ensure (content-bytes-p
+             (make-array 31 :element-type '(unsigned-byte 8)
+                         :initial-contents (append ws ct))))))
 
-(test make-sb-string
+(addtest (cl-gp-utilities-tests) make-sb-string
   (let ((bytes (make-array 2 :element-type '(unsigned-byte 8)
                            :initial-contents '(65 65))))
-    (is (subtypep (type-of (make-sb-string bytes)) 'simple-base-string))
-    (signals error
-        (make-sb-string bytes -1))
-    (signals invalid-argument-error
+    (ensure (subtypep (type-of (make-sb-string bytes)) 'simple-base-string))
+    (ensure-error
+      (make-sb-string bytes -1))
+    (ensure-condition invalid-argument-error
       (make-sb-string bytes 99))
-    (signals invalid-argument-error
+    (ensure-condition invalid-argument-error
       (make-sb-string bytes 1 0))
-    (signals invalid-argument-error
+    (ensure-condition invalid-argument-error
       (make-sb-string bytes 0 99))))
 
-(test concat-into-sb-string
-  (is (string= "AABBCC"
-               (concat-into-sb-string
-                (make-array 3 :initial-contents
-                            (loop
-                               for i from 65 to 67
-                               collect
-                                 (make-array 2
-                                             :element-type '(unsigned-byte 8)
-                                             :initial-element i)))))))
+(addtest (cl-gp-utilities-tests) concat-into-sb-string
+  (ensure (string=
+           "AABBCC"
+           (concat-into-sb-string
+            (make-array 3 :initial-contents
+                        (loop
+                           for i from 65 to 67
+                           collect
+                             (make-array 2
+                                         :element-type '(unsigned-byte 8)
+                                         :initial-element i)))))))

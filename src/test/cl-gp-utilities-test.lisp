@@ -15,13 +15,10 @@
 ;;; along with this program.  If not, see <http://www.gnu.org/licenses/>.
 ;;;
 
-(in-package :cl-gp-utilities-system)
-
-(fiveam:def-suite testsuite
-    :description "The test suite.")
-
-
 (in-package :cl-gp-utilities-test)
+
+(deftestsuite cl-gp-utilities-tests ()
+  ())
 
 (defclass x1 ()
   ((slotx1 :initarg :slotx1
@@ -42,6 +39,4 @@
 (defun find-slot-reader-method (class-name generic-function)
   (find-method generic-function '() (list (find-class class-name))))
 
-
-(in-suite cl-gp-utilities-system:testsuite)
 

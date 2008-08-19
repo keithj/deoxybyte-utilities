@@ -17,67 +17,64 @@
 
 (in-package :cl-gp-utilities-test)
 
-(in-suite cl-gp-utilities-system:testsuite)
-
-(test vector-positions
+(addtest (cl-gp-utilities-tests) vector-positions
   (let ((vec1 (make-array 10 :initial-contents '(a b c d e a g h i j)))
         (vec2 "abcdeaghij"))
-    (is (equal '(0 5) (vector-positions 'a vec1)))
-    (is (equal '(5) (vector-positions 'a vec1 :start 1)))
-    (is (equal '(0) (vector-positions 'a vec1 :end 2)))
-    (is (null (vector-positions 'a vec1 :start 1 :end 4)))
-    (is (equal '(0 5) (vector-positions #\a vec2 :test #'char=)))))
+    (ensure (equal '(0 5) (vector-positions 'a vec1)))
+    (ensure (equal '(5) (vector-positions 'a vec1 :start 1)))
+    (ensure (equal '(0) (vector-positions 'a vec1 :end 2)))
+    (ensure-null (vector-positions 'a vec1 :start 1 :end 4))
+    (ensure (equal '(0 5) (vector-positions #\a vec2 :test #'char=)))))
 
-(test vector-split-indices
+(addtest (cl-gp-utilities-tests) vector-split-indices
   (let ((vec1 (make-array 10 :initial-contents '(a b c d e a g h i j)))
         (vec2 "abcdeaghij"))
     (multiple-value-bind (starts ends)
         (vector-split-indices 'a vec1)
-      (is (equal '(0 1 6) starts))
-      (is (equal '(0 5 10) ends)))
+      (ensure (equal '(0 1 6) starts))
+      (ensure (equal '(0 5 10) ends)))
     (multiple-value-bind (starts ends)
         (vector-split-indices 'a vec1 :start 1)
-      (is (equal '(1 6) starts))
-      (is (equal '(5 10) ends)))
+      (ensure (equal '(1 6) starts))
+      (ensure (equal '(5 10) ends)))
     (multiple-value-bind (starts ends)
         (vector-split-indices 'a vec1 :end 2)
-      (is (equal '(0 1) starts))
-      (is (equal '(0 2) ends)))
+      (ensure (equal '(0 1) starts))
+      (ensure (equal '(0 2) ends)))
     (multiple-value-bind (starts ends)
         (vector-split-indices 'a vec1 :start 1 :end 4)
-      (is (null starts))
-      (is (null ends)))
+      (ensure-null starts)
+      (ensure-null ends))
     (multiple-value-bind (starts ends)
         (vector-split-indices #\a vec2 :test #'char=)
-      (is (equal '(0 1 6) starts))
-      (is (equal '(0 5 10) ends)))))
+      (ensure (equal '(0 1 6) starts))
+      (ensure (equal '(0 5 10) ends)))))
 
-(test vector-split
+(addtest (cl-gp-utilities-tests) vector-split
   (let ((vec1 (make-array 10 :initial-contents '(a b c d e a g h i j)))
         (vec2 "abcdeaghij"))
-    (is (equalp '(#() #(b c d e) #(g h i j))
-                (vector-split 'a vec1)))
-    (is (equalp '(#(b c d e) #(g h i j))
-                (vector-split 'a vec1 :remove-empty-subseqs t)))
-    (is (equalp '(#(b c d e) #(g h i j))
-                (vector-split 'a vec1 :start 1)))
-    (is (equalp '(#() #(b))
-                (vector-split 'a vec1 :end 2)))
-    (is (equalp '(#(b c d))
-                (vector-split 'a vec1 :start 1 :end 4)))
-    (is (equal '("" "bcde" "ghij")
-               (vector-split #\a vec2 :test #'char=)))))
+    (ensure (equalp '(#() #(b c d e) #(g h i j))
+                    (vector-split 'a vec1)))
+    (ensure (equalp '(#(b c d e) #(g h i j))
+                    (vector-split 'a vec1 :remove-empty-subseqs t)))
+    (ensure (equalp '(#(b c d e) #(g h i j))
+                    (vector-split 'a vec1 :start 1)))
+    (ensure (equalp '(#() #(b))
+                    (vector-split 'a vec1 :end 2)))
+    (ensure (equalp '(#(b c d))
+                    (vector-split 'a vec1 :start 1 :end 4)))
+    (ensure (equal '("" "bcde" "ghij")
+                   (vector-split #\a vec2 :test #'char=)))))
 
-(test vector-errors
+(addtest (cl-gp-utilities-tests) vector-errors
   (let ((vec1 (make-array 10 :initial-contents '(a b c d e a g h i j))))
     (dolist (fn (list #'vector-positions #'vector-split
                       #'vector-split-indices))
-      (signals error
+      (ensure-error
         (funcall fn 'a vec1 :start -1))
-      (signals error
+      (ensure-error
         (funcall fn 'a vec1 :end -1))
-      (signals invalid-argument-error
+      (ensure-condition invalid-argument-error
         (funcall fn 'a vec1 :end 99))
-      (signals invalid-argument-error
+      (ensure-condition invalid-argument-error
         (funcall fn 'a vec1 :start 1 :end 0)))))
-

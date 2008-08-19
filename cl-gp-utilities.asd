@@ -18,8 +18,7 @@
 (in-package :cl-user)
 
 (defpackage #:cl-gp-utilities-system
-  (:use :common-lisp :asdf)
-  (:export #:testsuite))
+  (:use :common-lisp :asdf))
 
 
 (in-package #:cl-gp-utilities-system)
@@ -49,8 +48,10 @@
 (defmethod perform ((op test-op) (c (eql (find-system
                                           :cl-gp-utilities))))
   (operate 'load-op :cl-gp-utilities-test)
-  (funcall (intern (string :run!) (string :fiveam))
-           'cl-gp-utilities-system:testsuite))
+
+  (let ((*default-pathname-defaults* (component-pathname c)))
+    (funcall (intern (string :run-tests) (string :lift))
+             :config "./cl-gp-utilities-test.config")))
 
 (defmethod operation-done-p ((op test-op) (c (eql (find-system
                                                    :cl-gp-utilities))))

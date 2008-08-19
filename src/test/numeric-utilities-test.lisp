@@ -17,31 +17,29 @@
 
 (in-package :cl-gp-utilities-test)
 
-(in-suite cl-gp-utilities-system:testsuite)
+(addtest (cl-gp-utilities-tests) iota
+  (ensure (equal '(0 0 0 0 0) (iota 5 0 0)))
+  (ensure (equal '(0 1 2 3 4) (iota 5)))
+  (ensure (equal '(10 11 12 13 14) (iota 5 10)))
+  (ensure (equal '(0 2 4 6 8) (iota 5 0 2)))
+  (ensure (equal '(0 -1 -2 -3 -4) (iota 5 0 -1)))
+  (ensure (equal '(0 -2 -4 -6 -8) (iota 5 0 -2))))
 
-(test iota
-  (is (equal '(0 0 0 0 0) (iota 5 0 0)))
-  (is (equal '(0 1 2 3 4) (iota 5)))
-  (is (equal '(10 11 12 13 14) (iota 5 10)))
-  (is (equal '(0 2 4 6 8) (iota 5 0 2)))
-  (is (equal '(0 -1 -2 -3 -4) (iota 5 0 -1)))
-  (is (equal '(0 -2 -4 -6 -8) (iota 5 0 -2))))
-
-(test make-number-gen
+(addtest (cl-gp-utilities-tests) make-number-gen
   (let ((gen (make-number-gen)))
-    (is (equal '(0 1 2 3 4) (loop
-                               repeat 5
-                               collect (next gen)))))
+    (ensure (equal '(0 1 2 3 4) (loop
+                                   repeat 5
+                                   collect (next gen)))))
   (let ((gen (make-number-gen 10)))
-    (is (equal '(10 11 12 13 14) (loop
-                                    repeat 5
-                                    collect (next gen)))))
+    (ensure (equal '(10 11 12 13 14) (loop
+                                        repeat 5
+                                        collect (next gen)))))
   (let ((gen (make-number-gen 0 2)))
-    (is (equal '(0 2 4 6 8) (loop
-                               repeat 5
-                               collect (next gen))))))
+    (ensure (equal '(0 2 4 6 8) (loop
+                                   repeat 5
+                                   collect (next gen))))))
 
-(test numeric-binner
+(addtest (cl-gp-utilities-tests) numeric-binner
   (let ((fn (define-numeric-binner 5 5))
         (bins nil)
         (low nil)
@@ -52,11 +50,11 @@
              for j from 0 to 7 ; 5 in each bin, 3 outside high
              do (multiple-value-setq (bins low high)
                   (funcall fn j))))
-    (is (equalp #(10 10 10 10 10) bins))
-    (is (= 0 low))
-    (is (= 30 high))))
+    (ensure (equalp #(10 10 10 10 10) bins))
+    (ensure (= 0 low))
+    (ensure (= 30 high))))
 
-(test categorical-binner
+(addtest (cl-gp-utilities-tests) categorical-binner
   (let ((fn (define-categorical-binner x
               (and (oddp x) (plusp x))
               (and (oddp x) (minusp x))
@@ -67,6 +65,6 @@
     (dolist (i '(-5 -4 -3 -2 -1 0 1 2 3 4 5))
       (multiple-value-setq (bins out)
         (funcall fn i)))
-    (is (equalp #(3 3 2 2) bins))
-    (is (= 1 out))))
+    (ensure (equalp #(3 3 2 2) bins))
+    (ensure (= 1 out))))
 

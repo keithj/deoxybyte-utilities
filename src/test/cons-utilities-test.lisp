@@ -17,85 +17,83 @@
 
 (in-package :cl-gp-utilities-test)
 
-(in-suite cl-gp-utilities-system:testsuite)
-
-(test assocdr/no-args
+(addtest (cl-gp-utilities-tests) assocdr/no-args
   (let ((keys '(a b c))
         (vals '(1 2 3)))
     (mapc #'(lambda (key val)
-              (is (= val (assocdr key (pairlis keys vals)))))
+              (ensure (= val (assocdr key (pairlis keys vals)))))
           keys vals)))
 
-(test assocdr/with-args
+(addtest (cl-gp-utilities-tests) assocdr/with-args
   (let ((keys '("a" "b" "c"))
         (vals '(1 2 3)))
     (mapc #'(lambda (key val)
-              (is (= val (assocdr key (pairlis keys vals)
-                                  :test #'string=))))
+              (ensure (= val (assocdr key (pairlis keys vals)
+                                      :test #'string=))))
           keys vals)))
 
-(test rassocar/no-args
+(addtest (cl-gp-utilities-tests) rassocar/no-args
   (let ((keys '(a b c))
         (vals '(1 2 3)))
     (mapc #'(lambda (key val)
-              (is (eql key (rassocar val (pairlis keys vals)))))
+              (ensure (eql key (rassocar val (pairlis keys vals)))))
           keys vals)))
 
-(test rassocar/with-args
+(addtest (cl-gp-utilities-tests) rassocar/with-args
   (let ((keys '(a b c))
         (vals '("1" "2" "3")))
     (mapc #'(lambda (key val)
-              (is (eql key (rassocar val (pairlis keys vals)
-                                     :test #'string=))))
+              (ensure (eql key (rassocar val (pairlis keys vals)
+                                         :test #'string=))))
           keys vals)))
 
-(test rplassoc/no-args
+(addtest (cl-gp-utilities-tests) rplassoc/no-args
   (let ((keys '(a b c))
         (vals '(1 2 3)))
     (let ((alist (pairlis keys vals)))
       (rplassoc 'a alist 99)
-      (is (= 99 (assocdr 'a alist))))))
+      (ensure (= 99 (assocdr 'a alist))))))
 
-(test rplassoc/with-args
+(addtest (cl-gp-utilities-tests) rplassoc/with-args
   (let ((keys '("a" "b" "c"))
         (vals '(1 2 3)))
     (let ((alist (pairlis keys vals)))
       (rplassoc "a" alist 99
                 :test #'string=)
-      (is (= 99 (assocdr "a" alist
-                         :test #'string=))))))
+      (ensure (= 99 (assocdr "a" alist
+                             :test #'string=))))))
 
-(test assocpush/no-args
+(addtest (cl-gp-utilities-tests) assocpush/no-args
   (let ((keys '(a b))
         (vals '((1 2) (3 4))))
     (let ((alist (pairlis keys vals)))
       (assocpush 'a alist 99)
-      (is (equal '(99 1 2) (assocdr 'a alist))))))
+      (ensure (equal '(99 1 2) (assocdr 'a alist))))))
 
-(test assocpush/with-args
+(addtest (cl-gp-utilities-tests) assocpush/with-args
   (let ((keys '("a" "b"))
         (vals '((1 2) (3 4))))
     (let ((alist (pairlis keys vals)))
       (assocpush "a" alist 99
                  :test #'string=)
-      (is (equal '(99 1 2) (assocdr "a" alist
-                                    :test #'string=))))))
+      (ensure (equal '(99 1 2) (assocdr "a" alist
+                                        :test #'string=))))))
 
-(test assocpop/no-args
+(addtest (cl-gp-utilities-tests) assocpop/no-args
   (let ((keys '(a b))
         (vals '((1 2) (3 4))))
     (let ((alist (pairlis keys vals)))
-      (is (= 1 (assocpop 'a alist)))
-      (is (equal '(2) (assocdr 'a alist))))))
+      (ensure (= 1 (assocpop 'a alist)))
+      (ensure (equal '(2) (assocdr 'a alist))))))
 
-(test assocpop/with-args
+(addtest (cl-gp-utilities-tests) assocpop/with-args
   (let ((keys '("a" "b"))
         (vals '((1 2) (3 4))))
     (let ((alist (pairlis keys vals)))
-      (is (= 1 (assocpop "a" alist
-                         :test #'string=)))
-      (is (equal '(2) (assocdr "a" alist
-                               :test #'string=))))))
+      (ensure (= 1 (assocpop "a" alist
+                             :test #'string=)))
+      (ensure (equal '(2) (assocdr "a" alist
+                                   :test #'string=))))))
 
 ;; (defmacro assocpush+ (key alist val &rest args)
 ;;   "Operates as ASSOCPUSH, except that if the cdr to be pushed onto is
@@ -106,58 +104,58 @@
 ;;          (assocpush ,key ,alist ,val ,@args)
 ;;        (rplassoc ,key ,alist (list ,val ,current-val) ,@args)))))
 
-(test splice/atom
+(addtest (cl-gp-utilities-tests) splice/atom
   (let ((x (list 1 2 3))
         (y 99))
-    (is (equal '(99 1 2 3) (splice x y 0)))
-    (is (equal '(1 99 2 3) (splice x y 1)))
-    (is (equal '(1 2 99 3) (splice x y 2)))
-    (is (equal '(1 2 3 99) (splice x y 3)))))
+    (ensure (equal '(99 1 2 3) (splice x y 0)))
+    (ensure (equal '(1 99 2 3) (splice x y 1)))
+    (ensure (equal '(1 2 99 3) (splice x y 2)))
+    (ensure (equal '(1 2 3 99) (splice x y 3)))))
 
-(test splice/list
+(addtest (cl-gp-utilities-tests) splice/list
   (let ((x (list 1 2 3))
         (y (list 99 77)))
-    (is (equal '(99 77 1 2 3) (splice x y 0)))
-    (is (equal '(1 99 77 2 3) (splice x y 1)))
-    (is (equal '(1 2 99 77 3) (splice x y 2)))
-    (is (equal '(1 2 3 99 77) (splice x y 3)))))
+    (ensure (equal '(99 77 1 2 3) (splice x y 0)))
+    (ensure (equal '(1 99 77 2 3) (splice x y 1)))
+    (ensure (equal '(1 2 99 77 3) (splice x y 2)))
+    (ensure (equal '(1 2 3 99 77) (splice x y 3)))))
 
-(test interleave
-  (is (equal '(a x b x c) (interleave '(a b c) 'x)))
-  (is (equal '(a x b) (interleave '(a b) 'x)))
-  (is (equal '(a) (interleave '(a) 'x)))
-  (is (equal '() (interleave '() 'x))))
+(addtest (cl-gp-utilities-tests) interleave
+  (ensure (equal '(a x b x c) (interleave '(a b c) 'x)))
+  (ensure (equal '(a x b) (interleave '(a b) 'x)))
+  (ensure (equal '(a) (interleave '(a) 'x)))
+  (ensure (equal '() (interleave '() 'x))))
 
-(test collect-args
+(addtest (cl-gp-utilities-tests) collect-args
   (let ((arglist '(:a 1 :b 2 :c 3)))
     (multiple-value-bind (args vals)
         (collect-args '(:a :b) arglist)
-      (is (equal '(:a :b) args))
-      (is (equal '( 1 2) vals)))))
+      (ensure (equal '(:a :b) args))
+      (ensure (equal '( 1 2) vals)))))
 
-(test arg-value
+(addtest (cl-gp-utilities-tests) arg-value
   (let ((arglist '(:a 1 :b 2 :c 3)))
-    (is (= 1 (arg-value :a arglist)))
-    (is (= 2 (arg-value :b arglist)))
-    (is (= 3 (arg-value :c arglist)))))
+    (ensure (= 1 (arg-value :a arglist)))
+    (ensure (= 2 (arg-value :b arglist)))
+    (ensure (= 3 (arg-value :c arglist)))))
 
-(test remove-args
+(addtest (cl-gp-utilities-tests) remove-args
   (let ((arglist '(:a 1 :b 2 :c 3)))
     (multiple-value-bind (retained removed)
         (remove-args '(:a :c) arglist)
-      (is (equal '(:b 2) retained))
-      (is (= 1 (assocdr :a removed)))
-      (is (= 3 (assocdr :c removed))))))
+      (ensure (equal '(:b 2) retained))
+      (ensure (= 1 (assocdr :a removed)))
+      (ensure (= 3 (assocdr :c removed))))))
 
-(test modify-arg
+(addtest (cl-gp-utilities-tests) modify-arg
   (let ((arglist '(:a 1 :b 2 :c 3))
         (fn #'(lambda (x &optional (y 0))
                 (+ 10 x y))))
-    (is (equal '(:a 11 :b 2 :c 3)
-               (modify-arg :a arglist fn)))
-    (is (equal '(:a 1 :b 12 :c 3)
-               (modify-arg :b arglist fn)))
-    (is (equal '(:a 1 :b 2 :c 13)
-               (modify-arg :c arglist fn)))
-    (is (equal '(:a 1 :b 2 :c 113)
-               (modify-arg :c arglist fn 100)))))
+    (ensure (equal '(:a 11 :b 2 :c 3)
+                   (modify-arg :a arglist fn)))
+    (ensure (equal '(:a 1 :b 12 :c 3)
+                   (modify-arg :b arglist fn)))
+    (ensure (equal '(:a 1 :b 2 :c 13)
+                   (modify-arg :c arglist fn)))
+    (ensure (equal '(:a 1 :b 2 :c 113)
+                   (modify-arg :c arglist fn 100)))))
