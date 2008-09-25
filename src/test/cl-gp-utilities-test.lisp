@@ -38,5 +38,3 @@
 
 (defun find-slot-reader-method (class-name generic-function)
   (find-method generic-function '() (list (find-class class-name))))
-
-

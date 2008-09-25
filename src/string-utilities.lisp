@@ -109,3 +109,56 @@ supplied, the simple-strings contained in the vector STRS."
   (concat-strings
    (coerce (interleave strings (make-string 1 :initial-element #\space))
            'simple-vector)))
+
+(defun string-positions (char str &key (start 0) end)
+  (declare (optimize (speed 3) (debug 0)))
+  (declare (type simple-string str))
+  (let ((end (or end (length str))))
+    (declare (type array-index start end))
+    (unless (<= 0 start end (length str))
+      (error 'invalid-argument-error
+             :params '(start end) :args (list start end)
+             :text "start must be >= 0 and be <= end"))
+    (loop for i from start below end
+       when (char= char (char str i))
+       collect i)))
+
+(defun string-split-indices (char str &key (start 0) end)
+  (declare (optimize (speed 3) (safety 0) (debug 0)))
+  (declare (type simple-string str))
+  (let ((end (or end (length str))))
+    (declare (type array-index start end))
+    (unless (<= 0 start end (length str))
+      (error 'invalid-argument-error
+             :params '(start end) :args (list start end)
+             :text "start must be >= 0 and be <= end"))
+    (let ((positions (string-positions char str :start start :end end)))
+      (if positions
+          (loop
+             for pos of-type fixnum in positions
+             and prev = start then (the fixnum (1+ pos))
+             maximize pos into last-pos
+             collect prev into starts
+             collect pos into ends
+             finally (return
+                       (values
+                        (nconc starts (list (the fixnum (1+ last-pos))))
+                        (nconc ends (list end)))))
+        nil))))
+
+(defun string-split (char str &key (start 0) end remove-empty-substrings)
+  (let ((end (or end (length str))))
+    (unless (<= 0 start end (length str))
+      (error 'invalid-argument-error
+             :params '(start end) :args (list start end)
+             :text "start must be >= 0 and be <= end"))
+    (multiple-value-bind (starts ends)
+        (string-split-indices char str :start start :end end)
+      (if (and starts ends)
+          (loop
+             for i in starts
+             for j in ends  
+             when (not (and remove-empty-substrings
+                            (= i j)))
+             collect (subseq str i j))
+        (list (subseq str start end))))))

@@ -41,6 +41,9 @@
    #:vector-positions
    #:vector-split-indices
    #:vector-split
+   #:string-positions
+   #:string-split-indices
+   #:string-split
    #:whitespace-byte-p
    #:whitespace-bytes-p
    #:content-bytes-p
