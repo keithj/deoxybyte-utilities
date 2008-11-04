@@ -49,14 +49,28 @@ insertion into DEST."
 
 ;;; Generator utility functions
 (defun current (gen)
+  "Returns the current value of generator function GEN."
   (funcall gen :current))
 
 (defun next (gen)
+  "Returns the next available value from generator function GEN."
   (funcall gen :next))
 
 (defun has-more-p (gen)
+  "Returns T if generator function GEN has more available values, or
+NIL otherwise."
   (funcall gen :more))
 
 ;;; Consumer utility functions
 (defun consume (con &rest args)
+  "Applies consumer function CON with arguments ARGS."
   (apply con args))
+
+(defun collect (gen &optional (n 1))
+  "Returns a list of up to N values collected from generator function
+GEN. Uses HAS-MORE-P to test the generator and may return an empty
+list if no items are available."
+  (loop
+     repeat n
+     while (has-more-p gen)
+     collect (next gen)))

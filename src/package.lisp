@@ -69,6 +69,8 @@
    #:current
    #:next
    #:has-more-p
+   #:consume
+   #:collect
    #:make-number-gen
 
    #:all-superclasses
