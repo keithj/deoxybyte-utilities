@@ -55,62 +55,43 @@ Returns:
                  (incf current step)))
         (:more t)))))
 
-(defmacro define-numeric-binner (range num-bins &key (start 0)
-                                 (lower-bound-test '>=)
-                                 (upper-bound-test '<))
-  "Creates a closure that accepts a numeric argument. The argument
-value is assigned to the appropriate bin and that bin's total is
-incremented. The closure returns three values, the bins as an array of
-fixnums, the total number of times values fell below the lowest bin
-and the total number of times values fell above the highest bin. Note
-that the return values are cumulative across calls because the
-counters are closed over.
+(defmacro with-numeric-selector (name (num-bins &key (start 0) end
+                                                (oob-error t))
+                               &body body)
+  "Defines a local function NAME that accepts a single numeric
+argument and returns an integer between 0 and NUM-BINS, indicating in
+which of NUM-BINS sequentail, equal-sized bins that value belongs.
 
 Arguments:
 
-- range (number): the range of values to be recorded
-- num-bins (fixnum): the number of bins into which RANGE is divided.
+- name (symbol): the local function name.
+- num-bins (integer): the number of bins into which values are to be
+  assigned.
 
 Key:
 
-- start (number): the start of RANGE, defaults to 0.
-- lower-bound-test (symbol): the test function for each bin's lower
-bound, defaults to '>= .
-- upper-bound-test (symbol): the test function for each bin's upper
-bound, defaults to '< .
+- start (number): the lower bound of the range of values to be binned,
+  defaults to 0.
+- end (number): the upper bound of the range of values to be binned.
 
-Returns:
-
-- A closure accepting a numeric value."
-  (let* ((bin-size (/ range num-bins))
-         (bin-ranges (loop
-                        for n from 0 below num-bins
-                        for offset = start then (+ offset bin-size)
-                        collect (list offset (+ offset bin-size))))
-         (lower-bound-test (if (quotedp lower-bound-test)
-                       (cadr lower-bound-test)
-                     lower-bound-test))
-         (upper-bound-test (if (quotedp upper-bound-test)
-                        (cadr upper-bound-test)
-                      upper-bound-test)))
-    `(progn
-       (let ((bins (make-array ,num-bins :element-type 'fixnum
-                               :initial-element 0))
-             (outside-low 0)
-             (outside-high 0))
-         (lambda (value)
-           (cond ,@(loop
-                      for bin-range in bin-ranges
-                      for i = 0 then (1+ i)
-                      collect
-                        `((and (,lower-bound-test value ,(first bin-range))
-                               (,upper-bound-test value ,(second bin-range)))
-                          (incf (aref bins ,i))))
-                 (t
-                  (if (< value ,start)
-                      (incf outside-low)
-                    (incf outside-high))))
-           (values bins outside-low outside-high))))))
+- oob-error (boolean): if T the function will throw an
+  INVALID-ARGUMENT-ERROR when passed values less than START or greater
+  than END, otherwise the function will return NIL."
+  (with-gensyms (bin-size lower-bound upper-bound)
+    `(let ((,bin-size (/ ,end ,num-bins))
+           (,lower-bound ,start)
+           (,upper-bound (1- (+ ,end ,start))))
+      (flet ((,name (value)
+               (if (<= ,lower-bound value ,upper-bound)
+                   (floor (/ (- value ,start) ,bin-size))
+                 ,(if oob-error
+                      `(error 'invalid-argument-error
+                        :params 'value
+                        :args value
+                        :text (format nil "expected a value in the range ~a"
+                               (list ,lower-bound (1- (+ ,lower-bound ,end)))))
+                      nil))))
+        ,@body))))
 
 (defmacro define-categorical-binner (value &rest categories)
   "Creates a closure that accepts a single argument. The argument
@@ -157,8 +138,6 @@ Returns:
                  (t
                   (incf outside)))
            (values bins outside))))))
-
-
 
 (defun quotedp (form)
   "Returns T if FORM is quoted."

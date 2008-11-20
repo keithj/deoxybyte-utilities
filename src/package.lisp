@@ -87,6 +87,10 @@
    #:assocpush
    #:assocpop
    #:assocpush+
+   #:defsmfun
+   #:defsm
+
+   #:with-numeric-selector
 
    ;;Types
    #:array-index))

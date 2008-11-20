@@ -35,13 +35,15 @@ otherwise."
 characters (defaults to #\Space #\Tab #\Return #\Linefeed and
 #\FormFeed), or NIL otherwise."
   (declare (optimize (speed 3) (debug 0)))
-  (declare (type string *whitespace-chars*))
+  (declare (type simple-string *whitespace-chars*))
   (loop for w across *whitespace-chars*
      thereis (char= w char)))
 
 (defun whitespace-string-p (str)
   "Returns T if all the characters in STR are whitespace as defined by
 WHITESPACE-CHAR-P, or NIL otherwise."
+  (declare (optimize (speed 3) (debug 0)))
+  (declare (type simple-string str))
   (loop for c across str
        always (whitespace-char-p c)))
 
@@ -49,27 +51,29 @@ WHITESPACE-CHAR-P, or NIL otherwise."
   "Returns T if any of the characters in STR are not whitespace as
 defined by WHITESPACE-CHAR-P, or NIL otherwise."
   (declare (optimize (speed 3) (debug 0)))
-  (declare (type string str))
+  (declare (type simple-string str))
   (loop for c across str
      thereis (not (whitespace-char-p c))))
 
 (defun empty-string-p (str)
   "Returns T if STR is a zero-length string or contains only
 whitespace as defined by WHITESPACE-CHAR-P, or NIL otherwise."
+  (declare (optimize (speed 3) (debug 0)))
+  (declare (type simple-string str))
   (or (zerop (length str))
       (whitespace-string-p str)))
 
 (defun contains-char-p (str char)
   "Returns T if STR contains CHAR, or NIL otherwise"
   (declare (optimize (speed 3) (debug 0)))
-  (declare (type string str))
+  (declare (type simple-string str))
   (loop for c across str
      thereis (char= char c)))
 
 (defun has-char-at-p (str char index)
   "Returns T if STR has CHAR at INDEX."
   (declare (optimize (speed 3) (debug 0)))
-  (declare (type string str))
+  (declare (type simple-string str))
   (and (not (zerop (length str)))
        (char= char (char str index))))
 
@@ -81,7 +85,7 @@ whitespace as defined by WHITESPACE-CHAR-P, or NIL otherwise."
   "Applies predicate TEST to characters of string STR indicated by
 INDICES and returns T if all those characters match TEST."
   (declare (optimize (speed 3) (debug 0)))
-  (declare (type string str)
+  (declare (type simple-string str)
            (type function test))
   (loop for i in indices
      always (funcall test (char str i))))
@@ -89,8 +93,8 @@ INDICES and returns T if all those characters match TEST."
 (defun concat-strings (strs)
   "Returns a new simple-string created by concatenating, in the order
 supplied, the simple-strings contained in the vector STRS."
-  (declare (optimize (speed 3) (debug 0)))
-  (declare (type vector strs))
+  (declare (optimize (speed 3) (debug 0) (safety 0)))
+  (declare (type (vector simple-string) strs))
   (let ((new-str (make-string (reduce #'+ strs :key #'length)
                               :element-type 'character))
         (num-strs (length strs)))
@@ -107,7 +111,7 @@ supplied, the simple-strings contained in the vector STRS."
 
 (defun msg (&rest strings)
   (concat-strings
-   (coerce (interleave strings (make-string 1 :initial-element #\space))
+   (coerce (interleave strings (make-string 1 :initial-element #\Space))
            'simple-vector)))
 
 (defun string-positions (char str &key (start 0) end)
@@ -147,7 +151,10 @@ supplied, the simple-strings contained in the vector STRS."
         nil))))
 
 (defun string-split (char str &key (start 0) end remove-empty-substrings)
+  (declare (optimize (speed 3) (debug 0)))
+  (declare (type simple-string str))
   (let ((end (or end (length str))))
+    (declare (type array-index start end))
     (unless (<= 0 start end (length str))
       (error 'invalid-argument-error
              :params '(start end) :args (list start end)
@@ -156,8 +163,8 @@ supplied, the simple-strings contained in the vector STRS."
         (string-split-indices char str :start start :end end)
       (if (and starts ends)
           (loop
-             for i in starts
-             for j in ends  
+             for i of-type array-index in starts
+             for j of-type array-index in ends  
              when (not (and remove-empty-substrings
                             (= i j)))
              collect (subseq str i j))

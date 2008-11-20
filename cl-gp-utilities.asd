@@ -40,7 +40,8 @@
                            (:file "vector-utilities")
                            (:file "string-utilities")
                            (:file "byte-array-utilities")
-                           (:file "clos-utilities")))))
+                           (:file "clos-utilities")
+                           (:file "finite-state-machine")))))
 
 
 (in-package #:asdf)

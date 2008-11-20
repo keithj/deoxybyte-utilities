@@ -112,7 +112,7 @@ order supplied, the simple-arrays of (unsigned-byte 8) contained in
 the vector BYTE-ARRAYS. The elements of the returned string are the
 result of calling code-char on the contents of the respective elements
 of BYTE-ARRAYS."
-  (declare (optimize (speed 3) (debug 0)))
+  (declare (optimize (speed 3) (debug 0) (safety 0)))
   (declare (type vector byte-arrays))
   (let ((new-str (make-string (reduce #'+ byte-arrays :key #'length)
                               :element-type 'base-char))
