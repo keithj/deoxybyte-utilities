@@ -17,8 +17,11 @@
 
 (in-package :cl-user)
 
+(eval-when (:compile-toplevel :load-toplevel :execute)
+  (asdf:operate 'asdf:load-op :cl-system-utilities))
+
 (defpackage #:cl-gp-utilities-system
-  (:use :common-lisp :asdf))
+  (:use :common-lisp :asdf :cl-system-utilities))
 
 
 (in-package #:cl-gp-utilities-system)
@@ -26,8 +29,9 @@
 (defsystem cl-gp-utilities
     :name "cl-gp-utilities"
     :author "Keith James"
-    :version "0.1.0"
+    :version "0.2.0"
     :licence "GPL v3"
+    :in-order-to ((test-op (load-op :cl-gp-utilities :cl-gp-utilities-test)))
     :components
     ((:module :cl-gp-utilities
               :serial t
@@ -41,29 +45,10 @@
                            (:file "string-utilities")
                            (:file "byte-array-utilities")
                            (:file "clos-utilities")
-                           (:file "finite-state-machine")))))
-
-
-(in-package #:asdf)
-
-(defmethod perform ((op test-op) (c (eql (find-system
-                                          :cl-gp-utilities))))
-  (operate 'load-op :cl-gp-utilities-test)
-
-  (let ((*default-pathname-defaults* (component-pathname c)))
-    (funcall (intern (string :run-tests) (string :lift))
-             :config "./cl-gp-utilities-test.config")))
-
-(defmethod operation-done-p ((op test-op) (c (eql (find-system
-                                                   :cl-gp-utilities))))
-  nil)
-
-(defmethod perform ((op cldoc-op) (c (eql (find-system
-                                           :cl-gp-utilities))))
-  (unless (find-package :cl-gp-utilities)
-    (operate 'load-op :cl-gp-utilities))
-
-  (let ((*default-pathname-defaults* (component-pathname c))
-        (fn-sym (intern (string :extract-documentation) (string :cldoc)))
-        (op-sym (intern (string :html) (string :cldoc))))
-    (funcall fn-sym op-sym "./doc/html" c)))
+                           (:file "finite-state-machine")))
+     (:lift-test-config :lift-tests
+                        :pathname "cl-gp-utilities-test.config"
+                        :target-system :cl-gp-utilities)
+     (:cldoc-config :cldoc-documentation
+                    :pathname "doc/html"
+                    :target-system :cl-gp-utilities)))

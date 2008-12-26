@@ -16,6 +16,6 @@
 ;;;
 
 (defpackage #:cl-gp-utilities-test
-  (:use #:common-lisp #:cl-gp-utilities #:lift)
+  (:use #:common-lisp #:cl-gp-utilities :lift)
   (:documentation "General purpose utilities tests.")
   (:export #:cl-gp-utilities-tests))

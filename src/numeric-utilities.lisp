@@ -47,20 +47,20 @@ Returns:
 
 - A closure of zero arity."
   (let ((current start))
-    (lambda (op)
-      (ecase op
-        (:current current)
-        (:next (prog1
+    (define-generator
+        :current current
+        :next (prog1
                    current
-                 (incf current step)))
-        (:more t)))))
+                 (incf current step))
+        :more t)))
 
-(defmacro with-numeric-selector (name (num-bins &key (start 0) end
-                                                (oob-error t))
-                               &body body)
-  "Defines a local function NAME that accepts a single numeric
+(defmacro with-numeric-selector ((name num-bins &key (start 0)
+                                       (end (+ start num-bins))
+                                       (out-of-bounds :error))
+                                 &body body)
+  "Defines a local function NAME that accepts a single fixnum
 argument and returns an integer between 0 and NUM-BINS, indicating in
-which of NUM-BINS sequentail, equal-sized bins that value belongs.
+which of NUM-BINS sequential, equal-sized bins that value belongs.
 
 Arguments:
 
@@ -73,29 +73,35 @@ Key:
 - start (number): the lower bound of the range of values to be binned,
   defaults to 0.
 - end (number): the upper bound of the range of values to be binned.
-
 - oob-error (boolean): if T the function will throw an
   INVALID-ARGUMENT-ERROR when passed values less than START or greater
   than END, otherwise the function will return NIL."
   (with-gensyms (bin-size lower-bound upper-bound)
-    `(let ((,bin-size (/ ,end ,num-bins))
-           (,lower-bound ,start)
-           (,upper-bound (1- (+ ,end ,start))))
+    `(let ((,lower-bound ,start)
+           (,upper-bound (1- ,end))
+           (,bin-size (/ (- ,end ,start) ,num-bins)))
+      (declare (type fixnum ,bin-size ,lower-bound ,upper-bound))
       (flet ((,name (value)
+               (declare (type fixnum value))
                (if (<= ,lower-bound value ,upper-bound)
-                   (floor (/ (- value ,start) ,bin-size))
-                 ,(if oob-error
-                      `(error 'invalid-argument-error
-                        :params 'value
-                        :args value
-                        :text (format nil "expected a value in the range ~a"
-                               (list ,lower-bound (1- (+ ,lower-bound ,end)))))
-                      nil))))
+                   (floor (- value ,lower-bound) ,bin-size)
+                 ,(ecase out-of-bounds
+                    (:include `(if (< value ,lower-bound)
+                                  0
+                                ,upper-bound))
+                    (:ignore nil)
+                    (:error
+                     `(error 'invalid-argument-error
+                       :params 'value
+                       :args value
+                       :text (format nil "expected a value in the range ~a"
+                              (list ,lower-bound
+                               (1- (+ ,lower-bound ,end))))))))))
         ,@body))))
 
 (defmacro define-categorical-binner (value &rest categories)
-  "Creates a closure that accepts a single argument. The argument
-value is assigned to the appropriate bin that bin's total is
+  "Creates a closure that accepts a single fixnum argument. The argument
+value is assigned to the appropriate bin and that bin's total is
 incremented. The closure returns two values, the bins as an array of
 fixnums and the total number of times values did not fall into any
 category. Note that the return values are cumulative across calls

@@ -60,11 +60,11 @@
    #:has-char-at-p
    #:starts-with-char-p
    #:every-char-p
+   #:starts-with-string-p
    #:concat-strings
    #:msg
 
    #:iota
-   #:define-numeric-binner
    #:define-categorical-binner
    #:current
    #:next
@@ -73,7 +73,12 @@
    #:collect
    #:make-number-gen
 
+   #:has-superclass-p
+   #:direct-superclasses
+   #:direct-subclasses
    #:all-superclasses
+   #:all-classes
+   #:all-external-classes
    #:all-specialized-methods
    #:all-specialized-generic-functions
    #:all-external-generic-functions
@@ -90,7 +95,9 @@
    #:defsmfun
    #:defsm
 
+   #:define-generator
+   
    #:with-numeric-selector
 
-   ;;Types
+   ;; Types
    #:array-index))

@@ -36,7 +36,8 @@ characters (defaults to #\Space #\Tab #\Return #\Linefeed and
 #\FormFeed), or NIL otherwise."
   (declare (optimize (speed 3) (debug 0)))
   (declare (type simple-string *whitespace-chars*))
-  (loop for w across *whitespace-chars*
+  (loop
+     for w across *whitespace-chars*
      thereis (char= w char)))
 
 (defun whitespace-string-p (str)
@@ -44,15 +45,17 @@ characters (defaults to #\Space #\Tab #\Return #\Linefeed and
 WHITESPACE-CHAR-P, or NIL otherwise."
   (declare (optimize (speed 3) (debug 0)))
   (declare (type simple-string str))
-  (loop for c across str
-       always (whitespace-char-p c)))
+  (loop
+     for c across str
+     always (whitespace-char-p c)))
 
 (defun content-string-p (str)
   "Returns T if any of the characters in STR are not whitespace as
 defined by WHITESPACE-CHAR-P, or NIL otherwise."
   (declare (optimize (speed 3) (debug 0)))
   (declare (type simple-string str))
-  (loop for c across str
+  (loop
+     for c across str
      thereis (not (whitespace-char-p c))))
 
 (defun empty-string-p (str)
@@ -63,23 +66,29 @@ whitespace as defined by WHITESPACE-CHAR-P, or NIL otherwise."
   (or (zerop (length str))
       (whitespace-string-p str)))
 
-(defun contains-char-p (str char)
-  "Returns T if STR contains CHAR, or NIL otherwise"
+(defun contains-char-p (str char &key (test #'char=))
+  "Returns T if STR contains CHAR, determined by TEST (defaults to
+CHAR=) or NIL otherwise."
   (declare (optimize (speed 3) (debug 0)))
-  (declare (type simple-string str))
-  (loop for c across str
-     thereis (char= char c)))
+  (declare (type simple-string str)
+           (type function test))
+  (loop
+     for c across str
+     thereis (funcall test char c)))
 
-(defun has-char-at-p (str char index)
-  "Returns T if STR has CHAR at INDEX."
+(defun has-char-at-p (str char index &key (test #'char=))
+  "Returns T if STR has CHAR at INDEX, determined by TEST (defaults to
+CHAR=), or NIL otherwise.."
   (declare (optimize (speed 3) (debug 0)))
-  (declare (type simple-string str))
+  (declare (type simple-string str)
+           (type function test))
   (and (not (zerop (length str)))
-       (char= char (char str index))))
+       (funcall test char (char str index))))
 
-(defun starts-with-char-p (str char)
-  "Returns T if STR has CHAR at index 0."
-  (has-char-at-p str char 0))
+(defun starts-with-char-p (str char &key (test #'char=))
+  "Returns T if STR has CHAR at index 0, determined by TEST (defaults
+to CHAR=), or NIL otherwise."
+  (has-char-at-p str char 0 :test test))
 
 (defun every-char-p (str test &rest indices)
   "Applies predicate TEST to characters of string STR indicated by
@@ -87,8 +96,16 @@ INDICES and returns T if all those characters match TEST."
   (declare (optimize (speed 3) (debug 0)))
   (declare (type simple-string str)
            (type function test))
-  (loop for i in indices
+  (loop
+     for i in indices
      always (funcall test (char str i))))
+
+(defun starts-with-string-p (str1 str2 &key (test #'string=))
+  "Returns T if STR1 starts with STR2, determined by TEST (defaults to
+STRING=), or NIL otherwise."
+  (let ((len2 (length str2)))
+    (and (>= (length str1) len2)
+         (funcall test str1 str2 :end1 len2))))
 
 (defun concat-strings (strs)
   "Returns a new simple-string created by concatenating, in the order
@@ -123,7 +140,8 @@ supplied, the simple-strings contained in the vector STRS."
       (error 'invalid-argument-error
              :params '(start end) :args (list start end)
              :text "start must be >= 0 and be <= end"))
-    (loop for i from start below end
+    (loop
+       for i from start below end
        when (char= char (char str i))
        collect i)))
 

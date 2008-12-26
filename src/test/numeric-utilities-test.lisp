@@ -17,7 +17,7 @@
 
 (in-package :cl-gp-utilities-test)
 
-(addtest (cl-gp-utilities-tests) iota
+(addtest (cl-gp-utilities-tests) iota/1
   (ensure (equal '(0 0 0 0 0) (iota 5 0 0)))
   (ensure (equal '(0 1 2 3 4) (iota 5)))
   (ensure (equal '(10 11 12 13 14) (iota 5 10)))
@@ -25,7 +25,7 @@
   (ensure (equal '(0 -1 -2 -3 -4) (iota 5 0 -1)))
   (ensure (equal '(0 -2 -4 -6 -8) (iota 5 0 -2))))
 
-(addtest (cl-gp-utilities-tests) make-number-gen
+(addtest (cl-gp-utilities-tests) make-number-gen/1
   (let ((gen (make-number-gen)))
     (ensure (equal '(0 1 2 3 4) (loop
                                    repeat 5
@@ -39,22 +39,38 @@
                                    repeat 5
                                    collect (next gen))))))
 
-(addtest (cl-gp-utilities-tests) numeric-binner
-  (let ((fn (define-numeric-binner 5 5))
-        (bins nil)
-        (low nil)
-        (high))
-    (loop
-       for i from 0 below 10 ; 10 rounds
-       do (loop
-             for j from 0 to 7 ; 5 in each bin, 3 outside high
-             do (multiple-value-setq (bins low high)
-                  (funcall fn j))))
-    (ensure (equalp #(10 10 10 10 10) bins))
-    (ensure (= 0 low))
-    (ensure (= 30 high))))
+(addtest (cl-gp-utilities-tests) numeric-selector/1
+  ; 5 bins, defaulting to integer range
+  (with-numeric-selector (select-bin 5 :out-of-bounds :ignore)
+    (let ((bins (make-array 5 :initial-element 0)))
+      (loop
+         for i from 0 below 10 ; 10 rounds
+         do (loop
+               for j from -3 upto 7 ; 5 in each bin, 3 outside low & high
+               do (let ((b (select-bin j)))
+                    (when b
+                      (incf (aref bins b))))))
+      (ensure (equalp #(10 10 10 10 10) bins)))))
 
-(addtest (cl-gp-utilities-tests) categorical-binner
+(addtest (cl-gp-utilities-tests) numeric-selector/2
+  (with-numeric-selector (select-bin 5 :out-of-bounds :include)
+    (let ((bins (make-array 5 :initial-element 0)))
+      (loop
+         for i from 0 below 10 ; 10 rounds
+         do (loop
+               for j from -3 to 7 ; 5 in each bin, 3 outside low & high
+               do (let ((b (select-bin j)))
+                    (when b
+                        (incf (aref bins b))))))
+      (ensure (equalp #(40 10 10 10 40) bins))))
+  (ensure-condition invalid-argument-error
+    (with-numeric-selector (select-bin 5 :out-of-bounds :error)
+      (select-bin -1)))
+  (ensure-condition invalid-argument-error
+    (with-numeric-selector (select-bin 5 :out-of-bounds :error)
+      (select-bin 5))))
+
+(addtest (cl-gp-utilities-tests) categorical-binner/1
   (let ((fn (define-categorical-binner x
               (and (oddp x) (plusp x))
               (and (oddp x) (minusp x))
@@ -67,4 +83,3 @@
         (funcall fn i)))
     (ensure (equalp #(3 3 2 2) bins))
     (ensure (= 1 out))))
-

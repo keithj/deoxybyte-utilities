@@ -18,15 +18,15 @@
 (in-package #:cl-gp-utilities-system)
 
 (defsystem cl-gp-utilities-test
-    :depends-on (:cl-gp-utilities :lift)
-    :components ((:module :cl-gp-utilities-test
-                          :serial t
-                          :pathname "src/test/"
-                          :components ((:file "package")
-                                       (:file "cl-gp-utilities-test")
-                                       (:file "cons-utilities-test")
-                                       (:file "numeric-utilities-test")
-                                       (:file "vector-utilities-test")
-                                       (:file "byte-array-utilities-test")
-                                       (:file "string-utilities-test")
-                                       (:file "clos-utilities-test")))))
+  :depends-on (:cl-gp-utilities)
+  :components ((:module :cl-gp-utilities-test
+                        :serial t
+                        :pathname "src/test/"
+                        :components ((:file "package")
+                                     (:file "cl-gp-utilities-test")
+                                     (:file "cons-utilities-test")
+                                     (:file "numeric-utilities-test")
+                                     (:file "vector-utilities-test")
+                                     (:file "byte-array-utilities-test")
+                                     (:file "string-utilities-test")
+                                     (:file "clos-utilities-test")))))

@@ -47,6 +47,33 @@ insertion into DEST."
                                     `(funcall ,key (aref ,source si))
                                   `(aref ,source si)))))
 
+(defmacro define-generator (&key current next more)
+  "Returns a generator function that may be passed to any of the
+generator utility functions {defun current} , {defun next} or
+{defun has-more-p}.
+
+Key:
+
+- current (form): A form to be called when passed the function is
+  passed to {defun current}. This should return the current value of
+  the generator.
+
+- next (form): A form to be called when passed the function is passed
+  to {defun current}. This should return the next value of the
+  generator.
+
+- has-more-p (form): A form to be called when passed the function is
+  passed to {defun has-more-p}. This should return T if the generator
+  can supply more values, or NIL otherwise.
+
+Returns:
+- A form that evaluates to an anonymous function."
+  `(lambda (op)
+    (ecase op
+      (:current ,current)
+      (:next ,next)
+      (:more ,more))))
+
 ;;; Generator utility functions
 (defun current (gen)
   "Returns the current value of generator function GEN."

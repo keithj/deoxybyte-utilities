@@ -17,82 +17,94 @@
 
 (in-package :cl-gp-utilities-test)
 
-(addtest (cl-gp-utilities-tests) control-char-p
+(addtest (cl-gp-utilities-tests) control-char-p/1
   (ensure (loop
              for i from 0 to 31
              always (control-char-p (code-char i))))
-  (ensure (control-char-p (code-char 127)))
+  (ensure (control-char-p (code-char 127))))
+
+(addtest (cl-gp-utilities-tests) control-char-p/2
   (ensure (loop
              for c across "abcdefghijklmnopqrstuvwxyz"
              never (control-char-p c))))
 
-(addtest (cl-gp-utilities-tests) whitespace-char-p
+(addtest (cl-gp-utilities-tests) whitespace-char-p/1
   (ensure (loop
              for c in '(#\Space #\Tab #\Return
                         #\Linefeed #\FormFeed)
-             always (whitespace-char-p c)))
+             always (whitespace-char-p c))))
+
+(addtest (cl-gp-utilities-tests) whitespace-char-p/2
   (ensure (loop
              for c across "abcdefghijklmnopqrstuvwxyz"
              never (whitespace-char-p c))))
 
-(addtest (cl-gp-utilities-tests) whitespace-string-p
+(addtest (cl-gp-utilities-tests) whitespace-string-p/1
   (ensure (whitespace-string-p
            (make-array 5 :element-type 'base-char
                        :initial-contents '(#\Space #\Tab #\Return
-                                           #\Linefeed #\FormFeed))))
+                                           #\Linefeed #\FormFeed)))))
+
+(addtest (cl-gp-utilities-tests) whitespace-string-p/2
   (ensure (not (whitespace-string-p
                 (make-array 6 :element-type 'base-char
-                            :initial-contents
-                            '(#\Space #\Tab #\Return
-                              #\Linefeed #\FormFeed #\a))))))
+                              :initial-contents
+                              '(#\Space #\Tab #\Return
+                                #\Linefeed #\FormFeed #\a))))))
 
-(addtest (cl-gp-utilities-tests) content-string-p
+(addtest (cl-gp-utilities-tests) content-string-p/1
   (ensure (content-string-p
            (make-array 6 :element-type 'base-char
                        :initial-contents '(#\Space #\Tab #\Return
-                                           #\Linefeed #\FormFeed #\a))))
+                                           #\Linefeed #\FormFeed #\a)))))
+
+(addtest (cl-gp-utilities-tests) content-string-p/2
   (ensure (not (content-string-p
                 (make-array 5 :element-type 'base-char
                             :initial-contents
                             '(#\Space #\Tab #\Return
                               #\Linefeed #\FormFeed))))))
 
-(addtest (cl-gp-utilities-tests) empty-string-p
+(addtest (cl-gp-utilities-tests) empty-string-p/1
   (ensure (empty-string-p
            (make-array 5 :element-type 'base-char
                        :initial-contents '(#\Space #\Tab #\Return
-                                           #\Linefeed #\FormFeed))))
-  (ensure (empty-string-p ""))
+                                           #\Linefeed #\FormFeed)))))
+
+(addtest (cl-gp-utilities-tests) empty-string-p/2
+  (ensure (empty-string-p "")))
+
+(addtest (cl-gp-utilities-tests) empty-string-p/3
   (ensure (not (empty-string-p
                 (make-array 6 :element-type 'base-char
-                            :initial-contents
-                            '(#\Space #\Tab #\Return
-                              #\Linefeed #\FormFeed #\a))))))
+                              :initial-contents
+                              '(#\Space #\Tab #\Return
+                                #\Linefeed #\FormFeed #\a))))))
 
-(addtest (cl-gp-utilities-tests) contains-char-p
+(addtest (cl-gp-utilities-tests) contains-char-p/1
   (ensure (contains-char-p "abc" #\a))
   (ensure (contains-char-p "abc" #\b))
   (ensure (contains-char-p "abc" #\c))
   (ensure (not (contains-char-p "abc" #\d))))
 
-(addtest (cl-gp-utilities-tests) has-char-at-p
+(addtest (cl-gp-utilities-tests) has-char-at-p/1
   (ensure (has-char-at-p "abc" #\a 0))
   (ensure (has-char-at-p "abc" #\b 1))
   (ensure (has-char-at-p "abc" #\c 2))
   (ensure (not (has-char-at-p "abc" #\a 1)))
   (ensure (not (has-char-at-p "abc" #\c 0))))
 
-(addtest (cl-gp-utilities-tests) starts-with-char-p
+(addtest (cl-gp-utilities-tests) starts-with-char-p/1
   (ensure (starts-with-char-p "abc" #\a))
   (ensure (not (starts-with-char-p "abc" #\b))))
 
-(addtest (cl-gp-utilities-tests) every-char-p
+(addtest (cl-gp-utilities-tests) every-char-p/1
   (let ((fn #'(lambda (c) (char= #\a c))))
     (ensure (every-char-p "aaa" fn 0 1 2))
     (ensure (every-char-p "aab" fn 0 1))
     (ensure (every-char-p "baa" fn 1 2))))
 
-(addtest (cl-gp-utilities-tests) concat-strings
+(addtest (cl-gp-utilities-tests) concat-strings/1
   (ensure (string=
            "aaabbbccc"
            (concat-strings (make-array 4 :initial-contents

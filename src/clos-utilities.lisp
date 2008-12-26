@@ -18,6 +18,30 @@
 (in-package :cl-gp-utilities)
 
 ;;; Introspection utility functions
+(defun has-superclass-p (class superclass)
+  "Returns T if CLASS has SUPERCLASS, or NIL otherwise."
+  #-(or :sbcl :cmu :lispworks)
+  (error "IS-SUPERCLASS-P not supported on this implementation.")
+  #+:sbcl (member superclass (sb-mop:compute-class-precedence-list class))
+  #+:cmu (member superclass (mop:compute-class-precedence-list class))
+  #+:lispworks (member superclass (clos:class-precedence-list class)))
+
+(defun direct-superclasses (class)
+  "Returns a list of the direct superclasses of CLASS."
+  #-(or :sbcl :cmu :lispworks)
+  (error "DIRECT-SUPERCLASSES not supported on this implementation.")
+  #+:sbcl (sb-mop:class-direct-superclasses class)
+  #+:cmu (cmu:class-direct-superclasses class)
+  #+:lispworks (clos:class-direct-superclasses class))
+
+(defun direct-subclasses (class)
+  "Returns a list of the direct subclasses of CLASS."
+  #-(or :sbcl :cmu :lispworks)
+  (error "DIRECT-SUBCLASSES not supported on this implementation.")
+  #+:sbcl (sb-mop:class-direct-subclasses class)
+  #+:cmu (cmu:class-direct-subclasses class)
+  #+:lispworks (clos:class-direct-subclasses class))
+
 (defun all-superclasses (class &optional
                          (ceiling (find-class 'standard-object)))
   "Returns a list of all superclasses of CLASS, up to, but not
@@ -31,6 +55,32 @@ STANDARD-OBJECT."
                          (mop:compute-class-precedence-list ceiling))
   #+:lispworks (set-difference (clos:class-precedence-list class)
                                (clos:class-precedence-list ceiling)))
+
+(defun all-classes (package-name &optional (superclass (find-class 't)))
+  "Returns a list of all classes defined in package PACKAGE-NAME,
+optionally restricted to those classes that have SUPERCLASS."
+  (let ((package (find-package package-name))
+        (classes ()))
+    (do-symbols (s package classes)
+      (let ((c (find-class s nil)))
+        (when (and c
+                   (eql package (symbol-package (class-name c)))
+                   (has-superclass-p c superclass))
+          (push c classes))))))
+
+(defun all-external-classes (package-name
+                             &optional (superclass (find-class 't)))
+  "Returns a list of all exported classes defined in package
+PACKAGE-NAME, optionally restricted to those classes that have
+SUPERCLASS."
+  (let ((package (find-package package-name))
+        (classes ()))
+    (do-external-symbols (s package classes)
+      (let ((c (find-class s nil)))
+        (when (and c
+                   (eql package (symbol-package (class-name c)))
+                   (has-superclass-p c superclass))
+          (push c classes))))))
 
 (defun all-specialized-methods (class &optional
                                 (ceiling (find-class 'standard-object)))
@@ -60,12 +110,34 @@ STANDARD-OBJECT."
           #+:lispworks #'clos:method-generic-function
           (all-specialized-methods class ceiling)))
 
-(defun all-external-generic-functions (package)
-  "Returns a list of all the external generic functions in PACKAGE."
+(defun all-external-generic-functions (package-name)
+  "Returns a list of all the external generic functions in package
+PACKAGE-NAME."
   (let ((generic-fns ()))
-    (do-external-symbols (s (find-package package) generic-fns)
+    (do-external-symbols (s (find-package package-name) generic-fns)
       (when (fboundp s)
         (let ((fn (symbol-function s)))
           (when (eql 'standard-generic-function (type-of fn))
-            (push fn generic-fns)))))
-    generic-fns))
+            (push fn generic-fns)))))))
+
+;; (in-package :cl-dot)
+
+;; (defmethod graph-object-node ((graph (eql 'class-example))
+;;                               (object class))
+;;   (make-instance 'node
+;;                  :attributes (list :label (class-name object)
+;;                                    :shape :box
+;;                                    :style :filled
+;;                                    :fillcolor "#eeeeff"
+;;                                    :fontname "Arial"
+;;                                    :fontsize 6)))
+
+;; (defmethod graph-object-pointed-to-by ((graph (eql 'class-example))
+;;                                        (object class))
+;;   (gpu:direct-subclasses object))
+
+
+;; (let* ((data (gpu:all-classes :bs))
+;;        (dgraph (generate-graph-from-roots 'class-example data
+;;                                           '(:rankdir "BT"))))
+;;   (dot-graph dgraph "/home/keith/test.png" :format :png))
