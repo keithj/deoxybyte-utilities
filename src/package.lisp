@@ -15,6 +15,8 @@
 ;;; along with this program.  If not, see <http://www.gnu.org/licenses/>.
 ;;;
 
+(in-package :cl-user)
+
 (defpackage #:cl-gp-utilities
   (:use #:common-lisp)
   (:nicknames #:gpu)

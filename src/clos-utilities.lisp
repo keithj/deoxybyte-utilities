@@ -56,7 +56,8 @@ STANDARD-OBJECT."
   #+:lispworks (set-difference (clos:class-precedence-list class)
                                (clos:class-precedence-list ceiling)))
 
-(defun all-classes (package-name &optional (superclass (find-class 't)))
+(defun all-classes (package-name &optional (superclass
+                                            (find-class 'standard-object)))
   "Returns a list of all classes defined in package PACKAGE-NAME,
 optionally restricted to those classes that have SUPERCLASS."
   (let ((package (find-package package-name))
@@ -120,24 +121,3 @@ PACKAGE-NAME."
           (when (eql 'standard-generic-function (type-of fn))
             (push fn generic-fns)))))))
 
-;; (in-package :cl-dot)
-
-;; (defmethod graph-object-node ((graph (eql 'class-example))
-;;                               (object class))
-;;   (make-instance 'node
-;;                  :attributes (list :label (class-name object)
-;;                                    :shape :box
-;;                                    :style :filled
-;;                                    :fillcolor "#eeeeff"
-;;                                    :fontname "Arial"
-;;                                    :fontsize 6)))
-
-;; (defmethod graph-object-pointed-to-by ((graph (eql 'class-example))
-;;                                        (object class))
-;;   (gpu:direct-subclasses object))
-
-
-;; (let* ((data (gpu:all-classes :bs))
-;;        (dgraph (generate-graph-from-roots 'class-example data
-;;                                           '(:rankdir "BT"))))
-;;   (dot-graph dgraph "/home/keith/test.png" :format :png))

@@ -12,15 +12,14 @@ all: fasl doc
 
 fasl:
 	sbcl --noinform --noprint \
-	--eval "(progn (asdf:oos 'asdf:compile-op :cl-gp-utilities) (quit))"
+	--eval "(progn (asdf:operate 'asdf:compile-op :cl-gp-utilities) (quit))"
 
 doc:
-	sbcl --noinform --noprint \
-	--eval "(progn (asdf:oos 'asdf:cldoc-op :cl-gp-utilities) (quit))"
+	sbcl --noinform --noprint --load make-doc.lisp
 
 test:
 	sbcl --noinform --noprint \
-	--eval "(progn (asdf:oos 'asdf:test-op :cl-gp-utilities) (quit))"
+	--eval "(progn (asdf:operate 'asdf:test-op :cl-gp-utilities) (quit))"
 
 clean:
 	find . -name \*.fasl -exec rm {} \;
