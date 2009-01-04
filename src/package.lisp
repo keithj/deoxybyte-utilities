@@ -61,8 +61,10 @@
    #:contains-char-p
    #:has-char-at-p
    #:starts-with-char-p
+   #:ends-with-char-p
    #:every-char-p
    #:starts-with-string-p
+   #:end-with-string-p
    #:concat-strings
    #:msg
 

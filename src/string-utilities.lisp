@@ -90,6 +90,11 @@ CHAR=), or NIL otherwise.."
 to CHAR=), or NIL otherwise."
   (has-char-at-p str char 0 :test test))
 
+(defun ends-with-char-p (str char &key (test #'char=))
+  "Returns T if STR has CHAR at its last index, determined by
+TEST (defaults to CHAR=), or NIL otherwise."
+  (has-char-at-p str char (1- (length str)) :test test))
+
 (defun every-char-p (str test &rest indices)
   "Applies predicate TEST to characters of string STR indicated by
 INDICES and returns T if all those characters match TEST."
@@ -106,6 +111,14 @@ STRING=), or NIL otherwise."
   (let ((len2 (length str2)))
     (and (>= (length str1) len2)
          (funcall test str1 str2 :end1 len2))))
+
+(defun ends-with-string-p (str1 str2 &key (test #'string=))
+  "Returns T if STR1 ends with STR2, determined by TEST (defaults to
+STRING=), or NIL otherwise."
+  (let ((len1 (length str1))
+        (len2 (length str2)))
+    (and (>= len1 len2)
+         (funcall test str1 str2 :start1 (- len1 len2)))))
 
 (defun concat-strings (strs)
   "Returns a new simple-string created by concatenating, in the order

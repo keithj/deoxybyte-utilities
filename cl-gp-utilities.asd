@@ -27,28 +27,28 @@
 (in-package #:cl-gp-utilities-system)
 
 (defsystem cl-gp-utilities
-    :name "cl-gp-utilities"
-    :author "Keith James"
-    :version "0.2.0"
-    :licence "GPL v3"
-    :in-order-to ((test-op (load-op :cl-gp-utilities :cl-gp-utilities-test)))
-    :components
-    ((:module :cl-gp-utilities
-              :serial t
-              :pathname "src/"
-              :components ((:file "package")
-                           (:file "conditions")
-                           (:file "cl-gp-utilities")
-                           (:file "numeric-utilities")
-                           (:file "cons-utilities")
-                           (:file "vector-utilities")
-                           (:file "string-utilities")
-                           (:file "byte-array-utilities")
-                           (:file "clos-utilities")
-                           (:file "finite-state-machine")))
-     (:lift-test-config :lift-tests
-                        :pathname "cl-gp-utilities-test.config"
-                        :target-system :cl-gp-utilities)
-     (:cldoc-config :cldoc-documentation
-                    :pathname "doc/html"
-                    :target-system :cl-gp-utilities)))
+  :name "cl-gp-utilities"
+  :author "Keith James"
+  :version "0.2.0"
+  :licence "GPL v3"
+  :in-order-to ((test-op (load-op :cl-gp-utilities :cl-gp-utilities-test)))
+  :components
+  ((:module :cl-gp-utilities
+            :serial t
+            :pathname "src/"
+            :components ((:file "package")
+                         (:file "conditions")
+                         (:file "cl-gp-utilities")
+                         (:file "numeric-utilities")
+                         (:file "cons-utilities")
+                         (:file "vector-utilities")
+                         (:file "string-utilities")
+                         (:file "byte-array-utilities")
+                         (:file "clos-utilities")
+                         (:file "finite-state-machine")))
+   (:lift-test-config :lift-tests
+                      :pathname "cl-gp-utilities-test.config"
+                      :target-system :cl-gp-utilities)
+   (:cldoc-config :cldoc-documentation
+                  :pathname "doc/html"
+                  :target-system :cl-gp-utilities)))
