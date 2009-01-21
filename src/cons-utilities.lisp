@@ -1,5 +1,5 @@
 ;;;
-;;; Copyright (C) 2008 Keith James. All rights reserved.
+;;; Copyright (C) 2008-2009 Keith James. All rights reserved.
 ;;;
 ;;; This program is free software: you can redistribute it and/or modify
 ;;; it under the terms of the GNU General Public License as published by
@@ -50,6 +50,20 @@ an atom, it is first wrapped in a new list."
      (if (consp ,current-val)
          (assocpush ,key ,alist ,val ,@args)
        (rplassoc ,key ,alist (list ,val ,current-val) ,@args)))))
+
+(defun dotted-pair-p (list)
+  "Returns T if LIST is a dotted pair, or NIL otherwise."
+  (and (consp list)
+       (cdr list)
+       (not (consp (cdr list)))))
+
+(defun proper-list-p (list)
+  "Returns T if LIST is a proper list, or NIL otherwise. A proper list
+is defined as a list whose terminal cdr is NIL. This function does not
+test the list for circularity."
+  (or (null list)
+      (and (consp list)
+           (proper-list-p (rest list)))))
 
 (defun splice (list obj n)
   "Splices atom or (a copy of) list OBJ into a copy of LIST at
