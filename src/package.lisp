@@ -26,6 +26,7 @@
 
    ;; Conditions
    #:invalid-argument-error
+   #:missing-argument-error
    #:invalid-operation-error
 
    ;; Classes
@@ -42,6 +43,7 @@
    #:splice
    #:nsplice
    #:interleave
+   #:flatten
    #:vector-positions
    #:vector-split-indices
    #:vector-split

@@ -95,6 +95,16 @@ OBJ."
     (append (list (car list) obj)
             (interleave (rest list) obj))))
 
+(defun flatten (tree)
+  "Returns a new list containing the members of TREE."
+  (cond ((null tree)
+         nil)
+        ((atom tree)
+         (list tree))
+        (t
+         (append (flatten (first tree))
+                 (flatten (rest tree))))))
+
 (defun collect-args (args arglist)
   "For all arguments in list ARGS, finds the argument and its value in
 list ARGLIST. Returns two values, a list of matched arguments and a

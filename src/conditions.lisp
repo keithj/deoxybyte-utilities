@@ -21,7 +21,7 @@
   ((parameters :initform "<not supplied>"
                :initarg :params
                :reader parameters-of
-               :documentation "The invalid parameters")
+               :documentation "The invalid parameters.")
    (arguments :initform "<not supplied>"
               :initarg :args
               :reader arguments-of
@@ -36,6 +36,24 @@
                      (parameters-of condition)
                      (atom (parameters-of condition))
                      (arguments-of condition)
+                     (text-of condition))))
+  (:documentation "An error that is raised when an invalid argument is
+passed to a function."))
+
+(define-condition missing-argument-error (error)
+  ((parameters :initform "<not supplied>"
+               :initarg :params
+               :reader parameters-of
+               :documentation "The invalid parameters.")
+   (text :initform nil
+         :initarg :text
+         :reader text-of
+         :documentation "Error message text."))
+  (:report (lambda (condition stream)
+             (format stream
+                     "Missing ~a argument~:[s~;~]~@[: ~a~]."
+                     (parameters-of condition)
+                     (atom (parameters-of condition))
                      (text-of condition))))
   (:documentation "An error that is raised when an invalid argument is
 passed to a function."))
