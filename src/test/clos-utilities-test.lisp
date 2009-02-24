@@ -45,7 +45,8 @@
 (addtest (cl-gp-utilities-tests) all-specialized-generic-functions/1
   (let ((mgf #+:sbcl #'sb-mop:method-generic-function
              #+:cmu #'mop:method-generic-function
-             #+:lispworks #'clos:method-generic-function))
+             #+:lispworks #'clos:method-generic-function
+             #+:ccl #'ccl:method-generic-function))
     (ensure (subsetp (mapcar mgf (all-specialized-methods (find-class 'x1)))
                      (all-specialized-generic-functions (find-class 'x1))))
     (ensure (subsetp (mapcar mgf (all-specialized-methods (find-class 'x2)))

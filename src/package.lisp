@@ -70,7 +70,8 @@
    #:starts-with-string-p
    #:end-with-string-p
    #:concat-strings
-   #:msg
+   #:txt
+   #:str
 
    #:iota
    #:define-categorical-binner

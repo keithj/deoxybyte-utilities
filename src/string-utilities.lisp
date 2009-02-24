@@ -139,10 +139,14 @@ supplied, the simple-strings contained in the vector STRS."
                       new-str offset)
           (incf offset (length str)))))))
 
-(defun msg (&rest strings)
-  (concat-strings
-   (coerce (interleave strings (make-string 1 :initial-element #\Space))
-           'simple-vector)))
+(defun txt (&rest strings)
+  "Returns the result of concatenating STRINGS, separated by spaces."
+  (apply #'concatenate 'string
+         (interleave strings (make-string 1 :initial-element #\Space))))
+
+(defun str (&rest strings)
+  "Returns the result of concatenating strings STRINGS."
+  (apply #'concatenate 'string strings))
 
 (defun string-positions (char str &key (start 0) end)
   (declare (optimize (speed 3) (debug 0)))
@@ -159,6 +163,10 @@ supplied, the simple-strings contained in the vector STRS."
        collect i)))
 
 (defun string-split-indices (char str &key (start 0) end)
+  "Returns two values, a list of start indices and a list of end
+indices into STR between START and END such that if used as start/end
+arguments to subseq, STR will be split on CHAR. CHAR is compared with
+elements in STR using TEST, which defaults to EQL."
   (declare (optimize (speed 3) (safety 0) (debug 0)))
   (declare (type simple-string str))
   (let ((end (or end (length str))))
@@ -182,6 +190,9 @@ supplied, the simple-strings contained in the vector STRS."
         nil))))
 
 (defun string-split (char str &key (start 0) end remove-empty-substrings)
+  "Returns a list of strings made by splitting simple-string STR at
+CHAR, between START and END. If REMOVE-EMPTY-SUBSEQS is T, any empty
+subsequences will be omitted from the returned list."
   (declare (optimize (speed 3) (debug 0)))
   (declare (type simple-string str))
   (let ((end (or end (length str))))

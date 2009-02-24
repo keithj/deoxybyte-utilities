@@ -66,7 +66,7 @@ compared with elements in VECTOR using TEST, which defaults to EQL."
   "Returns a list of vectors made by splitting VECTOR at ELT, between
 START and END. ELT is compared with elements in VECTOR using TEST,
 which defaults to EQL. If REMOVE-EMPTY-SUBSEQS is T, any empty
-subsequeneces will be omitted from the returned list. If
+subsequences will be omitted from the returned list. If
 DISPLACE-TO-VECTOR id T, the returned subsequences will be displaced
 to the actual subsequences within VECTOR and will therefore share
 structure with VECTOR."
