@@ -97,3 +97,19 @@ structure with VECTOR."
                          :displaced-index-offset start))
             (t
              (list (subseq vector start end)))))))
+
+(defun binary-search (vector item &key (test #'<) key
+                      (start 0) (end (length vector)))
+  (labels ((bin-search (start end)
+             (when (< start end)
+               (let ((mid (+ start (floor (- end start) 2))))
+                 (let ((mid-item (if key
+                                     (funcall key (aref vector mid))
+                                   (aref vector mid))))
+                   (cond ((funcall test item mid-item)
+                          (bin-search start mid))
+                         ((funcall test mid-item item)
+                          (bin-search (1+ mid) end))
+                         (t
+                          (aref vector mid))))))))
+      (bin-search start end)))
