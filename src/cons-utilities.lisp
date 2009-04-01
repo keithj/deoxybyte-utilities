@@ -105,49 +105,64 @@ OBJ."
          (append (flatten (first tree))
                  (flatten (rest tree))))))
 
-(defun collect-args (args arglist)
-  "For all arguments in list ARGS, finds the argument and its value in
-list ARGLIST. Returns two values, a list of matched arguments and a
-list of their corresponding values."
+(defun collect-key-values (keywords arg-list)
+  "For all keywords in list KEYWORDS, finds the keyword and its value
+in ARG-LIST, a list containing only keyword and value pairs. Returns
+two values, a list of matched keywords and a list of their
+corresponding values."
   (loop
-     for arg in arglist by #'cddr
-     for val in (rest arglist) by #'cddr
-     when (member arg args)
-     collect arg into matched-args
-     and collect val into vals
-     finally (return (values matched-args vals))))
+     for keyword in arg-list by #'cddr
+     for value in (rest arg-list) by #'cddr
+     when (member keyword keywords)
+     collect keyword into matched-keywords
+     and collect value into values
+     finally (return (values matched-keywords values))))
 
-(defun arg-value (arg arglist)
-  "Returns the current value of ARG in list ARGLIST."
-  (loop
-     for arg-n in arglist by #'cddr
-     for val in (rest arglist) by #'cddr
-     when (eql arg arg-n)
-     return val))
+(defun key-value (keyword arg-list)
+  "Returns the current value of KEYWORD in list ARG-LIST, a list
+containing only keyword and value pairs."
+  (second (member keyword arg-list)))
 
-(defun remove-args (args arglist)
-  "Returns two values, a copy of ARGLIST with ARGS and their values
-removed and an alist containing ARGS and their corresponding values."
+(defun remove-key-values (keywords arg-list)
+  "Returns two values, a copy of ARG-LIST, a list containing only
+keyword and value pairs, with KEYWORDS and their values removed and an
+alist containing KEYWORDS and their corresponding values."
   (loop
-     for arg-n in arglist by #'cddr
-     for val in (rest arglist) by #'cddr
-     if (not (member arg-n args))
-     nconc (list arg-n val) into new-arglist
+     for keyword in arg-list by #'cddr
+     for value in (rest arg-list) by #'cddr
+     if (not (member keyword keywords))
+     nconc (list keyword value) into new-arg-list
      else
-     collect arg-n into removed-args
-     and collect val into removed-vals
-     finally (return (values new-arglist
-                             (pairlis removed-args removed-vals)))))
+     collect keyword into removed-keywords
+     and collect value into removed-values
+     finally (return (values new-arg-list
+                             (pairlis removed-keywords
+                                      removed-values)))))
 
-(defun modify-arg (arg arglist mod-fn &rest fn-args)
-  "Returns a copy of ARGLIST where the value corresponding to ARG has
-been replaced by the result of applying MOD-FN to that value. MOD-FN
-must be a function that accepts ARG's value and may accept additional
-arguments supplied in FN-ARGS."
+(defun modify-key-value (keyword arg-list mod-fn &rest fn-args)
+  "Returns a copy of ARG-LIST where the value corresponding to KEYWORD
+has been replaced by the result of applying MOD-FN to that
+value. MOD-FN must be a function that accepts KEYWORDS's value and may
+accept additional arguments supplied in FN-ARGS."
   (loop
-     for arg-n in arglist by #'cddr
-     for val in (rest arglist) by #'cddr
-     if (eql arg arg-n)
-     nconc (list arg-n (apply mod-fn val fn-args))
+     for keyword-n in arg-list by #'cddr
+     for value in (rest arg-list) by #'cddr
+     if (eql keyword keyword-n)
+     nconc (list keyword-n (apply mod-fn value fn-args))
      else
-     nconc (list arg-n val)))
+     nconc (list keyword-n value)))
+
+(defun canonical-fn-args (lambda-list fn-args)
+  (let* ((key-pos (position '&key lambda-list))
+         (fixed-args (subseq fn-args 0 key-pos))
+         (keyword-args (subseq fn-args key-pos)))
+    (loop
+       for key in keyword-args by #'cddr
+       for val in (rest keyword-args) by #'cddr
+       collect key into keys
+       collect (list key val) into key-vals
+       finally (return
+                 (append fixed-args
+                         (mapcan (lambda (key)
+                                   (assoc key key-vals))
+                                 (sort keys #'string< :key #'symbol-name)))))))

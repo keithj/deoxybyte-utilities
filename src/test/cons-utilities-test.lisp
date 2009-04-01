@@ -126,36 +126,36 @@
   (ensure (equal '(a) (interleave '(a) 'x)))
   (ensure (equal '() (interleave '() 'x))))
 
-(addtest (cl-gp-utilities-tests) collect-args/1
-  (let ((arglist '(:a 1 :b 2 :c 3)))
+(addtest (cl-gp-utilities-tests) collect-key-values/1
+  (let ((arg-list '(:a 1 :b 2 :c 3)))
     (multiple-value-bind (args vals)
-        (collect-args '(:a :b) arglist)
+        (collect-key-values '(:a :b) arg-list)
       (ensure (equal '(:a :b) args))
       (ensure (equal '( 1 2) vals)))))
 
-(addtest (cl-gp-utilities-tests) arg-value/1
-  (let ((arglist '(:a 1 :b 2 :c 3)))
-    (ensure (= 1 (arg-value :a arglist)))
-    (ensure (= 2 (arg-value :b arglist)))
-    (ensure (= 3 (arg-value :c arglist)))))
+(addtest (cl-gp-utilities-tests) key-value/1
+  (let ((arg-list '(:a 1 :b 2 :c 3)))
+    (ensure (= 1 (key-value :a arg-list)))
+    (ensure (= 2 (key-value :b arg-list)))
+    (ensure (= 3 (key-value :c arg-list)))))
 
-(addtest (cl-gp-utilities-tests) remove-args/1
-  (let ((arglist '(:a 1 :b 2 :c 3)))
+(addtest (cl-gp-utilities-tests) remove-key-values/1
+  (let ((arg-list '(:a 1 :b 2 :c 3)))
     (multiple-value-bind (retained removed)
-        (remove-args '(:a :c) arglist)
+        (remove-key-values '(:a :c) arg-list)
       (ensure (equal '(:b 2) retained))
       (ensure (= 1 (assocdr :a removed)))
       (ensure (= 3 (assocdr :c removed))))))
 
-(addtest (cl-gp-utilities-tests) modify-arg/1
-  (let ((arglist '(:a 1 :b 2 :c 3))
-        (fn #'(lambda (x &optional (y 0))
-                (+ 10 x y))))
+(addtest (cl-gp-utilities-tests) modify-key-value/1
+  (let ((arg-list '(:a 1 :b 2 :c 3))
+        (fn (lambda (x &optional (y 0))
+              (+ 10 x y))))
     (ensure (equal '(:a 11 :b 2 :c 3)
-                   (modify-arg :a arglist fn)))
+                   (modify-key-value :a arg-list fn)))
     (ensure (equal '(:a 1 :b 12 :c 3)
-                   (modify-arg :b arglist fn)))
+                   (modify-key-value :b arg-list fn)))
     (ensure (equal '(:a 1 :b 2 :c 13)
-                   (modify-arg :c arglist fn)))
+                   (modify-key-value :c arg-list fn)))
     (ensure (equal '(:a 1 :b 2 :c 113)
-                   (modify-arg :c arglist fn 100)))))
+                   (modify-key-value :c arg-list fn 100)))))

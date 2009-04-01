@@ -34,10 +34,10 @@
    ;; Generics
 
    ;; Functions
-   #:collect-args
-   #:arg-value
-   #:remove-args
-   #:modify-arg
+   #:collect-key-values
+   #:key-value
+   #:remove-key-values
+   #:modify-key-value
    #:proper-list-p
    #:dotted-pair-p
    #:splice
