@@ -47,6 +47,7 @@
    #:vector-positions
    #:vector-split-indices
    #:vector-split
+   #:binary-search
    #:string-positions
    #:string-split-indices
    #:string-split
