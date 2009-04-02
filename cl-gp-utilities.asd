@@ -29,7 +29,7 @@
 (defsystem cl-gp-utilities
   :name "cl-gp-utilities"
   :author "Keith James"
-  :version "0.2.0"
+  :version "0.3.0"
   :licence "GPL v3"
   :in-order-to ((test-op (load-op :cl-gp-utilities :cl-gp-utilities-test)))
   :components
