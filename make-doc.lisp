@@ -20,5 +20,5 @@
 (asdf:operate 'asdf:load-op :cl-system-utilities)
 (asdf:operate 'asdf:load-op :cl-gp-utilities)
 
-(csu:document-system :cl-gp-utilities)
+(su:document-system :cl-gp-utilities)
 (quit)
