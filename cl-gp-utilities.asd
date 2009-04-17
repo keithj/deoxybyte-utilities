@@ -1,5 +1,5 @@
 ;;;
-;;; Copyright (C) 2007-2008, Keith James. All rights reserved.
+;;; Copyright (C) 2007-2009 Keith James. All rights reserved.
 ;;;
 ;;; This program is free software: you can redistribute it and/or modify
 ;;; it under the terms of the GNU General Public License as published by
@@ -29,7 +29,6 @@
 (defsystem cl-gp-utilities
   :name "cl-gp-utilities"
   :author "Keith James"
-  :version "0.3.0"
   :licence "GPL v3"
   :in-order-to ((test-op (load-op :cl-gp-utilities :cl-gp-utilities-test)))
   :components

@@ -1,5 +1,5 @@
 ;;;
-;;; Copyright (C) 2007-2009-2008, Keith James. All rights reserved.
+;;; Copyright (C) 2007-2009 Keith James. All rights reserved.
 ;;;
 ;;; This program is free software: you can redistribute it and/or modify
 ;;; it under the terms of the GNU General Public License as published by
@@ -20,7 +20,6 @@
 (deftype array-index ()
   "Array index type."
   '(and fixnum (integer 0 *)))
-
 
 ;;; Core macros
 (eval-when (:compile-toplevel :load-toplevel :execute)
@@ -50,20 +49,20 @@ insertion into DEST."
 (defmacro define-generator (&key current next more)
   "Returns a generator function that may be passed to any of the
 generator utility functions {defun current} , {defun next} or
-{defun has-more-p}.
+{defun has-more-p} .
 
 Key:
 
 - current (form): A form to be called when passed the function is
-  passed to {defun current}. This should return the current value of
+  passed to {defun current} . This should return the current value of
   the generator.
 
 - next (form): A form to be called when passed the function is passed
-  to {defun current}. This should return the next value of the
+  to {defun current} . This should return the next value of the
   generator.
 
 - has-more-p (form): A form to be called when passed the function is
-  passed to {defun has-more-p}. This should return T if the generator
+  passed to {defun has-more-p} . This should return T if the generator
   can supply more values, or NIL otherwise.
 
 Returns:
@@ -95,8 +94,8 @@ NIL otherwise."
 
 (defun collect (gen &optional (n 1))
   "Returns a list of up to N values collected from generator function
-GEN. Uses HAS-MORE-P to test the generator and may return an empty
-list if no items are available."
+GEN. Uses {defun has-more-p} to test the generator and may return an
+empty list if no items are available."
   (loop
      repeat n
      while (has-more-p gen)
