@@ -206,7 +206,7 @@ subsequences will be omitted from the returned list."
       (if (and starts ends)
           (loop
              for i of-type array-index in starts
-             for j of-type array-index in ends  
+             for j of-type array-index in ends
              when (not (and remove-empty-substrings
                             (= i j)))
              collect (subseq str i j))
