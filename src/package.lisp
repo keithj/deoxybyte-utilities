@@ -44,6 +44,8 @@
    #:nsplice
    #:interleave
    #:flatten
+   #:exactly-n
+   #:exactly-one
    #:vector-positions
    #:vector-split-indices
    #:vector-split

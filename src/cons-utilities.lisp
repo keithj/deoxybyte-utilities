@@ -105,6 +105,25 @@ OBJ."
          (append (flatten (first tree))
                  (flatten (rest tree))))))
 
+(defun exactly-n (predicate n first-seq &rest more-seqs)
+  "Analagous to the ANSI standard functions EVERY and SOME, except
+that this function returns T if exactly N tests of PREDICATE are true,
+or NIL otherwise."
+  (loop
+     for i from 0 below (apply #'min (length first-seq)
+                               (mapcar #'length more-seqs))
+     count (apply predicate (elt first-seq i) (loop
+                                                 for seq in more-seqs
+                                                 collect (elt seq i)))
+     into total
+     finally (return (= n total))))
+
+(defun exactly-one (predicate first-seq &rest more-seqs)
+  "Analagous to the ANSI standard functions EVERY and SOME, except
+that this function returns T if exactly one test of PREDICATE is true,
+or NIL otherwise."
+  (apply #'exactly-n predicate 1 first-seq more-seqs))
+
 (defun collect-key-values (keywords arg-list)
   "For all keywords in list KEYWORDS, finds the keyword and its value
 in ARG-LIST, a list containing only keyword and value pairs. Returns
