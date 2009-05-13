@@ -71,7 +71,7 @@
    #:ends-with-char-p
    #:every-char-p
    #:starts-with-string-p
-   #:end-with-string-p
+   #:ends-with-string-p
    #:concat-strings
    #:txt
    #:str

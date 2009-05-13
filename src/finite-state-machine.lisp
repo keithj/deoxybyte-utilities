@@ -18,6 +18,59 @@
 (in-package :cl-gp-utilities)
 
 (defmacro defsmfun (name args bindings (&rest states))
+  "Returns a function that encapsulates a finite state machine over STATES.
+
+Arguments:
+
+- name (symbol): The name of the function.
+- args (lambda list): The function lambda list.
+- bindings (list): A list of parallel bindings (as for LET).
+
+Rest:
+
+- states (list): A list of forms describing the state
+  transitions. Each state form consists of a symbol that denotes a
+  current state and a series of conditional forms that act indicate
+  potential states that may be reached from the current state. The
+  tests are evaluated in turn as in a COND form.
+
+     (current-state (test1 next-state1 &rest actions)
+                    (test2 next-state2 &rest actions)
+                    (t nil))
+
+  When a test returns T, the machine moves to the next state once the
+  current state's action forms are evaluated. A next state of NIL
+  indicates termination, at which point the function returns the
+  result of evaluating the last action form.
+
+  For example, the following definition returns a function that
+  partitions a DNA sequence into base triples (codons).
+
+   ;;; (defsmfun codon-iterator (seq &key (start 0))
+   ;;;   ((i start)
+   ;;;    (len (length-of seq))
+   ;;;    (codons ())
+   ;;;    (codon ()))
+   ;;;   ((base0 ((< i len) base1
+   ;;;            (setf codon (list (element-of seq i)))
+   ;;;            (incf i))
+   ;;;            (t nil
+   ;;;               (reverse codons)))
+   ;;;    (base1 ((< i len) base2
+   ;;;            (push (element-of seq i) codon)
+   ;;;            (incf i))
+   ;;;           (t nil
+   ;;;              (reverse codons)))
+   ;;;    (base2 ((< i len) base0
+   ;;;            (push (element-of seq i) codon)
+   ;;;            (push (reverse codon) codons)
+   ;;;            (incf i))
+   ;;;           (t nil
+   ;;;              (reverse codons)))))
+
+Returns:
+
+- A function."
   `(defun ,name ,args
     (let (,@bindings)
       (block nil
@@ -34,6 +87,36 @@
                      states)))))))
 
 (defmacro defsm ((&rest states))
+  "Defines a finite state machine over STATES.
+
+Arguments:
+
+- states (list): A list of forms describing the state transitions. See
+  {defmacro defsmfun} .
+
+For example:
+
+   ;;; (let* ((seq (make-dna \"atggtgcct\"))
+   ;;;        (i 0)
+   ;;;        (len (length-of seq))
+   ;;;        (codons ())
+   ;;;        (codon ()))
+   ;;;   (defsm ((base0 ((< i len) base1
+   ;;;                   (setf codon (list (element-of seq i)))
+   ;;;                   (incf i))
+   ;;;                  (t nil
+   ;;;                     (reverse codons)))
+   ;;;           (base1 ((< i len) base2
+   ;;;                   (push (element-of seq i) codon)
+   ;;;                   (incf i))
+   ;;;                  (t nil
+   ;;;                     (reverse codons)))
+   ;;;           (base2 ((< i len) base0
+   ;;;                   (push (element-of seq i) codon)
+   ;;;                   (push (reverse codon) codons)
+   ;;;                   (incf i))
+   ;;;                  (t nil
+   ;;;                     (reverse codons)))))"
   `(block nil
     (tagbody
        ,@(apply #'append
@@ -60,67 +143,9 @@
                               `((let ((x (progn
                                            ,@forms)))
                                   (return x))))
-                             (t
+                             (t ; this may be redundant if the user
+                                ; supplies their own catch-all clause
                               '((return)))))))
          acceptors)
       (t
        (return)))))
-
-;; (defsmfun codon-iterator (seq &key (start 0))
-;;   ((i start)
-;;    (len (length-of seq))
-;;    (codons ())
-;;    (codon ()))
-;;   ((base0 ((< i len) base1
-;;            (setf codon (list (element-of seq i)))
-;;            (incf i))
-;;            (t nil
-;;               (reverse codons)))
-;;    (base1 ((< i len) base2
-;;            (push (element-of seq i) codon)
-;;            (incf i))
-;;           (t nil))
-;;    (base2 ((< i len) base0
-;;            (push (element-of seq i) codon)
-;;            (push (reverse codon) codons)
-;;            (incf i))
-;;           (t nil))))
-
-;; (let* ((seq (make-dna "atggtgcct"))
-;;        (i 0)
-;;        (len (length-of seq))
-;;        (codons ())
-;;        (codon ()))
-;;   (defsm ((base0 ((< i len) base1
-;;                   (setf codon (list (element-of seq i)))
-;;                   (incf i))
-;;                  (t nil
-;;                     (reverse codons)))
-;;           (base1 ((< i len) base2
-;;                   (push (element-of seq i) codon)
-;;                   (incf i))
-;;                  (t nil))
-;;           (base2 ((< i len) base0
-;;                   (push (element-of seq i) codon)
-;;                   (push (reverse codon) codons)
-;;                   (incf i))
-;;                  (t nil)))))
-
-;; (define-fsm zombat (x)
-;;   ()
-;;   ((start ((eql 'foo (first x)) lambard
-;;            (format t "Foo!~%"))
-;;            ((eql 'bar (first x)) lard
-;;             (format t "Bar!~%"))
-;;            (t flub))
-;;    (lambard ((eql 'foo (second x)) pling
-;;              (format t "Moo!~%"))
-;;             ((eql 'baz (second x)) lard
-;;              (format t "Lardy!~%"))
-;;             (t flub))
-;;    (lard ((= 2 (length x)) flub)) 
-;;    (zangbot)
-;;    (pling (t nil
-;;              (format t "Nice!~%")))
-;;    (flub (t nil
-;;             (format t "flub~%")))))
