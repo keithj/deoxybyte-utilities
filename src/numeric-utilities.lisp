@@ -15,12 +15,12 @@
 ;;; along with this program.  If not, see <http://www.gnu.org/licenses/>.
 ;;;
 
-(in-package :cl-gp-utilities)
+(in-package :uk.co.deoxybyte-utilities)
 
 (defun iota (count &optional (start 0) (step 1))
-  "Generates a list of COUNT integers from START \(defaults to 0\)
-with subsequent integers STEP \(defaults to 1\) greater than the last
-\(or less, if a negative STEP is given\)."
+  "Generates a list of COUNT integers from START (defaults to 0) with
+subsequent integers STEP (defaults to 1) greater than the last, or
+less, if a negative STEP is given."
   (cond ((zerop step)
          (loop repeat count
             collect 0))

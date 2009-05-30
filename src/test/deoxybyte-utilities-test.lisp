@@ -15,9 +15,9 @@
 ;;; along with this program.  If not, see <http://www.gnu.org/licenses/>.
 ;;;
 
-(in-package :cl-gp-utilities-test)
+(in-package :deoxybyte-utilities-test)
 
-(deftestsuite cl-gp-utilities-tests ()
+(deftestsuite deoxybyte-utilities-tests ()
   ())
 
 (defclass x1 ()

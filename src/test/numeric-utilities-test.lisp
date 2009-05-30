@@ -15,9 +15,9 @@
 ;;; along with this program.  If not, see <http://www.gnu.org/licenses/>.
 ;;;
 
-(in-package :cl-gp-utilities-test)
+(in-package :deoxybyte-utilities-test)
 
-(addtest (cl-gp-utilities-tests) iota/1
+(addtest (deoxybyte-utilities-tests) iota/1
   (ensure (equal '(0 0 0 0 0) (iota 5 0 0)))
   (ensure (equal '(0 1 2 3 4) (iota 5)))
   (ensure (equal '(10 11 12 13 14) (iota 5 10)))
@@ -25,7 +25,7 @@
   (ensure (equal '(0 -1 -2 -3 -4) (iota 5 0 -1)))
   (ensure (equal '(0 -2 -4 -6 -8) (iota 5 0 -2))))
 
-(addtest (cl-gp-utilities-tests) make-number-gen/1
+(addtest (deoxybyte-utilities-tests) make-number-gen/1
   (let ((gen (make-number-gen)))
     (ensure (equal '(0 1 2 3 4) (loop
                                    repeat 5
@@ -39,7 +39,7 @@
                                    repeat 5
                                    collect (next gen))))))
 
-(addtest (cl-gp-utilities-tests) numeric-selector/1
+(addtest (deoxybyte-utilities-tests) numeric-selector/1
   ; 5 bins, defaulting to integer range
   (with-numeric-selector (select-bin 5 :out-of-bounds :ignore)
     (let ((bins (make-array 5 :initial-element 0)))
@@ -52,7 +52,7 @@
                       (incf (aref bins b))))))
       (ensure (equalp #(10 10 10 10 10) bins)))))
 
-(addtest (cl-gp-utilities-tests) numeric-selector/2
+(addtest (deoxybyte-utilities-tests) numeric-selector/2
   (with-numeric-selector (select-bin 5 :out-of-bounds :include)
     (let ((bins (make-array 5 :initial-element 0)))
       (loop
@@ -70,7 +70,7 @@
     (with-numeric-selector (select-bin 5 :out-of-bounds :error)
       (select-bin 5))))
 
-(addtest (cl-gp-utilities-tests) categorical-binner/1
+(addtest (deoxybyte-utilities-tests) categorical-binner/1
   (let ((fn (define-categorical-binner x
               (and (oddp x) (plusp x))
               (and (oddp x) (minusp x))

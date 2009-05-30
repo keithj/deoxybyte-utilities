@@ -15,7 +15,7 @@
 ;;; along with this program.  If not, see <http://www.gnu.org/licenses/>.
 ;;;
 
-(in-package :cl-gp-utilities)
+(in-package :uk.co.deoxybyte-utilities)
 
 (defmacro defsmfun (name args bindings (&rest states))
   "Returns a function that encapsulates a finite state machine over STATES.

@@ -1,5 +1,5 @@
 ;;;
-;;; Copyright (C) 2007-2008, Keith James. All rights reserved.
+;;; Copyright (C) 2007-2008 Keith James. All rights reserved.
 ;;;
 ;;; This program is free software: you can redistribute it and/or modify
 ;;; it under the terms of the GNU General Public License as published by
@@ -15,15 +15,15 @@
 ;;; along with this program.  If not, see <http://www.gnu.org/licenses/>.
 ;;;
 
-(in-package #:cl-gp-utilities-system)
+(in-package #:uk.co.deoxybyte-utilities-system)
 
-(defsystem cl-gp-utilities-test
-  :depends-on (:cl-gp-utilities :lift)
-  :components ((:module :cl-gp-utilities-test
+(defsystem deoxybyte-utilities-test
+  :depends-on (:deoxybyte-utilities :lift)
+  :components ((:module :deoxybyte-utilities-test
                         :serial t
                         :pathname "src/test/"
                         :components ((:file "package")
-                                     (:file "cl-gp-utilities-test")
+                                     (:file "deoxybyte-utilities-test")
                                      (:file "cons-utilities-test")
                                      (:file "numeric-utilities-test")
                                      (:file "vector-utilities-test")

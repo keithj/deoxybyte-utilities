@@ -15,9 +15,9 @@
 ;;; along with this program.  If not, see <http://www.gnu.org/licenses/>.
 ;;;
 
-(in-package :cl-gp-utilities-test)
+(in-package :deoxybyte-utilities-test)
 
-(addtest (cl-gp-utilities-tests) whitespace-bytes-p/1
+(addtest (deoxybyte-utilities-tests) whitespace-bytes-p/1
   (let ((ws (mapcar #'char-code '(#\Space #\Tab #\Return
                                   #\Linefeed #\FormFeed)))
         (ct (loop
@@ -36,7 +36,7 @@
                   (make-array 26 :element-type '(unsigned-byte 8)
                               :initial-contents ct))))))
 
-(addtest (cl-gp-utilities-tests) content-bytes-p/1
+(addtest (deoxybyte-utilities-tests) content-bytes-p/1
   (let ((ws (mapcar #'char-code '(#\Space #\Tab #\Return
                                   #\Linefeed #\FormFeed)))
         (ct (loop
@@ -53,7 +53,7 @@
                          :initial-contents (append ws ct))))))
 
 
-(addtest (cl-gp-utilities-tests) make-sb-string/1
+(addtest (deoxybyte-utilities-tests) make-sb-string/1
   (let ((bytes (make-array 2 :element-type '(unsigned-byte 8)
                            :initial-contents '(65 65))))
     (ensure (subtypep (type-of (make-sb-string bytes)) 'simple-base-string))
@@ -66,7 +66,7 @@
     (ensure-condition invalid-argument-error
       (make-sb-string bytes 0 99))))
 
-(addtest (cl-gp-utilities-tests) concat-into-sb-string/1
+(addtest (deoxybyte-utilities-tests) concat-into-sb-string/1
   (ensure (string=
            "AABBCC"
            (concat-into-sb-string

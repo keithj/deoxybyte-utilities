@@ -17,10 +17,11 @@
 
 (in-package :cl-user)
 
-(defpackage #:cl-gp-utilities
+(defpackage #:uk.co.deoxybyte-utilities
   (:use #:common-lisp)
-  (:nicknames #:gpu)
-  (:documentation "General purpose utilities.")
+  (:nicknames
+   #:deoxybyte-utilities
+   #:dxu)
   (:export
    ;; Constants
 
@@ -112,4 +113,6 @@
    #:with-numeric-selector
    
    ;; Types
-   #:array-index))
+   #:array-index)
+  (:documentation "The deoxybyte-utilities package contains general
+  purpose utilities."))

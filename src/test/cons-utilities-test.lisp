@@ -15,16 +15,16 @@
 ;;; along with this program.  If not, see <http://www.gnu.org/licenses/>.
 ;;;
 
-(in-package :cl-gp-utilities-test)
+(in-package :deoxybyte-utilities-test)
 
-(addtest (cl-gp-utilities-tests) assocdr/1
+(addtest (deoxybyte-utilities-tests) assocdr/1
   (let ((keys '(a b c))
         (vals '(1 2 3)))
     (mapc #'(lambda (key val)
               (ensure (= val (assocdr key (pairlis keys vals)))))
           keys vals)))
 
-(addtest (cl-gp-utilities-tests) assocdr/2
+(addtest (deoxybyte-utilities-tests) assocdr/2
   (let ((keys '("a" "b" "c"))
         (vals '(1 2 3)))
     (mapc #'(lambda (key val)
@@ -32,14 +32,14 @@
                                       :test #'string=))))
           keys vals)))
 
-(addtest (cl-gp-utilities-tests) rassocar/1
+(addtest (deoxybyte-utilities-tests) rassocar/1
   (let ((keys '(a b c))
         (vals '(1 2 3)))
     (mapc #'(lambda (key val)
               (ensure (eql key (rassocar val (pairlis keys vals)))))
           keys vals)))
 
-(addtest (cl-gp-utilities-tests) rassocar/2
+(addtest (deoxybyte-utilities-tests) rassocar/2
   (let ((keys '(a b c))
         (vals '("1" "2" "3")))
     (mapc #'(lambda (key val)
@@ -47,14 +47,14 @@
                                          :test #'string=))))
           keys vals)))
 
-(addtest (cl-gp-utilities-tests) rplassoc/1
+(addtest (deoxybyte-utilities-tests) rplassoc/1
   (let ((keys '(a b c))
         (vals '(1 2 3)))
     (let ((alist (pairlis keys vals)))
       (rplassoc 'a alist 99)
       (ensure (= 99 (assocdr 'a alist))))))
 
-(addtest (cl-gp-utilities-tests) rplassoc/2
+(addtest (deoxybyte-utilities-tests) rplassoc/2
   (let ((keys '("a" "b" "c"))
         (vals '(1 2 3)))
     (let ((alist (pairlis keys vals)))
@@ -63,14 +63,14 @@
       (ensure (= 99 (assocdr "a" alist
                              :test #'string=))))))
 
-(addtest (cl-gp-utilities-tests) assocpush/1
+(addtest (deoxybyte-utilities-tests) assocpush/1
   (let ((keys '(a b))
         (vals '((1 2) (3 4))))
     (let ((alist (pairlis keys vals)))
       (assocpush 'a alist 99)
       (ensure (equal '(99 1 2) (assocdr 'a alist))))))
 
-(addtest (cl-gp-utilities-tests) assocpush/2
+(addtest (deoxybyte-utilities-tests) assocpush/2
   (let ((keys '("a" "b"))
         (vals '((1 2) (3 4))))
     (let ((alist (pairlis keys vals)))
@@ -79,14 +79,14 @@
       (ensure (equal '(99 1 2) (assocdr "a" alist
                                         :test #'string=))))))
 
-(addtest (cl-gp-utilities-tests) assocpop/1
+(addtest (deoxybyte-utilities-tests) assocpop/1
   (let ((keys '(a b))
         (vals '((1 2) (3 4))))
     (let ((alist (pairlis keys vals)))
       (ensure (= 1 (assocpop 'a alist)))
       (ensure (equal '(2) (assocdr 'a alist))))))
 
-(addtest (cl-gp-utilities-tests) assocpop/2
+(addtest (deoxybyte-utilities-tests) assocpop/2
   (let ((keys '("a" "b"))
         (vals '((1 2) (3 4))))
     (let ((alist (pairlis keys vals)))
@@ -104,7 +104,7 @@
 ;;          (assocpush ,key ,alist ,val ,@args)
 ;;        (rplassoc ,key ,alist (list ,val ,current-val) ,@args)))))
 
-(addtest (cl-gp-utilities-tests) splice/1
+(addtest (deoxybyte-utilities-tests) splice/1
   (let ((x (list 1 2 3))
         (y 99)) ; atom
     (ensure (equal '(99 1 2 3) (splice x y 0)))
@@ -112,7 +112,7 @@
     (ensure (equal '(1 2 99 3) (splice x y 2)))
     (ensure (equal '(1 2 3 99) (splice x y 3)))))
 
-(addtest (cl-gp-utilities-tests) splice/2
+(addtest (deoxybyte-utilities-tests) splice/2
   (let ((x (list 1 2 3))
         (y (list 99 77))) ; list
     (ensure (equal '(99 77 1 2 3) (splice x y 0)))
@@ -120,26 +120,26 @@
     (ensure (equal '(1 2 99 77 3) (splice x y 2)))
     (ensure (equal '(1 2 3 99 77) (splice x y 3)))))
 
-(addtest (cl-gp-utilities-tests) interleave/1
+(addtest (deoxybyte-utilities-tests) interleave/1
   (ensure (equal '(a x b x c) (interleave '(a b c) 'x)))
   (ensure (equal '(a x b) (interleave '(a b) 'x)))
   (ensure (equal '(a) (interleave '(a) 'x)))
   (ensure (equal '() (interleave '() 'x))))
 
-(addtest (cl-gp-utilities-tests) collect-key-values/1
+(addtest (deoxybyte-utilities-tests) collect-key-values/1
   (let ((arg-list '(:a 1 :b 2 :c 3)))
     (multiple-value-bind (args vals)
         (collect-key-values '(:a :b) arg-list)
       (ensure (equal '(:a :b) args))
       (ensure (equal '( 1 2) vals)))))
 
-(addtest (cl-gp-utilities-tests) key-value/1
+(addtest (deoxybyte-utilities-tests) key-value/1
   (let ((arg-list '(:a 1 :b 2 :c 3)))
     (ensure (= 1 (key-value :a arg-list)))
     (ensure (= 2 (key-value :b arg-list)))
     (ensure (= 3 (key-value :c arg-list)))))
 
-(addtest (cl-gp-utilities-tests) remove-key-values/1
+(addtest (deoxybyte-utilities-tests) remove-key-values/1
   (let ((arg-list '(:a 1 :b 2 :c 3)))
     (multiple-value-bind (retained removed)
         (remove-key-values '(:a :c) arg-list)
@@ -147,7 +147,7 @@
       (ensure (= 1 (assocdr :a removed)))
       (ensure (= 3 (assocdr :c removed))))))
 
-(addtest (cl-gp-utilities-tests) modify-key-value/1
+(addtest (deoxybyte-utilities-tests) modify-key-value/1
   (let ((arg-list '(:a 1 :b 2 :c 3))
         (fn (lambda (x &optional (y 0))
               (+ 10 x y))))

@@ -15,7 +15,7 @@
 ;;; along with this program.  If not, see <http://www.gnu.org/licenses/>.
 ;;;
 
-(in-package :cl-gp-utilities)
+(in-package :uk.co.deoxybyte-utilities)
 
 (defun vector-positions (elt vector &key (start 0) end (test #'eql))
   "Returns a list of indices into VECTOR between START and END where

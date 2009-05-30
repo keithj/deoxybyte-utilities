@@ -15,14 +15,14 @@
 ;;; along with this program.  If not, see <http://www.gnu.org/licenses/>.
 ;;;
 
-(in-package :cl-gp-utilities-test)
+(in-package :deoxybyte-utilities-test)
 
-(addtest (cl-gp-utilities-tests) has-superclass-p/1
+(addtest (deoxybyte-utilities-tests) has-superclass-p/1
   (ensure (has-superclass-p (find-class 'x2) (find-class 'x1)))
   (ensure (has-superclass-p (find-class 'x3) (find-class 'x1)))
   (ensure (not (has-superclass-p (find-class 'y1) (find-class 'x1)))))
 
-(addtest (cl-gp-utilities-tests) all-superclasses/1
+(addtest (deoxybyte-utilities-tests) all-superclasses/1
   (ensure (equal (list (find-class 'x1))
                  (all-superclasses (find-class 'x1))))
   (ensure (equal (mapcar #'find-class '(x1 x2))
@@ -30,7 +30,7 @@
   (ensure (equal (mapcar #'find-class '(y1 x1 x2 x3))
                  (all-superclasses (find-class 'x3)))))
 
-(addtest (cl-gp-utilities-tests) all-specialized-methods/1
+(addtest (deoxybyte-utilities-tests) all-specialized-methods/1
   (ensure (subsetp (mapcar #'find-slot-reader-method
                                   '(x1) (list #'slotx1-of))
                    (all-specialized-methods (find-class 'x1))))
@@ -42,7 +42,7 @@
                                                 #'slotx3-of #'sloty1-of))
                    (all-specialized-methods (find-class 'x3)))))
 
-(addtest (cl-gp-utilities-tests) all-specialized-generic-functions/1
+(addtest (deoxybyte-utilities-tests) all-specialized-generic-functions/1
   (let ((mgf #+:sbcl #'sb-mop:method-generic-function
              #+:cmu #'mop:method-generic-function
              #+:lispworks #'clos:method-generic-function
@@ -54,7 +54,7 @@
     (ensure (subsetp (mapcar mgf (all-specialized-methods (find-class 'x3)))
                      (all-specialized-generic-functions (find-class 'x3))))))
 
-(addtest (cl-gp-utilities-tests) all-external-generic-functions/1
+(addtest (deoxybyte-utilities-tests) all-external-generic-functions/1
   (let ((external ()))
     (do-external-symbols (sym (find-package :common-lisp) external)
       (when (fboundp sym)

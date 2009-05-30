@@ -18,26 +18,27 @@
 (in-package :cl-user)
 
 (eval-when (:compile-toplevel :load-toplevel :execute)
-  (when (asdf:find-system :cl-system-utilities nil)
-    (asdf:operate 'asdf:load-op :cl-system-utilities)))
+  (when (asdf:find-system :deoxybyte-systems nil)
+    (asdf:operate 'asdf:load-op :deoxybyte-systems)))
 
-(defpackage #:cl-gp-utilities-system
-  (:use :common-lisp :asdf :cl-system-utilities))
+(defpackage #:uk.co.deoxybyte-utilities-system
+  (:use :common-lisp :asdf :deoxybyte-systems))
 
-(in-package #:cl-gp-utilities-system)
+(in-package #:uk.co.deoxybyte-utilities-system)
 
-(defsystem cl-gp-utilities
-  :name "cl-gp-utilities"
+(defsystem deoxybyte-utilities
+  :name "deoxybyte-utilities"
   :author "Keith James"
   :licence "GPL v3"
-  :in-order-to ((test-op (load-op :cl-gp-utilities :cl-gp-utilities-test)))
+  :in-order-to ((test-op (load-op :deoxybyte-utilities
+                                  :deoxybyte-utilities-test)))
   :components
-  ((:module :cl-gp-utilities
+  ((:module :deoxybyte-utilities
             :serial t
             :pathname "src/"
             :components ((:file "package")
                          (:file "conditions")
-                         (:file "cl-gp-utilities")
+                         (:file "deoxybyte-utilities")
                          (:file "numeric-utilities")
                          (:file "cons-utilities")
                          (:file "vector-utilities")
@@ -46,8 +47,8 @@
                          (:file "clos-utilities")
                          (:file "finite-state-machine")))
    (:lift-test-config :lift-tests
-                      :pathname "cl-gp-utilities-test.config"
-                      :target-system :cl-gp-utilities)
+                      :pathname "deoxybyte-utilities-test.config"
+                      :target-system :deoxybyte-utilities)
    (:cldoc-config :cldoc-documentation
                   :pathname "doc/html"
-                  :target-system :cl-gp-utilities)))
+                  :target-system :deoxybyte-utilities)))

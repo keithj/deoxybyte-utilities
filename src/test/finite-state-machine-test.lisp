@@ -15,7 +15,7 @@
 ;;; along with this program.  If not, see <http://www.gnu.org/licenses/>.
 ;;;
 
-(in-package :cl-gp-utilities-test)
+(in-package :deoxybyte-utilities-test)
 
 (defsmfun char-triples/1 (str &key (start 0))
      ((i start)
@@ -39,7 +39,7 @@
           (t nil
              (reverse triples)))))
 
-(addtest (cl-gp-utilities-tests) defsmfun/1
+(addtest (deoxybyte-utilities-tests) defsmfun/1
   (ensure (equalp '((#\a #\a #\a) (#\b #\b #\b) (#\c #\c #\c))
                   (char-triples/1 "aaabbbccc")))
   (ensure (equalp '((#\a #\a #\b) (#\b #\b #\c))
@@ -71,6 +71,6 @@
                 (t nil
                    (reverse triples)))))))
 
-(addtest (cl-gp-utilities-tests) defsm/1
+(addtest (deoxybyte-utilities-tests) defsm/1
   (ensure (equalp '((#\a #\a #\a) (#\b #\b #\b) (#\c #\c #\c))
                   (char-triples/2 "aaabbbccc"))))

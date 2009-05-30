@@ -1,5 +1,5 @@
 ;;;
-;;; Copyright (C) 2007-2009-2008, Keith James. All rights reserved.
+;;; Copyright (C) 2007-2009 Keith James. All rights reserved.
 ;;;
 ;;; This program is free software: you can redistribute it and/or modify
 ;;; it under the terms of the GNU General Public License as published by
@@ -15,7 +15,7 @@
 ;;; along with this program.  If not, see <http://www.gnu.org/licenses/>.
 ;;;
 
-(defpackage #:cl-gp-utilities-test
-  (:use #:common-lisp #:cl-gp-utilities :lift)
+(defpackage #:deoxybyte-utilities-test
+  (:use #:common-lisp #:deoxybyte-utilities :lift)
   (:documentation "General purpose utilities tests.")
-  (:export #:cl-gp-utilities-tests))
+  (:export #:deoxybyte-utilities-tests))
