@@ -15,7 +15,7 @@
 ;;; along with this program.  If not, see <http://www.gnu.org/licenses/>.
 ;;;
 
-(in-package :deoxybyte-utilities-test)
+(in-package :uk.co.deoxybyte-utilities-test)
 
 (addtest (deoxybyte-utilities-tests) has-superclass-p/1
   (ensure (has-superclass-p (find-class 'x2) (find-class 'x1)))

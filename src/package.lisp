@@ -115,4 +115,4 @@
    ;; Types
    #:array-index)
   (:documentation "The deoxybyte-utilities package contains general
-  purpose utilities."))
+purpose utilities."))

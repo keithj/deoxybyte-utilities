@@ -15,7 +15,7 @@
 ;;; along with this program.  If not, see <http://www.gnu.org/licenses/>.
 ;;;
 
-(in-package :deoxybyte-utilities-test)
+(in-package :uk.co.deoxybyte-utilities-test)
 
 (addtest (deoxybyte-utilities-tests) iota/1
   (ensure (equal '(0 0 0 0 0) (iota 5 0 0)))

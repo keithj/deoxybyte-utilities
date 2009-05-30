@@ -15,7 +15,7 @@
 ;;; along with this program.  If not, see <http://www.gnu.org/licenses/>.
 ;;;
 
-(in-package :deoxybyte-utilities-test)
+(in-package :uk.co.deoxybyte-utilities-test)
 
 (defsmfun char-triples/1 (str &key (start 0))
      ((i start)

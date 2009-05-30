@@ -15,7 +15,7 @@
 ;;; along with this program.  If not, see <http://www.gnu.org/licenses/>.
 ;;;
 
-(in-package :deoxybyte-utilities-test)
+(in-package :uk.co.deoxybyte-utilities-test)
 
  (let ((vec1 (make-array 10 :initial-contents '(a b c d e a g h i j)))
        (vec2 "abcdeaghij"))
