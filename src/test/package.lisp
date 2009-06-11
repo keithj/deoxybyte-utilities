@@ -15,7 +15,7 @@
 ;;; along with this program.  If not, see <http://www.gnu.org/licenses/>.
 ;;;
 
-(defpackage #:uk.co.deoxybyte-utilities-test
+(defpackage :uk.co.deoxybyte-utilities-test
   (:use #:common-lisp #:deoxybyte-utilities #:lift)
   (:documentation "General purpose utilities tests.")
   (:export #:deoxybyte-utilities-tests))

@@ -15,7 +15,7 @@
 ;;; along with this program.  If not, see <http://www.gnu.org/licenses/>.
 ;;;
 
-(in-package #:uk.co.deoxybyte-utilities-system)
+(in-package :uk.co.deoxybyte-utilities-system)
 
 (defsystem deoxybyte-utilities-test
   :depends-on (:deoxybyte-utilities :lift)

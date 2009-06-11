@@ -21,10 +21,10 @@
   (when (asdf:find-system :deoxybyte-systems nil)
     (asdf:operate 'asdf:load-op :deoxybyte-systems)))
 
-(defpackage #:uk.co.deoxybyte-utilities-system
+(defpackage :uk.co.deoxybyte-utilities-system
   (:use :common-lisp :asdf :deoxybyte-systems))
 
-(in-package #:uk.co.deoxybyte-utilities-system)
+(in-package :uk.co.deoxybyte-utilities-system)
 
 (defsystem deoxybyte-utilities
   :name "deoxybyte-utilities"
@@ -50,5 +50,5 @@
                       :pathname "deoxybyte-utilities-test.config"
                       :target-system :deoxybyte-utilities)
    (:cldoc-config :cldoc-documentation
-                  :pathname "doc/html"
+                  :pathname "doc/html/"
                   :target-system :deoxybyte-utilities)))

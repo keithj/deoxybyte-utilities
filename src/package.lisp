@@ -17,7 +17,7 @@
 
 (in-package :cl-user)
 
-(defpackage #:uk.co.deoxybyte-utilities
+(defpackage :uk.co.deoxybyte-utilities
   (:use #:common-lisp)
   (:nicknames
    #:deoxybyte-utilities
@@ -114,5 +114,5 @@
    
    ;; Types
    #:array-index)
-  (:documentation "The deoxybyte-utilities package contains general
+  (:documentation "The deoxybyte-utilities system provides general
 purpose utilities."))

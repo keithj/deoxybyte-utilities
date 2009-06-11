@@ -32,7 +32,7 @@
   #-(or :sbcl :cmu :lispworks :ccl)
   (error "DIRECT-SUPERCLASSES not supported on this implementation.")
   #+:sbcl (sb-mop:class-direct-superclasses class)
-  #+:cmu (cmu:class-direct-superclasses class)
+  #+:cmu (pcl:class-direct-superclasses class)
   #+:lispworks (clos:class-direct-superclasses class)
   #+:ccl (ccl:class-direct-superclasses class))
 
@@ -41,7 +41,7 @@
   #-(or :sbcl :cmu :lispworks :ccl)
   (error "DIRECT-SUBCLASSES not supported on this implementation.")
   #+:sbcl (sb-mop:class-direct-subclasses class)
-  #+:cmu (cmu:class-direct-subclasses class)
+  #+:cmu (pcl:class-direct-subclasses class)
   #+:lispworks (clos:class-direct-subclasses class)
   #+:ccl (ccl:class-direct-subclasses class))
 
