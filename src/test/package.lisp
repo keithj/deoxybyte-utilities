@@ -1,6 +1,8 @@
 ;;;
 ;;; Copyright (C) 2007-2009 Keith James. All rights reserved.
 ;;;
+;;; This file is part of deoxybyte-utilities.
+;;;
 ;;; This program is free software: you can redistribute it and/or modify
 ;;; it under the terms of the GNU General Public License as published by
 ;;; the Free Software Foundation, either version 3 of the License, or
@@ -17,5 +19,5 @@
 
 (defpackage :uk.co.deoxybyte-utilities-test
   (:use #:common-lisp #:deoxybyte-utilities #:lift)
-  (:documentation "General purpose utilities tests.")
+  (:documentation "Deoxybyte utilities tests.")
   (:export #:deoxybyte-utilities-tests))

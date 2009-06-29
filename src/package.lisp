@@ -1,6 +1,8 @@
 ;;;
 ;;; Copyright (C) 2007-2009 Keith James. All rights reserved.
 ;;;
+;;; This file is part of deoxybyte-utilities.
+;;;
 ;;; This program is free software: you can redistribute it and/or modify
 ;;; it under the terms of the GNU General Public License as published by
 ;;; the Free Software Foundation, either version 3 of the License, or
@@ -23,44 +25,59 @@
    #:deoxybyte-utilities
    #:dxu)
   (:export
-   ;; Constants
-
    ;; Conditions
    #:invalid-argument-error
    #:missing-argument-error
    #:invalid-operation-error
 
-   ;; Classes
+   ;; Deoxybyte-utilities
+   #:array-index
+   #:with-gensyms
+   #:copy-array   
+   #:defgenerator
+   #:current
+   #:next
+   #:has-more-p
+   #:consume
+   #:collect
 
-   ;; Generics
+   ;; CLOS utilities
+   #:has-superclass-p
+   #:direct-superclasses
+   #:direct-subclasses
+   #:all-superclasses
+   #:all-classes
+   #:all-external-classes
+   #:all-specialized-methods
+   #:all-specialized-generic-functions
+   #:all-external-generic-functions
 
-   ;; Functions
+   ;; Cons utilities
+   #:assocdr
+   #:rassocar
+   #:rplassoc
+   #:assocpush
+   #:assocpop
+   #:dotted-pair-p
+   #:proper-list-p
+   #:splice
+   #:nsplice
+   #:intersperse
+   #:flatten
+   #:exactly-n
+   #:exactly-one
    #:collect-key-values
    #:key-value
    #:remove-key-values
    #:modify-key-value
-   #:proper-list-p
-   #:dotted-pair-p
-   #:splice
-   #:nsplice
-   #:interleave
-   #:flatten
-   #:exactly-n
-   #:exactly-one
+
+   ;; Vector utilities
    #:vector-positions
    #:vector-split-indices
    #:vector-split
    #:binary-search
-   #:string-positions
-   #:string-split-indices
-   #:string-split
-   #:whitespace-byte-p
-   #:whitespace-bytes-p
-   #:content-bytes-p
-   #:has-byte-at-p
-   #:starts-with-byte-p
-   #:make-sb-string
-   #:concat-into-sb-string
+
+   ;; String utilities
    #:control-char-p
    #:whitespace-char-p
    #:whitespace-string-p
@@ -76,43 +93,34 @@
    #:concat-strings
    #:txt
    #:str
+   #:string-positions
+   #:string-split-indices
+   #:string-split
 
+   ;; Byte array utilities
+   #:whitespace-byte-p
+   #:whitespace-bytes-p
+   #:content-bytes-p
+   #:has-byte-at-p
+   #:starts-with-byte-p
+   #:make-sb-string
+   #:concat-into-sb-string
+
+   ;; Numeric utilities
    #:iota
-   #:define-categorical-binner
-   #:current
-   #:next
-   #:has-more-p
-   #:consume
-   #:collect
    #:make-number-gen
-
-   #:has-superclass-p
-   #:direct-superclasses
-   #:direct-subclasses
-   #:all-superclasses
-   #:all-classes
-   #:all-external-classes
-   #:all-specialized-methods
-   #:all-specialized-generic-functions
-   #:all-external-generic-functions
-
-   ;; Macros
-   #:with-gensyms
-   #:copy-array
-   #:assocdr
-   #:rassocar
-   #:rplassoc
-   #:assocpush
-   #:assocpop
-   #:assocpush+
-   #:defsmfun
-   #:defsm
-
-   #:define-generator
-   
    #:with-numeric-selector
-   
-   ;; Types
-   #:array-index)
+   #:define-categorical-binner
+
+   ;; Finite state machine
+   #:defsmfun
+   #:defsm)
   (:documentation "The deoxybyte-utilities system provides general
-purpose utilities."))
+purpose utilities. These are for the most part simple, standalone
+functions and macros. Once a particular function or macro has been
+written more than once or twice in other systems, it normally gets
+moved here.
+
+Given the fluid nature of the contents of this system, its packages'
+exported symbols are intended primarily for use by other deoxybyte
+packages."))

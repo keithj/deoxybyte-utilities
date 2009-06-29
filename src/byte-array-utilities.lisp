@@ -1,6 +1,8 @@
 ;;;
 ;;; Copyright (C) 2008-2009 Keith James. All rights reserved.
 ;;;
+;;; This file is part of deoxybyte-utilities.
+;;;
 ;;; This program is free software: you can redistribute it and/or modify
 ;;; it under the terms of the GNU General Public License as published by
 ;;; the Free Software Foundation, either version 3 of the License, or
@@ -29,7 +31,7 @@
   "Returns T if BYTE is one of the currently bound set of whitespace
 codes (defaults to codes of #\Space #\Tab #\Return #\Linefeed and
 #\FormFeed), or NIL otherwise."
-  (declare (optimize (speed 3) (debug 0)))
+  (declare (optimize (speed 3) (safety 1)))
   (declare (type (simple-array (unsigned-byte 8)) *whitespace-codes*)
            (type (unsigned-byte 8) byte))
   (loop for w across *whitespace-codes*
@@ -38,7 +40,7 @@ codes (defaults to codes of #\Space #\Tab #\Return #\Linefeed and
 (defun whitespace-bytes-p (bytes)
   "Returns T if all the bytes in BYTES are whitespace codes as defined
 by WHITESPACE-BYTE-P, or NIL otherwise."
-  (declare (optimize (speed 3) (debug 0)))
+  (declare (optimize (speed 3) (safety 1)))
   (declare (type (simple-array (unsigned-byte 8)) bytes))
   (loop for b across bytes
      always (whitespace-byte-p b)))
@@ -46,14 +48,14 @@ by WHITESPACE-BYTE-P, or NIL otherwise."
 (defun content-bytes-p (bytes)
   "Returns T if any of BYTES are not whitespace codes as defined by
 WHITESPACE-BYTE-P, or NIL otherwise."
-  (declare (optimize (speed 3) (debug 0)))
+  (declare (optimize (speed 3) (safety 1)))
   (declare (type (simple-array (unsigned-byte 8)) bytes))
   (loop for b across bytes
      thereis (not (whitespace-byte-p b))))
 
 (defun has-byte-at-p (bytes byte index)
   "Returns T if array BYTES has BYTE at INDEX."
-  (declare (optimize (speed 3) (debug 0)))
+  (declare (optimize (speed 3) (safety 1)))
   (declare (type (simple-array (unsigned-byte 8)) bytes)
            (type (unsigned-byte 8) byte))
   (and (not (zerop (length bytes)))
@@ -70,7 +72,7 @@ SOURCE-START and SOURCE-END, inclusive. SOURCE start defaults to 0 and
 SOURCE-END defaults to NIL. The elements of the returned string are
 the result of calling code-char on the respective elements of
 BYTE-ARRAY."
-  (declare (optimize (speed 3) (debug 0)))
+  (declare (optimize (speed 3) (safety 1)))
   (declare (type (simple-array (unsigned-byte 8)) byte-array))
   (let ((source-end (or source-end (1- (length byte-array)))))
     (declare (type array-index source-start source-end))
@@ -112,7 +114,7 @@ order supplied, the simple-arrays of (unsigned-byte 8) contained in
 the vector BYTE-ARRAYS. The elements of the returned string are the
 result of calling code-char on the contents of the respective elements
 of BYTE-ARRAYS."
-  (declare (optimize (speed 3) (debug 0) (safety 0)))
+  (declare (optimize (speed 3) (safety 0)))
   (declare (type vector byte-arrays))
   (let ((new-str (make-string (reduce #'+ byte-arrays :key #'length)
                               :element-type 'base-char))

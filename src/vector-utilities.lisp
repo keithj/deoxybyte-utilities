@@ -1,6 +1,8 @@
 ;;;
 ;;; Copyright (C) 2008-2009 Keith James. All rights reserved.
 ;;;
+;;; This file is part of deoxybyte-utilities.
+;;;
 ;;; This program is free software: you can redistribute it and/or modify
 ;;; it under the terms of the GNU General Public License as published by
 ;;; the Free Software Foundation, either version 3 of the License, or
@@ -100,6 +102,22 @@ structure with VECTOR."
 
 (defun binary-search (vector item &key (test #'<) key
                       (start 0) (end (length vector)))
+  "Searches for ITEM in VECTOR by binary search.
+
+Arguments:
+
+- vector (vector): A sorted vector to be searched.
+- item (object): The item to be found.
+
+Key:
+
+- test (function): The test used to compare ITEM with VECTOR elements.
+- key (function): A key function with which to transform VECTOR elements.
+- start (fixnum): The lower bound index of the search in VECTOR.
+- end (fixnum): The upper bound index of the search in VECTOR.
+
+Returns:
+- An object, or NIL."
   (labels ((bin-search (start end)
              (when (< start end)
                (let ((mid (+ start (floor (- end start) 2))))

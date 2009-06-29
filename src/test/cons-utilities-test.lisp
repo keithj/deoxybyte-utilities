@@ -1,6 +1,8 @@
 ;;;
 ;;; Copyright (C) 2008-2009 Keith James. All rights reserved.
 ;;;
+;;; This file is part of deoxybyte-utilities.
+;;;
 ;;; This program is free software: you can redistribute it and/or modify
 ;;; it under the terms of the GNU General Public License as published by
 ;;; the Free Software Foundation, either version 3 of the License, or
@@ -120,11 +122,11 @@
     (ensure (equal '(1 2 99 77 3) (splice x y 2)))
     (ensure (equal '(1 2 3 99 77) (splice x y 3)))))
 
-(addtest (deoxybyte-utilities-tests) interleave/1
-  (ensure (equal '(a x b x c) (interleave '(a b c) 'x)))
-  (ensure (equal '(a x b) (interleave '(a b) 'x)))
-  (ensure (equal '(a) (interleave '(a) 'x)))
-  (ensure (equal '() (interleave '() 'x))))
+(addtest (deoxybyte-utilities-tests) intersperse/1
+  (ensure (equal '(a x b x c) (intersperse '(a b c) 'x)))
+  (ensure (equal '(a x b) (intersperse '(a b) 'x)))
+  (ensure (equal '(a) (intersperse '(a) 'x)))
+  (ensure (equal '() (intersperse '() 'x))))
 
 (addtest (deoxybyte-utilities-tests) collect-key-values/1
   (let ((arg-list '(:a 1 :b 2 :c 3)))

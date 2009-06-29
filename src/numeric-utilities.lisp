@@ -1,6 +1,8 @@
 ;;;
 ;;; Copyright (C) 2008-2009 Keith James. All rights reserved.
 ;;;
+;;; This file is part of deoxybyte-utilities.
+;;;
 ;;; This program is free software: you can redistribute it and/or modify
 ;;; it under the terms of the GNU General Public License as published by
 ;;; the Free Software Foundation, either version 3 of the License, or
@@ -47,11 +49,11 @@ Returns:
 
 - A closure of zero arity."
   (let ((current start))
-    (define-generator
+    (defgenerator
         :current current
         :next (prog1
-                   current
-                 (incf current step))
+                  current
+                (incf current step))
         :more t)))
 
 (defmacro with-numeric-selector ((name num-bins &key (start 0)

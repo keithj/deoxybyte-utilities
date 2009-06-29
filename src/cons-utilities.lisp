@@ -1,6 +1,8 @@
 ;;;
 ;;; Copyright (C) 2008-2009 Keith James. All rights reserved.
 ;;;
+;;; This file is part of deoxybyte-utilities.
+;;;
 ;;; This program is free software: you can redistribute it and/or modify
 ;;; it under the terms of the GNU General Public License as published by
 ;;; the Free Software Foundation, either version 3 of the License, or
@@ -42,15 +44,6 @@ assoc with KEY and ARGS."
 calling assoc with KEY and ARGS."
    `(pop (assocdr ,key ,alist ,@args)))
 
-(defmacro assocpush+ (key alist val &rest args)
-  "Operates as ASSOCPUSH, except that if the cdr to be pushed onto is
-an atom, it is first wrapped in a new list."
-  (let ((current-val (gensym)))
-  `(let ((,current-val (assocdr ,key ,alist ,@args)))
-     (if (consp ,current-val)
-         (assocpush ,key ,alist ,val ,@args)
-       (rplassoc ,key ,alist (list ,val ,current-val) ,@args)))))
-
 (defun dotted-pair-p (list)
   "Returns T if LIST is a dotted pair, or NIL otherwise."
   (and (consp list)
@@ -87,13 +80,13 @@ position N."
                    (nconc obj (cdr join)))))
          list)))
 
-(defun interleave (list obj)
-  "Returns a list containing the members of LIST interleaved with
+(defun intersperse (list obj)
+  "Returns a list containing the members of LIST interspersed with
 OBJ."
   (if (endp (rest list))
       list
     (append (list (car list) obj)
-            (interleave (rest list) obj))))
+            (intersperse (rest list) obj))))
 
 (defun flatten (tree)
   "Returns a new list containing the members of TREE."
@@ -172,6 +165,7 @@ accept additional arguments supplied in FN-ARGS."
      nconc (list keyword-n value)))
 
 (defun canonical-fn-args (lambda-list fn-args)
+  "Returns a canonical version of FN-ARGS corresponding to LAMBDA-LIST."
   (let* ((key-pos (position '&key lambda-list))
          (fixed-args (subseq fn-args 0 key-pos))
          (keyword-args (subseq fn-args key-pos)))

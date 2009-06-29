@@ -1,6 +1,8 @@
 ;;;
 ;;; Copyright (C) 2008-2009 Keith James. All rights reserved.
 ;;;
+;;; This file is part of deoxybyte-utilities.
+;;;
 ;;; This program is free software: you can redistribute it and/or modify
 ;;; it under the terms of the GNU General Public License as published by
 ;;; the Free Software Foundation, either version 3 of the License, or
@@ -34,7 +36,7 @@ otherwise."
   "Returns T if CHAR is one of the currently bound set of whitespace
 characters (defaults to #\Space #\Tab #\Return #\Linefeed and
 #\FormFeed), or NIL otherwise."
-  (declare (optimize (speed 3) (debug 0)))
+  (declare (optimize (speed 3) (safety 1)))
   (declare (type simple-string *whitespace-chars*))
   (loop
      for w across *whitespace-chars*
@@ -43,7 +45,7 @@ characters (defaults to #\Space #\Tab #\Return #\Linefeed and
 (defun whitespace-string-p (str)
   "Returns T if all the characters in STR are whitespace as defined by
 WHITESPACE-CHAR-P, or NIL otherwise."
-  (declare (optimize (speed 3) (debug 0)))
+  (declare (optimize (speed 3) (safety 1)))
   (declare (type simple-string str))
   (loop
      for c across str
@@ -52,7 +54,7 @@ WHITESPACE-CHAR-P, or NIL otherwise."
 (defun content-string-p (str)
   "Returns T if any of the characters in STR are not whitespace as
 defined by WHITESPACE-CHAR-P, or NIL otherwise."
-  (declare (optimize (speed 3) (debug 0)))
+  (declare (optimize (speed 3) (safety 1)))
   (declare (type simple-string str))
   (loop
      for c across str
@@ -61,7 +63,7 @@ defined by WHITESPACE-CHAR-P, or NIL otherwise."
 (defun empty-string-p (str)
   "Returns T if STR is a zero-length string or contains only
 whitespace as defined by WHITESPACE-CHAR-P, or NIL otherwise."
-  (declare (optimize (speed 3) (debug 0)))
+  (declare (optimize (speed 3) (safety 1)))
   (declare (type simple-string str))
   (or (zerop (length str))
       (whitespace-string-p str)))
@@ -69,7 +71,7 @@ whitespace as defined by WHITESPACE-CHAR-P, or NIL otherwise."
 (defun contains-char-p (str char &key (test #'char=))
   "Returns T if STR contains CHAR, determined by TEST (defaults to
 CHAR=) or NIL otherwise."
-  (declare (optimize (speed 3) (debug 0)))
+  (declare (optimize (speed 3) (safety 1)))
   (declare (type simple-string str)
            (type function test))
   (loop
@@ -78,8 +80,8 @@ CHAR=) or NIL otherwise."
 
 (defun has-char-at-p (str char index &key (test #'char=))
   "Returns T if STR has CHAR at INDEX, determined by TEST (defaults to
-CHAR=), or NIL otherwise.."
-  (declare (optimize (speed 3) (debug 0)))
+CHAR=), or NIL otherwise."
+  (declare (optimize (speed 3) (safety 1)))
   (declare (type simple-string str)
            (type function test))
   (and (not (zerop (length str)))
@@ -98,7 +100,7 @@ TEST (defaults to CHAR=), or NIL otherwise."
 (defun every-char-p (str test &rest indices)
   "Applies predicate TEST to characters of string STR indicated by
 INDICES and returns T if all those characters match TEST."
-  (declare (optimize (speed 3) (debug 0)))
+  (declare (optimize (speed 3) (safety 1)))
   (declare (type simple-string str)
            (type function test))
   (loop
@@ -123,7 +125,7 @@ STRING=), or NIL otherwise."
 (defun concat-strings (strs)
   "Returns a new simple-string created by concatenating, in the order
 supplied, the simple-strings contained in the vector STRS."
-  (declare (optimize (speed 3) (debug 0) (safety 0)))
+  (declare (optimize (speed 3) (safety 0)))
   (declare (type (vector simple-string) strs))
   (let ((new-str (make-string (reduce #'+ strs :key #'length)
                               :element-type 'character))
@@ -142,14 +144,14 @@ supplied, the simple-strings contained in the vector STRS."
 (defun txt (&rest strings)
   "Returns the result of concatenating STRINGS, separated by spaces."
   (apply #'concatenate 'string
-         (interleave strings (make-string 1 :initial-element #\Space))))
+         (intersperse strings (make-string 1 :initial-element #\Space))))
 
 (defun str (&rest strings)
   "Returns the result of concatenating strings STRINGS."
   (apply #'concatenate 'string strings))
 
 (defun string-positions (char str &key (start 0) end)
-  (declare (optimize (speed 3) (debug 0)))
+  (declare (optimize (speed 3) (safety 1)))
   (declare (type simple-string str))
   (let ((end (or end (length str))))
     (declare (type array-index start end))
@@ -167,7 +169,7 @@ supplied, the simple-strings contained in the vector STRS."
 indices into STR between START and END such that if used as start/end
 arguments to subseq, STR will be split on CHAR. CHAR is compared with
 elements in STR using TEST, which defaults to EQL."
-  (declare (optimize (speed 3) (safety 0) (debug 0)))
+  (declare (optimize (speed 3) (safety 0)))
   (declare (type simple-string str))
   (let ((end (or end (length str))))
     (declare (type array-index start end))
@@ -193,7 +195,7 @@ elements in STR using TEST, which defaults to EQL."
   "Returns a list of strings made by splitting simple-string STR at
 CHAR, between START and END. If REMOVE-EMPTY-SUBSEQS is T, any empty
 subsequences will be omitted from the returned list."
-  (declare (optimize (speed 3) (debug 0)))
+  (declare (optimize (speed 3) (safety 1)))
   (declare (type simple-string str))
   (let ((end (or end (length str))))
     (declare (type array-index start end))

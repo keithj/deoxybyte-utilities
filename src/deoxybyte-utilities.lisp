@@ -1,6 +1,8 @@
 ;;;
 ;;; Copyright (C) 2007-2009 Keith James. All rights reserved.
 ;;;
+;;; This file is part of deoxybyte-utilities.
+;;;
 ;;; This program is free software: you can redistribute it and/or modify
 ;;; it under the terms of the GNU General Public License as published by
 ;;; the Free Software Foundation, either version 3 of the License, or
@@ -23,13 +25,10 @@
 
 ;;; Core macros
 (eval-when (:compile-toplevel :load-toplevel :execute)
-  ;; eval-when to ensure with-gensyms is available at compile-time,
-  ;; for use in other macros i.e. when we expect to use it!
   (defmacro with-gensyms ((&rest names) &body body)
     `(let ,(loop for n in names
               collect `(,n (gensym)))
        ,@body)))
-
 
 ;;; Array copying macro
 (defmacro copy-array (source source-start source-end
@@ -46,7 +45,7 @@ insertion into DEST."
                                     `(funcall ,key (aref ,source si))
                                   `(aref ,source si)))))
 
-(defmacro define-generator (&key current next more)
+(defmacro defgenerator (&key current next more)
   "Returns a generator function that may be passed to any of the
 generator utility functions {defun current} , {defun next} or
 {defun has-more-p} .
