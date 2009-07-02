@@ -150,7 +150,7 @@ supplied, the simple-strings contained in the vector STRS."
   "Returns the result of concatenating strings STRINGS."
   (apply #'concatenate 'string strings))
 
-(defun string-positions (char str &key (start 0) end)
+(defun string-positions (str char &key (start 0) end)
   (declare (optimize (speed 3) (safety 1)))
   (declare (type simple-string str))
   (let ((end (or end (length str))))
@@ -164,7 +164,7 @@ supplied, the simple-strings contained in the vector STRS."
        when (char= char (char str i))
        collect i)))
 
-(defun string-split-indices (char str &key (start 0) end)
+(defun string-split-indices (str char &key (start 0) end)
   "Returns two values, a list of start indices and a list of end
 indices into STR between START and END such that if used as start/end
 arguments to subseq, STR will be split on CHAR. CHAR is compared with
@@ -177,7 +177,7 @@ elements in STR using TEST, which defaults to EQL."
       (error 'invalid-argument-error
              :params '(start end) :args (list start end)
              :text "start must be >= 0 and be <= end"))
-    (let ((positions (string-positions char str :start start :end end)))
+    (let ((positions (string-positions str char :start start :end end)))
       (if positions
           (loop
              for pos of-type fixnum in positions
@@ -191,7 +191,7 @@ elements in STR using TEST, which defaults to EQL."
                         (nconc ends (list end)))))
         nil))))
 
-(defun string-split (char str &key (start 0) end remove-empty-substrings)
+(defun string-split (str char &key (start 0) end remove-empty-substrings)
   "Returns a list of strings made by splitting simple-string STR at
 CHAR, between START and END. If REMOVE-EMPTY-SUBSEQS is T, any empty
 subsequences will be omitted from the returned list."
@@ -204,7 +204,7 @@ subsequences will be omitted from the returned list."
              :params '(start end) :args (list start end)
              :text "start must be >= 0 and be <= end"))
     (multiple-value-bind (starts ends)
-        (string-split-indices char str :start start :end end)
+        (string-split-indices str char :start start :end end)
       (if (and starts ends)
           (loop
              for i of-type array-index in starts
