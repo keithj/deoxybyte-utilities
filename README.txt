@@ -10,10 +10,38 @@ exported symbols are intended primarily for use by other deoxybyte
 packages.
 
 
+Installation
+
+deoxybyte-utilities uses ASDF for system definition. Copy or symlink
+deoxybyte-utilities.asd (and optionally deoxybyte-utilities-test.asd)
+to your asdf:*central-registry* and load deoxybyte-utilities with the
+asdf:operate function:
+
+ (asdf:operate 'asdf:load-op :deoxybyte-utilities)
+
+or with the equivalent deoxybyte-systems:load-system function:
+
+ (dxs:load-system :deoxybyte-utilities)
+
+
+Tests
+
+To run the unit and regression tests you need to have LIFT
+installed. Run the tests with the asdf:operate function:
+
+ (asdf:operate 'asdf:test-op :deoxybyte-utilities)
+
+or with the equivalent deoxybyte-systems:test-system function:
+
+ (dxs:test-system :deoxybyte-utilities)
+
+
 Documentation
 
 See the Lisp docstrings, particularly the package docstrings for an
-overview.
+overview. HTML documentation may be generated with the command:
+
+ (dxs:document-system :deoxybyte-utilities)
 
 
 Dependencies
