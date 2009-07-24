@@ -47,3 +47,9 @@ overview. HTML documentation may be generated with the command:
 Dependencies
 
 deoxybyte-systems       git://github.com/keithj/deoxybyte-systems.git
+
+
+Optional dependencies
+
+LIFT                    http://common-lisp.net/project/lift/
+CLDOC                   http://common-lisp.net/project/cldoc/
