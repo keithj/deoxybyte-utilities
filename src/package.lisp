@@ -114,13 +114,29 @@
 
    ;; Finite state machine
    #:defsmfun
-   #:defsm)
+   #:defsm
+
+   ;; Queue
+   #:queue
+   #:queue-head
+   #:queue-first
+   #:queue-last
+   #:make-queue
+   #:queue-enqueue
+   #:queue-dequeue
+   #:queue-dequeue-if
+   #:queue-clear
+   #:queue-first
+   #:queue-last
+   #:queue-nth
+   #:queue-empty-p
+   #:queue-delete)
   (:documentation "The deoxybyte-utilities system provides general
 purpose utilities. These are for the most part simple, standalone
 functions and macros. Once a particular function or macro has been
 written more than once or twice in other systems, it normally gets
 moved here.
 
-Given the fluid nature of the contents of this system, its packages'
+Given the fluid nature of the contents of this system, its package's
 exported symbols are intended primarily for use by other deoxybyte
 packages."))

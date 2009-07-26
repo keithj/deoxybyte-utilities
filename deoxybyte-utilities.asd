@@ -48,7 +48,8 @@
                          (:file "string-utilities")
                          (:file "byte-array-utilities")
                          (:file "clos-utilities")
-                         (:file "finite-state-machine")))
+                         (:file "finite-state-machine")
+                         (:file "queue")))
    (:lift-test-config :lift-tests
                       :pathname "deoxybyte-utilities-test.config"
                       :target-system :deoxybyte-utilities)
