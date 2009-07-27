@@ -118,6 +118,7 @@
 
    ;; Queue
    #:queue
+   #:queue-p
    #:queue-head
    #:queue-first
    #:queue-last

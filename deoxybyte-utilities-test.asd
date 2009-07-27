@@ -32,4 +32,5 @@
                                      (:file "byte-array-utilities-test")
                                      (:file "string-utilities-test")
                                      (:file "clos-utilities-test")
-                                     (:file "finite-state-machine-test")))))
+                                     (:file "finite-state-machine-test")
+                                     (:file "queue-test")))))
