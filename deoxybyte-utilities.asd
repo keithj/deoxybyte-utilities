@@ -41,6 +41,7 @@
             :pathname "src/"
             :components ((:file "package")
                          (:file "conditions")
+                         (:file "type-utilities")
                          (:file "deoxybyte-utilities")
                          (:file "numeric-utilities")
                          (:file "cons-utilities")
