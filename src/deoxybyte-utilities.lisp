@@ -19,10 +19,6 @@
 
 (in-package :uk.co.deoxybyte-utilities)
 
-(deftype array-index ()
-  "Array index type."
-  '(and fixnum (integer 0 *)))
-
 ;;; Core macros
 (eval-when (:compile-toplevel :load-toplevel :execute)
   (defmacro with-gensyms ((&rest names) &body body)

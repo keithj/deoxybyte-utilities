@@ -31,7 +31,6 @@
    #:invalid-operation-error
 
    ;; Deoxybyte-utilities
-   #:array-index
    #:with-gensyms
    #:copy-array   
    #:defgenerator
@@ -40,6 +39,15 @@
    #:has-more-p
    #:consume
    #:collect
+
+   ;; Type utilities
+   #:array-index
+   #:uint8
+   #:int8
+   #:uint16
+   #:int16
+   #:uint32
+   #:int32
 
    ;; CLOS utilities
    #:has-superclass-p
