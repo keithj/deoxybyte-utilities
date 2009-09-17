@@ -94,7 +94,7 @@ Returns:
 Arguments:
 
 - states (list): A list of forms describing the state transitions. See
-  {defmacro defsmfun} .
+  {defun defsmfun} .
 
 For example:
 
