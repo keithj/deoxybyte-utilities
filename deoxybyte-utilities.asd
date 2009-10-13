@@ -24,7 +24,8 @@
     (asdf:operate 'asdf:load-op :deoxybyte-systems)))
 
 (defpackage :uk.co.deoxybyte-utilities-system
-  (:use :common-lisp :asdf :deoxybyte-systems))
+  (:use :common-lisp :asdf)
+  (:import-from :deoxybyte-systems :lift-test-config :cldoc-config))
 
 (in-package :uk.co.deoxybyte-utilities-system)
 
