@@ -97,15 +97,6 @@
       (ensure (equal '(2) (assocdr "a" alist
                                    :test #'string=))))))
 
-;; (defmacro assocpush+ (key alist val &rest args)
-;;   "Operates as ASSOCPUSH, except that if the cdr to be pushed onto is
-;; an atom, it is first wrapped in a new list."
-;;   (let ((current-val (gensym)))
-;;   `(let ((,current-val (assocdr ,key ,alist ,@args)))
-;;      (if (consp ,current-val)
-;;          (assocpush ,key ,alist ,val ,@args)
-;;        (rplassoc ,key ,alist (list ,val ,current-val) ,@args)))))
-
 (addtest (deoxybyte-utilities-tests) splice/1
   (let ((x (list 1 2 3))
         (y 99)) ; atom

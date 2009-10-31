@@ -41,32 +41,33 @@ insertion into DEST."
                                     `(funcall ,key (aref ,source si))
                                   `(aref ,source si)))))
 
-(defmacro defgenerator (&key current next more)
+(defmacro defgenerator (&key more next current)
   "Returns a generator function that may be passed to any of the
-generator utility functions {defun current} , {defun next} or
-{defun has-more-p} .
+generator utility functions {defun has-more-p} , {defun next}
+and {defun current} .
 
 Key:
-
-- current (form): A form to be called when passed the function is
-  passed to {defun current} . This should return the current value of
-  the generator.
-
-- next (form): A form to be called when passed the function is passed
-  to {defun current} . This should return the next value of the
-  generator.
 
 - has-more-p (form): A form to be called when passed the function is
   passed to {defun has-more-p} . This should return T if the generator
   can supply more values, or NIL otherwise.
+- next (form): A form to be called when passed the function is passed
+  to {defun current} . This should return the next value of the
+  generator.
+- current (form): An optional form to be called when passed the
+  function is passed to {defun current} . This should return the
+  current value of the generator.
 
 Returns:
 - A form that evaluates to an anonymous function."
+  (assert more () "A :more form is required.")
+  (assert next () "A :next form is required.")
   `(lambda (op)
-    (ecase op
-      (:current ,current)
-      (:next ,next)
-      (:more ,more))))
+     (ecase op
+       ,@(when current
+               `((:current ,current)))
+       (:next ,next)
+       (:more ,more))))
 
 ;;; Generator utility functions
 (defun current (gen)
@@ -95,3 +96,30 @@ empty list if no items are available."
      repeat n
      while (has-more-p gen)
      collect (next gen)))
+
+(defun discard (gen &optional (n 1))
+  "Discards up to N values collected from generator function GEN. Uses
+{defun has-more-p} to test the generator and finally returns the
+number of values actually discarded."
+  (loop
+     repeat n
+     while (has-more-p gen)
+     count (next gen)))
+
+(defun discarding-if (test gen)
+  "Returns a new generator function that discards values from
+generator function GEN while they satisfy TEST."
+  (flet ((skip-to-next ()
+           (loop
+              while (has-more-p gen)
+              do (let ((elt (next gen)))
+                   (unless (funcall test elt)
+                     (return elt))))))
+    (let* ((elt (skip-to-next))
+           (more (has-more-p gen)))
+      (defgenerator
+          :next (prog1
+                    elt
+                  (setf elt (skip-to-next)
+                        more (has-more-p gen)))
+          :more more))))

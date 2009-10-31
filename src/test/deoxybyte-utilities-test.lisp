@@ -40,3 +40,35 @@
 
 (defun find-slot-reader-method (class-name generic-function)
   (find-method generic-function '() (list (find-class class-name))))
+
+(defun make-seq-iter (seq)
+  (let ((n (length seq))
+        (i 0))
+    (defgenerator
+        :next (prog1
+                  (elt seq i)
+                (incf i))
+        :more (< i n))))
+
+(addtest (deoxybyte-utilities-tests) defgenerator/1
+  (let ((gen (make-seq-iter (iota 10))))
+    (ensure (equal (iota 10) (loop
+                             while (has-more-p gen)
+                             collect (next gen))))
+    (ensure (not (has-more-p gen)))))
+
+(addtest (deoxybyte-utilities-tests) collect/1
+  (let ((gen (make-seq-iter (iota 10))))
+    (ensure (equal (iota 1) (collect gen)))
+    (ensure (equal (iota 5 1) (collect gen 5)))))
+
+(addtest (deoxybyte-utilities-tests) discard/1
+  (let ((gen (make-seq-iter (iota 10))))
+    (ensure (= 5 (discard gen 5)))
+    (ensure (= 5 (discard gen 10)))))
+
+(addtest (deoxybyte-utilities-tests) discarding-if/1
+  (let ((gen (discarding-if #'oddp (make-seq-iter (iota 10)))))
+    (ensure (equal '(0 2 4 6 8) (loop
+                                   while (has-more-p gen)
+                                   collect (next gen))))))

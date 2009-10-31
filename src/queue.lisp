@@ -111,5 +111,3 @@ for CL:DELETE."
   (setf (queue-head queue) (delete item (queue-head queue) :key key :test test)
         (queue-tail queue) (last (queue-head queue)))
   queue)
-
-

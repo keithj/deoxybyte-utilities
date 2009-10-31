@@ -39,6 +39,8 @@
    #:has-more-p
    #:consume
    #:collect
+   #:discard
+   #:discarding-if
 
    ;; Type utilities
    #:array-index
