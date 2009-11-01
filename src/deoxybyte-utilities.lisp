@@ -110,16 +110,18 @@ number of values actually discarded."
   "Returns a new generator function that discards values from
 generator function GEN while they satisfy TEST."
   (flet ((skip-to-next ()
-           (loop
-              while (has-more-p gen)
-              do (let ((elt (next gen)))
-                   (unless (funcall test elt)
-                     (return elt))))))
-    (let* ((elt (skip-to-next))
-           (more (has-more-p gen)))
+           (multiple-value-bind (elt found)
+               (loop
+                  while (has-more-p gen)
+                  do (let ((elt (next gen)))
+                       (unless (funcall test elt)
+                         (return (values elt t)))))
+             (values elt found))))
+    (multiple-value-bind (elt more)
+        (skip-to-next)
       (defgenerator
           :next (prog1
                     elt
-                  (setf elt (skip-to-next)
-                        more (has-more-p gen)))
+                  (multiple-value-setq (elt more)
+                    (skip-to-next)))
           :more more))))

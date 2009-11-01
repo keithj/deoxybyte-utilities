@@ -68,7 +68,28 @@
     (ensure (= 5 (discard gen 10)))))
 
 (addtest (deoxybyte-utilities-tests) discarding-if/1
+  (let ((gen (discarding-if #'evenp (make-seq-iter (iota 1)))))
+    (ensure (equal '() (loop
+                           while (has-more-p gen)
+                           collect (next gen)))))
+  (let ((gen (discarding-if #'oddp (make-seq-iter (iota 1)))))
+    (ensure (equal '(0) (loop
+                           while (has-more-p gen)
+                           collect (next gen))))))
+
+(addtest (deoxybyte-utilities-tests) discarding-if/2
+  (let ((gen (discarding-if #'null (make-seq-iter (iota 10)))))
+    (ensure (equal (iota 10) (loop
+                              while (has-more-p gen)
+                              collect (next gen)))))
   (let ((gen (discarding-if #'oddp (make-seq-iter (iota 10)))))
     (ensure (equal '(0 2 4 6 8) (loop
                                    while (has-more-p gen)
+                                   collect (next gen)))))
+  (let ((gen (discarding-if #'evenp (make-seq-iter (iota 10)))))
+    (ensure (equal '(1 3 5 7 9) (loop
+                                   while (has-more-p gen)
                                    collect (next gen))))))
+
+
+
