@@ -29,6 +29,7 @@
    #:invalid-argument-error
    #:missing-argument-error
    #:invalid-operation-error
+   #:deprecation-warning
 
    ;; Deoxybyte-utilities
    #:with-gensyms

@@ -70,3 +70,16 @@ passed to a function."))
                      (text-of condition))))
   (:documentation "An error that is raised when an invalid operation
 is attempted."))
+
+(define-condition deprecation-warning (style-warning)
+  ((feature :initform nil
+            :initarg :feature
+            :reader feature-of)
+   (in-favour :initform nil
+              :initarg :in-favour
+              :reader in-favour-of))
+  (:report (lambda (condition stream)
+             (format stream "~a is deprecated~@[ in favour of ~a~]."
+                     (feature-of condition) (in-favour-of condition))))
+  (:documentation "A warning that is raised when a deprecated feature
+is used."))
