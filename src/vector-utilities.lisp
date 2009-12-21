@@ -52,15 +52,19 @@ compared with elements in VECTOR using TEST, which defaults to EQL."
                                        :start start :end end :test test)))
       (if positions
           (loop
-             for pos of-type fixnum in positions
-             and prev = start then (the fixnum (1+ pos))
+             with starts = ()
+             with ends = ()
+             for pos of-type array-index in positions
+             and prev = start then (the array-index (1+ pos))
              maximize pos into last-pos
-             collect prev into starts
-             collect pos into ends
-             finally (return
-                       (values
-                        (nconc starts (list (the fixnum (1+ last-pos))))
-                        (nconc ends (list end)))))
+             do (progn
+                  (push prev starts)
+                  (push pos ends))
+             finally (progn
+                       (push (the array-index (1+ last-pos)) starts)
+                       (push end ends)
+                       (return
+                         (values (nreverse starts) (nreverse ends)))))
         nil))))
 
 (defun vector-split (elt vector &key (start 0) end (test #'eql)
