@@ -155,10 +155,8 @@ supplied, the simple-strings contained in the vector STRS."
   (declare (type simple-string str))
   (let ((end (or end (length str))))
     (declare (type vector-index start end))
-    (unless (<= 0 start end (length str))
-      (error 'invalid-argument-error
-             :params '(start end) :args (list start end)
-             :text "start must be >= 0 and be <= end"))
+    (check-arguments (<= 0 start end (length str)) (start end)
+                     "start must be >= 0 and be <= end")
     (loop
        for i from start below end
        when (char= char (char str i))
@@ -173,22 +171,24 @@ elements in STR using TEST, which defaults to EQL."
   (declare (type simple-string str))
   (let ((end (or end (length str))))
     (declare (type vector-index start end))
-    (unless (<= 0 start end (length str))
-      (error 'invalid-argument-error
-             :params '(start end) :args (list start end)
-             :text "start must be >= 0 and be <= end"))
+    (check-arguments (<= 0 start end (length str)) (start end)
+                     "start must be >= 0 and be <= end")
     (let ((positions (string-positions str char :start start :end end)))
       (if positions
           (loop
+             with starts = ()
+             with ends = ()
              for pos of-type fixnum in positions
-             and prev = start then (the fixnum (1+ pos))
+             and prev = start then (the vector-index (1+ pos))
              maximize pos into last-pos
-             collect prev into starts
-             collect pos into ends
-             finally (return
-                       (values
-                        (nconc starts (list (the fixnum (1+ last-pos))))
-                        (nconc ends (list end)))))
+             do (progn
+                  (push prev starts)
+                  (push pos ends))
+             finally (progn
+                       (push (the vector-index (1+ last-pos)) starts)
+                       (push end ends)
+                       (return
+                         (values (nreverse starts) (nreverse ends)))))
         nil))))
 
 (defun string-split (str char &key (start 0) end remove-empty-substrings)
@@ -199,10 +199,8 @@ subsequences will be omitted from the returned list."
   (declare (type simple-string str))
   (let ((end (or end (length str))))
     (declare (type vector-index start end))
-    (unless (<= 0 start end (length str))
-      (error 'invalid-argument-error
-             :params '(start end) :args (list start end)
-             :text "start must be >= 0 and be <= end"))
+    (check-arguments (<= 0 start end (length str)) (start end)
+                     "start must be >= 0 and be <= end")
     (multiple-value-bind (starts ends)
         (string-split-indices str char :start start :end end)
       (if (and starts ends)

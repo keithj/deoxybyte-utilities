@@ -27,10 +27,8 @@ ELT is present according to TEST (which defaults to EQL)."
            (type function test))
   (let ((end (or end (length vector))))
     (declare (type vector-index start end))
-    (unless (<= 0 start end (length vector))
-      (error 'invalid-argument-error
-             :params '(start end) :args (list start end)
-             :text "start must be >= 0 and be <= end"))
+    (check-arguments (<= 0 start end (length vector)) (start end)
+                     "start must be >= 0 and be <= end")
     (loop for i from start below end
        when (funcall test elt (aref vector i))
        collect i)))
@@ -44,10 +42,8 @@ compared with elements in VECTOR using TEST, which defaults to EQL."
   (declare (type vector vector))
   (let ((end (or end (length vector))))
     (declare (type vector-index start end))
-    (unless (<= 0 start end (length vector))
-      (error 'invalid-argument-error
-             :params '(start end) :args (list start end)
-             :text "start must be >= 0 and be <= end"))
+    (check-arguments (<= 0 start end (length vector)) (start end)
+                     "start must be >= 0 and be <= end")
     (let ((positions (vector-positions elt vector
                                        :start start :end end :test test)))
       (if positions
@@ -78,10 +74,8 @@ to the actual subsequences within VECTOR and will therefore share
 structure with VECTOR."
   (let ((end (or end (length vector)))
         (elt-type (array-element-type vector)))
-    (unless (<= 0 start end (length vector))
-      (error 'invalid-argument-error
-             :params '(start end) :args (list start end)
-             :text "start must be >= 0 and be <= end"))
+    (check-arguments (<= 0 start end (length vector)) (start end)
+                     "start must be >= 0 and be <= end")
     (multiple-value-bind (starts ends)
         (vector-split-indices elt vector :start start :end end :test test)
       (cond ((and starts ends)

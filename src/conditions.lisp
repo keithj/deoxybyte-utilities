@@ -21,11 +21,11 @@
 
 (define-condition invalid-argument-error (error)
   ((parameters :initform "<not supplied>"
-               :initarg :params
+               :initarg :parameters
                :reader parameters-of
                :documentation "The invalid parameters.")
    (arguments :initform "<not supplied>"
-              :initarg :args
+              :initarg :arguments
               :reader arguments-of
               :documentation "The invalid arguments.")
    (text :initform nil
@@ -44,7 +44,7 @@ passed to a function."))
 
 (define-condition missing-argument-error (error)
   ((parameters :initform "<not supplied>"
-               :initarg :params
+               :initarg :parameters
                :reader parameters-of
                :documentation "The invalid parameters.")
    (text :initform nil
@@ -57,8 +57,8 @@ passed to a function."))
                      (parameters-of condition)
                      (atom (parameters-of condition))
                      (text-of condition))))
-  (:documentation "An error that is raised when an invalid argument is
-passed to a function."))
+  (:documentation "An error that is raised when a required argument is
+not passed to a function."))
 
 (define-condition invalid-operation-error (error)
   ((text :initform nil

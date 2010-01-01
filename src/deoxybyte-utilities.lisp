@@ -41,6 +41,35 @@ insertion into DEST."
                                     `(funcall ,key (aref ,source si))
                                   `(aref ,source si)))))
 
+(defmacro check-arguments (test-form arguments &optional error-message
+                           &rest message-arguments)
+  "Checks the validity of ARGUMENTS. If TEST-FORM returns false an
+{define-condition invalid-argument-error} is raised. The default error
+message may be refined with an additional ERROR-MESSAGE.
+
+Arguments:
+
+- test-form (form): A form to be evaluated. If the form returns NIL,
+  an error is raised.
+- arguments (list symbols): A list of symbols to which argument values
+  are bound.
+
+Optional:
+
+- error-message (string): An error message string.
+
+Rest:
+
+- message-arguments (forms): Forms that evaluate to arguments for the
+  error message."
+  `(progn
+     (unless ,test-form
+       (error 'invalid-argument-error
+              :paramaters ',arguments
+              :arguments (list ,@arguments)
+              :text (format nil ,error-message ,@message-arguments)))
+     t))
+
 (defmacro defgenerator (&key more next current)
   "Returns a generator function that may be passed to any of the
 generator utility functions {defun has-more-p} , {defun next}

@@ -75,31 +75,20 @@ BYTE-ARRAY."
   (declare (optimize (speed 3) (safety 1)))
   (declare (type simple-octet-vector byte-array))
   (let ((source-end (or source-end (1- (length byte-array)))))
-    (declare (type vector-index source-start source-end))
+    (declare (type fixnum source-start source-end))
     (let ((source-len (length byte-array)))
       (cond ((zerop source-len)
              (make-string 0 :element-type 'base-char))
-            ((or (< source-start 0)
-                 (>= source-start source-len))
-             (error 'invalid-argument-error
-                    :params 'source-start
-                    :args source-start
-                    :text
-                    (format nil "source-start must be >= 0 and be <= ~a"
-                            source-len)))
-            ((> source-start source-end)
-             (error 'invalid-argument-error
-                    :params '(source-start source-end)
-                    :args (list source-start source-end)
-                    :text "source-start must be <= source-end"))
-            ((>= source-end source-len)
-             (error 'invalid-argument-error
-                    :params 'source-end
-                    :args source-end
-                    :text
-                    (format nil "source-end must be >= 0 and be <= ~a"
-                            source-len)))
             (t
+             (check-arguments (and (<= 0 source-start)
+                                   (> source-len source-start)) (source-start)
+                                   "source-start must be >= 0 and be <= ~a"
+                                   source-len)
+             (check-arguments (< source-start source-end)
+                              (source-start source-end)
+                              "source-start must be <= source-end")
+             (check-arguments (<= source-end source-len) (source-end)
+                              "source-end must be >= 0 and be <= ~a" source-len)
              (let ((dest-length (1+ (- source-end source-start))))
                (declare (type vector-index dest-length))
                (let ((string (make-string dest-length

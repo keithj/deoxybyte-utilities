@@ -26,6 +26,7 @@
    #:dxu)
   (:export
    ;; Conditions
+   #:check-arguments
    #:invalid-argument-error
    #:missing-argument-error
    #:invalid-operation-error
@@ -53,6 +54,7 @@
    #:int32
    #:array-index
    #:vector-index
+   #:simple-octet-vector
 
    ;; CLOS utilities
    #:has-superclass-p
