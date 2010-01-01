@@ -19,6 +19,10 @@
 
 (in-package :uk.co.deoxybyte-utilities)
 
+(deftype octet ()
+  "Alias for unsigned-byte 8."
+  '(unsigned-byte 8))
+
 (deftype uint8 ()
   "Alias for unsigned-byte 8."
   '(unsigned-byte 8))
@@ -43,6 +47,16 @@
   "Alias for signed-byte 32."
   '(signed-byte 32))
 
+;; array-index is deprecated in favour of vector-index
 (deftype array-index ()
   "Array index type."
   '(and fixnum (integer 0 *)))
+
+(deftype vector-index ()
+  "Vector index type."
+  '(and fixnum (integer 0 *)))
+
+(deftype simple-octet-vector ()
+  "Alias for (simple-array (unsigned-byte 8) (*)), using a naming
+  convention analagous to simple-base-string."
+  '(simple-array (unsigned-byte 8) (*)))

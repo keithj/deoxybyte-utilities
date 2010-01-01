@@ -1,5 +1,5 @@
 ;;;
-;;; Copyright (C) 2008-2009 Keith James. All rights reserved.
+;;; Copyright (C) 2008-2010 Keith James. All rights reserved.
 ;;;
 ;;; This file is part of deoxybyte-utilities.
 ;;;
@@ -135,7 +135,7 @@ supplied, the simple-strings contained in the vector STRS."
         ((= i num-strs) new-str)
       (let ((str (aref strs i)))
         (declare (type simple-string str)
-                 (type array-index offset))
+                 (type vector-index offset))
         (unless (zerop (length str))
           (copy-array str 0 (1- (length str))
                       new-str offset)
@@ -154,7 +154,7 @@ supplied, the simple-strings contained in the vector STRS."
   (declare (optimize (speed 3) (safety 1)))
   (declare (type simple-string str))
   (let ((end (or end (length str))))
-    (declare (type array-index start end))
+    (declare (type vector-index start end))
     (unless (<= 0 start end (length str))
       (error 'invalid-argument-error
              :params '(start end) :args (list start end)
@@ -172,7 +172,7 @@ elements in STR using TEST, which defaults to EQL."
   (declare (optimize (speed 3) (safety 0)))
   (declare (type simple-string str))
   (let ((end (or end (length str))))
-    (declare (type array-index start end))
+    (declare (type vector-index start end))
     (unless (<= 0 start end (length str))
       (error 'invalid-argument-error
              :params '(start end) :args (list start end)
@@ -198,7 +198,7 @@ subsequences will be omitted from the returned list."
   (declare (optimize (speed 3) (safety 1)))
   (declare (type simple-string str))
   (let ((end (or end (length str))))
-    (declare (type array-index start end))
+    (declare (type vector-index start end))
     (unless (<= 0 start end (length str))
       (error 'invalid-argument-error
              :params '(start end) :args (list start end)
@@ -207,8 +207,8 @@ subsequences will be omitted from the returned list."
         (string-split-indices str char :start start :end end)
       (if (and starts ends)
           (loop
-             for i of-type array-index in starts
-             for j of-type array-index in ends
+             for i of-type vector-index in starts
+             for j of-type vector-index in ends
              when (not (and remove-empty-substrings
                             (= i j)))
              collect (subseq str i j))

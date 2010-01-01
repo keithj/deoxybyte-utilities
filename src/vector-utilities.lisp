@@ -1,5 +1,5 @@
 ;;;
-;;; Copyright (C) 2008-2009 Keith James. All rights reserved.
+;;; Copyright (C) 2008-2010 Keith James. All rights reserved.
 ;;;
 ;;; This file is part of deoxybyte-utilities.
 ;;;
@@ -26,7 +26,7 @@ ELT is present according to TEST (which defaults to EQL)."
   (declare (type vector vector)
            (type function test))
   (let ((end (or end (length vector))))
-    (declare (type array-index start end))
+    (declare (type vector-index start end))
     (unless (<= 0 start end (length vector))
       (error 'invalid-argument-error
              :params '(start end) :args (list start end)
@@ -43,7 +43,7 @@ compared with elements in VECTOR using TEST, which defaults to EQL."
   (declare (optimize (speed 3) (safety 0) (debug 0)))
   (declare (type vector vector))
   (let ((end (or end (length vector))))
-    (declare (type array-index start end))
+    (declare (type vector-index start end))
     (unless (<= 0 start end (length vector))
       (error 'invalid-argument-error
              :params '(start end) :args (list start end)
@@ -54,14 +54,14 @@ compared with elements in VECTOR using TEST, which defaults to EQL."
           (loop
              with starts = ()
              with ends = ()
-             for pos of-type array-index in positions
-             and prev = start then (the array-index (1+ pos))
+             for pos of-type vector-index in positions
+             and prev = start then (the vector-index (1+ pos))
              maximize pos into last-pos
              do (progn
                   (push prev starts)
                   (push pos ends))
              finally (progn
-                       (push (the array-index (1+ last-pos)) starts)
+                       (push (the vector-index (1+ last-pos)) starts)
                        (push end ends)
                        (return
                          (values (nreverse starts) (nreverse ends)))))

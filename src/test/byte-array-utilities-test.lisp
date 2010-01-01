@@ -1,5 +1,5 @@
 ;;;
-;;; Copyright (C) 2008-2009 Keith James. All rights reserved.
+;;; Copyright (C) 2008-2010 Keith James. All rights reserved.
 ;;;
 ;;; This file is part of deoxybyte-utilities.
 ;;;
@@ -32,11 +32,9 @@
                for c in ct
                never (whitespace-byte-p c)))
     (ensure (whitespace-bytes-p
-             (make-array 5 :element-type '(unsigned-byte 8)
-                         :initial-contents ws)))
+             (make-array 5 :element-type 'octet :initial-contents ws)))
     (ensure (not (whitespace-bytes-p
-                  (make-array 26 :element-type '(unsigned-byte 8)
-                              :initial-contents ct))))))
+                  (make-array 26 :element-type 'octet :initial-contents ct))))))
 
 (addtest (deoxybyte-utilities-tests) content-bytes-p/1
   (let ((ws (mapcar #'char-code '(#\Space #\Tab #\Return
@@ -45,19 +43,16 @@
                for i from 65 to 90
                collect i)))
     (ensure (not (content-bytes-p
-                  (make-array 5 :element-type '(unsigned-byte 8)
-                              :initial-contents ws))))
+                  (make-array 5 :element-type 'octet :initial-contents ws))))
     (ensure (content-bytes-p
-             (make-array 26 :element-type '(unsigned-byte 8)
-                         :initial-contents ct)))
+             (make-array 26 :element-type 'octet :initial-contents ct)))
     (ensure (content-bytes-p
-             (make-array 31 :element-type '(unsigned-byte 8)
+             (make-array 31 :element-type 'octet
                          :initial-contents (append ws ct))))))
 
 
 (addtest (deoxybyte-utilities-tests) make-sb-string/1
-  (let ((bytes (make-array 2 :element-type '(unsigned-byte 8)
-                           :initial-contents '(65 65))))
+  (let ((bytes (make-array 2 :element-type 'octet :initial-contents '(65 65))))
     (ensure (subtypep (type-of (make-sb-string bytes)) 'simple-base-string))
     (ensure-error
       (make-sb-string bytes -1))
@@ -75,7 +70,5 @@
             (make-array 3 :initial-contents
                         (loop
                            for i from 65 to 67
-                           collect
-                             (make-array 2
-                                         :element-type '(unsigned-byte 8)
-                                         :initial-element i)))))))
+                           collect (make-array 2 :element-type 'octet
+                                               :initial-element i)))))))

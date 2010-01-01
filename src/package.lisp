@@ -1,5 +1,5 @@
 ;;;
-;;; Copyright (C) 2007-2009 Keith James. All rights reserved.
+;;; Copyright (C) 2007-2010 Keith James. All rights reserved.
 ;;;
 ;;; This file is part of deoxybyte-utilities.
 ;;;
@@ -44,13 +44,15 @@
    #:discarding-if
 
    ;; Type utilities
-   #:array-index
+   #:octet
    #:uint8
    #:int8
    #:uint16
    #:int16
    #:uint32
    #:int32
+   #:array-index
+   #:vector-index
 
    ;; CLOS utilities
    #:has-superclass-p

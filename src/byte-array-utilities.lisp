@@ -1,5 +1,5 @@
 ;;;
-;;; Copyright (C) 2008-2009 Keith James. All rights reserved.
+;;; Copyright (C) 2008-2010 Keith James. All rights reserved.
 ;;;
 ;;; This file is part of deoxybyte-utilities.
 ;;;
@@ -20,7 +20,7 @@
 (in-package :uk.co.deoxybyte-utilities)
 
 (defvar *whitespace-codes*
-  (make-array 5 :element-type '(unsigned-byte 8)
+  (make-array 5 :element-type 'octet
               :initial-contents (mapcar #'char-code
                                         '(#\Space #\Tab #\Return
                                           #\Linefeed #\FormFeed)))
@@ -32,8 +32,8 @@
 codes (defaults to codes of #\Space #\Tab #\Return #\Linefeed and
 #\FormFeed), or NIL otherwise."
   (declare (optimize (speed 3) (safety 1)))
-  (declare (type (simple-array (unsigned-byte 8)) *whitespace-codes*)
-           (type (unsigned-byte 8) byte))
+  (declare (type simple-octet-vector *whitespace-codes*)
+           (type octet byte))
   (loop for w across *whitespace-codes*
      thereis (= w byte)))
 
@@ -41,7 +41,7 @@ codes (defaults to codes of #\Space #\Tab #\Return #\Linefeed and
   "Returns T if all the bytes in BYTES are whitespace codes as defined
 by WHITESPACE-BYTE-P, or NIL otherwise."
   (declare (optimize (speed 3) (safety 1)))
-  (declare (type (simple-array (unsigned-byte 8)) bytes))
+  (declare (type simple-octet-vector bytes))
   (loop for b across bytes
      always (whitespace-byte-p b)))
 
@@ -49,15 +49,15 @@ by WHITESPACE-BYTE-P, or NIL otherwise."
   "Returns T if any of BYTES are not whitespace codes as defined by
 WHITESPACE-BYTE-P, or NIL otherwise."
   (declare (optimize (speed 3) (safety 1)))
-  (declare (type (simple-array (unsigned-byte 8)) bytes))
+  (declare (type simple-octet-vector bytes))
   (loop for b across bytes
      thereis (not (whitespace-byte-p b))))
 
 (defun has-byte-at-p (bytes byte index)
   "Returns T if array BYTES has BYTE at INDEX."
   (declare (optimize (speed 3) (safety 1)))
-  (declare (type (simple-array (unsigned-byte 8)) bytes)
-           (type (unsigned-byte 8) byte))
+  (declare (type simple-octet-vector bytes)
+           (type octet byte))
   (and (not (zerop (length bytes)))
        (= byte (aref bytes index))))
 
@@ -73,9 +73,9 @@ SOURCE-END defaults to NIL. The elements of the returned string are
 the result of calling code-char on the respective elements of
 BYTE-ARRAY."
   (declare (optimize (speed 3) (safety 1)))
-  (declare (type (simple-array (unsigned-byte 8)) byte-array))
+  (declare (type simple-octet-vector byte-array))
   (let ((source-end (or source-end (1- (length byte-array)))))
-    (declare (type array-index source-start source-end))
+    (declare (type vector-index source-start source-end))
     (let ((source-len (length byte-array)))
       (cond ((zerop source-len)
              (make-string 0 :element-type 'base-char))
@@ -101,7 +101,7 @@ BYTE-ARRAY."
                             source-len)))
             (t
              (let ((dest-length (1+ (- source-end source-start))))
-               (declare (type array-index dest-length))
+               (declare (type vector-index dest-length))
                (let ((string (make-string dest-length
                                           :element-type 'base-char)))
                  (copy-array byte-array source-start source-end
@@ -123,8 +123,8 @@ of BYTE-ARRAYS."
          (offset 0))
         ((= i num-arrays) new-str)
       (let ((byte-array (aref byte-arrays i)))
-        (declare (type (simple-array (unsigned-byte 8)) byte-array)
-                 (type array-index offset))
+        (declare (type simple-octet-vector byte-array)
+                 (type vector-index offset))
         (unless (zerop (length byte-array))
           (copy-array byte-array 0 (1- (length byte-array))
                       new-str offset #'code-char)

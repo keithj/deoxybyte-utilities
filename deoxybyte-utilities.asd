@@ -1,5 +1,5 @@
 ;;;
-;;; Copyright (C) 2007-2009 Keith James. All rights reserved.
+;;; Copyright (C) 2007-2010 Keith James. All rights reserved.
 ;;;
 ;;; This file is part of deoxybyte-utilities.
 ;;;
@@ -31,7 +31,7 @@
 
 (defsystem deoxybyte-utilities
   :name "deoxybyte-utilities"
-  :version "0.5.5"
+  :version "0.5.6"
   :author "Keith James"
   :licence "GPL v3"
   :in-order-to ((test-op (load-op :deoxybyte-utilities

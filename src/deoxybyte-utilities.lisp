@@ -1,5 +1,5 @@
 ;;;
-;;; Copyright (C) 2007-2009 Keith James. All rights reserved.
+;;; Copyright (C) 2007-2010 Keith James. All rights reserved.
 ;;;
 ;;; This file is part of deoxybyte-utilities.
 ;;;
@@ -34,9 +34,9 @@ inserting them into DEST at DEST-START onwards. If the function KEY is
 supplied, it is applied to each element of SOURCE prior to its
 insertion into DEST."
   `(loop
-      for si of-type array-index from ,source-start to ,source-end
-      for di of-type array-index = ,dest-start
-      then (the array-index (1+ di))
+      for si of-type vector-index from ,source-start to ,source-end
+      for di of-type vector-index = ,dest-start
+      then (the vector-index (1+ di))
       do (setf (aref ,dest di) ,(if key
                                     `(funcall ,key (aref ,source si))
                                   `(aref ,source si)))))
