@@ -22,7 +22,7 @@
 (defvar *whitespace-chars*
   (make-array 5 :element-type 'character
               :initial-contents '(#\Space #\Tab #\Return
-                                  #\Linefeed #\FormFeed))
+                                  #\Linefeed #\Page))
   "Whitespace characters.")
 
 (defun control-char-p (char)

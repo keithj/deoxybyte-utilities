@@ -1,5 +1,5 @@
 ;;;
-;;; Copyright (C) 2009 Keith James. All rights reserved.
+;;; Copyright (C) 2009-2010 Keith James. All rights reserved.
 ;;;
 ;;; This file is part of deoxybyte-utilities.
 ;;;
@@ -17,7 +17,7 @@
 ;;; along with this program.  If not, see <http://www.gnu.org/licenses/>.
 ;;;
 
-(in-package :deoxybyte-utilities)
+(in-package :uk.co.deoxybyte-utilities)
 
 (defstruct queue
   "A FIFO queue. For consistency, all functions that operate on a

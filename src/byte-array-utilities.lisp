@@ -23,7 +23,7 @@
   (make-array 5 :element-type 'octet
               :initial-contents (mapcar #'char-code
                                         '(#\Space #\Tab #\Return
-                                          #\Linefeed #\FormFeed)))
+                                          #\Linefeed #\Page)))
   "Character codes of whitespace characters.")
 
 ;;; byte array utility functions
