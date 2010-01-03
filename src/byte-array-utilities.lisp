@@ -84,7 +84,7 @@ BYTE-ARRAY."
                                    (> source-len source-start)) (source-start)
                                    "source-start must be >= 0 and be <= ~a"
                                    source-len)
-             (check-arguments (< source-start source-end)
+             (check-arguments (<= source-start source-end)
                               (source-start source-end)
                               "source-start must be <= source-end")
              (check-arguments (<= source-end source-len) (source-end)

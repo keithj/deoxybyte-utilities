@@ -65,7 +65,7 @@ Rest:
   `(progn
      (unless ,test-form
        (error 'invalid-argument-error
-              :paramaters ',arguments
+              :parameters ',arguments
               :arguments (list ,@arguments)
               :text (format nil ,error-message ,@message-arguments)))
      t))
