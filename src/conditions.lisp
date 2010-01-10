@@ -36,7 +36,8 @@
              (format stream
                      "Invalid ~a argument~:[s~;~] ~@[~a~]~@[: ~a~]."
                      (parameters-of condition)
-                     (atom (parameters-of condition))
+                     (or (atom (parameters-of condition))
+                         (endp (rest (parameters-of condition))))
                      (arguments-of condition)
                      (text-of condition))))
   (:documentation "An error that is raised when an invalid argument is
