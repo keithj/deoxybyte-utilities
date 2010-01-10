@@ -37,10 +37,9 @@ otherwise."
 characters (defaults to #\Space #\Tab #\Return #\Linefeed and
 #\FormFeed), or NIL otherwise."
   (declare (optimize (speed 3) (safety 1)))
-  (declare (type simple-string *whitespace-chars*))
-  (loop
-     for w across *whitespace-chars*
-     thereis (char= w char)))
+  (declare (type simple-string *whitespace-chars*)
+           (type character char))
+  (find char *whitespace-chars*))
 
 (defun whitespace-string-p (str)
   "Returns T if all the characters in STR are whitespace as defined by
@@ -56,9 +55,7 @@ WHITESPACE-CHAR-P, or NIL otherwise."
 defined by WHITESPACE-CHAR-P, or NIL otherwise."
   (declare (optimize (speed 3) (safety 1)))
   (declare (type simple-string str))
-  (loop
-     for c across str
-     thereis (not (whitespace-char-p c))))
+  (find-if (complement #'whitespace-char-p) str))
 
 (defun empty-string-p (str)
   "Returns T if STR is a zero-length string or contains only
@@ -73,10 +70,9 @@ whitespace as defined by WHITESPACE-CHAR-P, or NIL otherwise."
 CHAR=) or NIL otherwise."
   (declare (optimize (speed 3) (safety 1)))
   (declare (type simple-string str)
+           (type character char)
            (type function test))
-  (loop
-     for c across str
-     thereis (funcall test char c)))
+  (find char str :test test))
 
 (defun has-char-at-p (str char index &key (test #'char=))
   "Returns T if STR has CHAR at INDEX, determined by TEST (defaults to
