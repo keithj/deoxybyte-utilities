@@ -28,7 +28,7 @@ ELT is present according to TEST (which defaults to EQL)."
   (let ((end (or end (length vector))))
     (declare (type vector-index start end))
     (check-arguments (<= 0 start end (length vector)) (start end)
-                     "start must be >= 0 and be <= end")
+                     "must satisfy (<= 0 start end ~d)" (length vector))
     (loop for i from start below end
        when (funcall test elt (aref vector i))
        collect i)))
@@ -43,7 +43,7 @@ compared with elements in VECTOR using TEST, which defaults to EQL."
   (let ((end (or end (length vector))))
     (declare (type vector-index start end))
     (check-arguments (<= 0 start end (length vector)) (start end)
-                     "start must be >= 0 and be <= end")
+                     "must satisfy (<= 0 start end ~d)" (length vector))
     (let ((positions (vector-positions elt vector
                                        :start start :end end :test test)))
       (if positions
@@ -75,7 +75,7 @@ structure with VECTOR."
   (let ((end (or end (length vector)))
         (elt-type (array-element-type vector)))
     (check-arguments (<= 0 start end (length vector)) (start end)
-                     "start must be >= 0 and be <= end")
+                     "must satisfy (<= 0 start end ~d)" (length vector))
     (multiple-value-bind (starts ends)
         (vector-split-indices elt vector :start start :end end :test test)
       (cond ((and starts ends)

@@ -80,15 +80,9 @@ BYTE-ARRAY."
       (cond ((zerop source-len)
              (make-string 0 :element-type 'base-char))
             (t
-             (check-arguments (and (<= 0 source-start)
-                                   (> source-len source-start)) (source-start)
-                                   "source-start must be >= 0 and be <= ~a"
-                                   source-len)
-             (check-arguments (<= source-start source-end)
+             (check-arguments (<= 0 source-start source-end source-len)
                               (source-start source-end)
-                              "source-start must be <= source-end")
-             (check-arguments (<= source-end source-len) (source-end)
-                              "source-end must be >= 0 and be <= ~a" source-len)
+                              "must satisfy (<= 0 start end ~d)" source-len)
              (let ((dest-length (1+ (- source-end source-start))))
                (declare (type vector-index dest-length))
                (let ((string (make-string dest-length
@@ -106,7 +100,7 @@ of BYTE-ARRAYS."
   (declare (optimize (speed 3) (safety 0)))
   (declare (type vector byte-arrays))
   (let ((new-str (make-string (reduce #'+ byte-arrays :key #'length)
-                              :element-type 'base-char))
+                              :element-type 'base-char :initial-element #\Nul))
         (num-arrays (length byte-arrays)))
     (do ((i 0 (1+ i))
          (offset 0))
