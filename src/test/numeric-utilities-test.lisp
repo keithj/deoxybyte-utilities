@@ -42,7 +42,7 @@
                                    collect (next gen))))))
 
 (addtest (deoxybyte-utilities-tests) numeric-selector/1
-  ; 5 bins, defaulting to integer range
+  ;; 5 bins, defaulting to integer range
   (with-numeric-selector (select-bin 5 :out-of-bounds :ignore)
     (let ((bins (make-array 5 :initial-element 0)))
       (loop

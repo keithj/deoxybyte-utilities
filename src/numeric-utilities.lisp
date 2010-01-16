@@ -94,8 +94,8 @@ Key:
                     (:ignore nil)
                     (:error
                      `(error 'invalid-argument-error
-                       :params 'value
-                       :args value
+                       :parameters 'value
+                       :arguments value
                        :text (format nil "expected a value in the range ~a"
                               (list ,lower-bound
                                (1- (+ ,lower-bound ,end))))))))))
