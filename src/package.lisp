@@ -34,6 +34,7 @@
 
    ;; Deoxybyte-utilities
    #:with-gensyms
+   #:funcall-if-fn
    #:copy-array   
    #:defgenerator
    #:current
@@ -91,6 +92,13 @@
    #:vector-split-indices
    #:vector-split
    #:binary-search
+
+   ;; Set utilities
+   #:linear-union
+   #:linear-intersection
+   #:linear-set-difference
+   #:linear-set-exclusive-or
+   #:linear-subsetp
 
    ;; String utilities
    #:control-char-p

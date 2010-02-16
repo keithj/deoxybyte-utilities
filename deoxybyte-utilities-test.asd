@@ -28,6 +28,7 @@
                         :components ((:file "package")
                                      (:file "deoxybyte-utilities-test")
                                      (:file "cons-utilities-test")
+                                     (:file "set-utilities-test")
                                      (:file "numeric-utilities-test")
                                      (:file "vector-utilities-test")
                                      (:file "byte-array-utilities-test")

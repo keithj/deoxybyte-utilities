@@ -50,6 +50,10 @@
                 (incf i))
         :more (< i n))))
 
+(addtest (deoxybyte-utilities-tests) funcall-if-fn/1
+  (ensure (equal "ABCDEF" (funcall-if-fn nil "ABCDEF")))
+  (ensure (equal "abcdef" (funcall-if-fn #'string-downcase "ABCDEF"))))
+
 (addtest (deoxybyte-utilities-tests) defgenerator/1
   (let ((gen (make-seq-iter (iota 10))))
     (ensure (equal (iota 10) (loop

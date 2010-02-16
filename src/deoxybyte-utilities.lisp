@@ -26,6 +26,13 @@
               collect `(,n (gensym)))
        ,@body)))
 
+(defmacro funcall-if-fn (function arg)
+  "If FUNCTION is not null, funcalls FUNCTION on ARG, otherwise
+returns ARG."
+  `(if ,function
+       (funcall ,function ,arg)
+     ,arg))
+
 ;;; Array copying macro
 (defmacro copy-array (source source-start source-end
                       dest dest-start &optional key)
@@ -37,9 +44,7 @@ insertion into DEST."
       for si of-type vector-index from ,source-start to ,source-end
       for di of-type vector-index = ,dest-start
       then (the vector-index (1+ di))
-      do (setf (aref ,dest di) ,(if key
-                                    `(funcall ,key (aref ,source si))
-                                  `(aref ,source si)))))
+      do (setf (aref ,dest di) (funcall-if-fn ,key (aref ,source si)))))
 
 (defmacro check-arguments (test-form arguments &optional error-message
                            &rest message-arguments)
