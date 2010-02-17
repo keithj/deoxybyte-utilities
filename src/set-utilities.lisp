@@ -109,3 +109,7 @@ CL:SUBSETP for the meaning of KEY and TEST."
              (loop
                 for elt in smaller
                 always (gethash (funcall-if-fn key elt) hash)))))))
+
+(defun linear-set-equal (list1 list2  &key key test)
+  (and (not (linear-set-difference list1 list2 :key key :test test))
+       (not (linear-set-difference list2 list1 :key key :test test))))

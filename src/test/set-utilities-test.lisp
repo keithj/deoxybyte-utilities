@@ -73,3 +73,15 @@
 (addtest (deoxybyte-utilities-tests) linear-subsetp/2
   (test-list-of-lists #'subsetp #'linear-subsetp))
 
+(addtest (deoxybyte-utilities-tests) linear-set-equal/1
+  (test-numlist (lambda (x y &rest args)
+                  (declare (ignore args))
+                  (equal x y)) #'linear-set-equal))
+
+(addtest (deoxybyte-utilities-tests) linear-set-equal/2
+  (test-list-of-lists (lambda (x y &rest args)
+                        (declare (ignore args))
+                        (equal x y)) #'linear-set-equal))
+
+(addtest (deoxybyte-utilities-tests) linear-set-equal/3
+  (ensure (not (linear-set-equal '(1 2 3) '(2 3)))))

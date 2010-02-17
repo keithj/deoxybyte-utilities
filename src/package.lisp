@@ -99,6 +99,7 @@
    #:linear-set-difference
    #:linear-set-exclusive-or
    #:linear-subsetp
+   #:linear-set-equal
 
    ;; String utilities
    #:control-char-p
