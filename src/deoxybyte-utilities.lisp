@@ -82,15 +82,14 @@ and {defun current} .
 
 Key:
 
-- has-more-p (form): A form to be called when passed the function is
-  passed to {defun has-more-p} . This should return T if the generator
-  can supply more values, or NIL otherwise.
-- next (form): A form to be called when passed the function is passed
-  to {defun current} . This should return the next value of the
-  generator.
-- current (form): An optional form to be called when passed the
-  function is passed to {defun current} . This should return the
-  current value of the generator.
+- has-more-p (form): A form that returns T if the generator can supply
+  more values, or NIL otherwise. Used by {defun has-more-p } .
+
+- next (form): A form that returns the next value of the
+  generator. Used by {defun next} .
+
+- current (form): An optional form that returns the current value of
+  the generator. Used by {defun current} .
 
 Returns:
 - A form that evaluates to an anonymous function."
