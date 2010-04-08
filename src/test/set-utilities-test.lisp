@@ -43,7 +43,7 @@
               (equal (funcall fn1 x y :key #'car)
                      (funcall fn2 x y :key #'car)))))
 
-(addtest (deoxybyte-utilities-tests) linear-union~/1
+(addtest (deoxybyte-utilities-tests) linear-union/1
   (test-numlist #'union #'linear-union))
     
 (addtest (deoxybyte-utilities-tests) linear-union/2
