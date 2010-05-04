@@ -56,28 +56,6 @@ Returns:
                 (incf current step)))
         (current current))))
 
-;; (defun make-number-gen (&optional (start 0) (step 1))
-;;   "Creates a closure of zero arity that returns an integer from START
-;; with subsequent integers incrementing by STEP greater than the last,
-;; or less, is a negative step is given.
-
-;; Optional:
-
-;; - start (integer): the start value, defaults to 0.
-;; - step (integer): the step size, defaults to 1.
-
-;; Returns:
-
-;; - A closure of zero arity."
-;;   (let ((current start))
-;;     (defgenerator
-;;         :current current
-;;         :next (prog1
-;;                   current
-;;                 (incf current step))
-;;         :more t)))
-
-
 (defmacro with-numeric-selector ((name num-bins &key (start 0)
                                        (end (+ start num-bins))
                                        (out-of-bounds :error))
