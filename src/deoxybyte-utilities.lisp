@@ -75,50 +75,69 @@ Rest:
               :text (format nil ,error-message ,@message-arguments)))
      t))
 
-(defmacro defgenerator (&key more next current)
+(defmacro defgenerator (more-form next-form &optional current-form)
   "Returns a generator function that may be passed to any of the
 generator utility functions {defun has-more-p} , {defun next}
 and {defun current} .
 
-Key:
+Arguments:
 
-- has-more-p (form): A form that returns T if the generator can supply
+- more-form (form): A form that returns T if the generator can supply
   more values, or NIL otherwise. Used by {defun has-more-p } .
 
-- next (form): A form that returns the next value of the
+- next-form (form): A form that returns the next value of the
   generator. Used by {defun next} .
 
-- current (form): An optional form that returns the current value of
-  the generator. Used by {defun current} .
+Optional:
+
+- current-form (form): A form that returns the current value of the
+  generator. Used by {defun current} .
 
 Returns:
 - A form that evaluates to an anonymous function."
-  (assert more () "A :more form is required.")
-  (assert next () "A :next form is required.")
-  `(lambda (op)
-     (ecase op
-       ,@(when current
-               `((:current ,current)))
-       (:next ,next)
-       (:more ,more))))
+  (destructuring-bind ((more more-body) (next next-body))
+      (list more-form next-form)
+    (assert (equal "MORE" (symbol-name more)) ()
+            "Expected a MORE form, but found ~a" more-form)
+    (assert (equal "NEXT" (symbol-name next)) ()
+            "Expected a NEXT form, but found ~a" next-form)
+    `(lambda (op)
+       (ecase op
+         ,@(when current-form
+                 (destructuring-bind (current current-body)
+                     current-form
+                   (assert (equal "CURRENT" (symbol-name current)) ()
+                           "Expected a CURRENT form, but found ~a"
+                           current-form)
+                   `((:current ,current-body))))
+         (:more ,more-body)
+         (:next ,next-body)))))
 
 ;;; Generator utility functions
 (defun current (gen)
   "Returns the current value of generator function GEN."
+  (declare (optimize (speed 3)))
+  (declare (type function gen))
   (funcall gen :current))
 
 (defun next (gen)
   "Returns the next available value from generator function GEN."
+  (declare (optimize (speed 3)))
+  (declare (type function gen))
   (funcall gen :next))
 
 (defun has-more-p (gen)
   "Returns T if generator function GEN has more available values, or
 NIL otherwise."
+  (declare (optimize (speed 3)))
+  (declare (type function gen))
   (funcall gen :more))
 
 ;;; Consumer utility functions
 (defun consume (con &rest args)
   "Applies consumer function CON with arguments ARGS."
+  (declare (optimize (speed 3)))
+  (declare (type function con))
   (apply con args))
 
 (defun collect (gen &optional (n 1))
@@ -142,6 +161,8 @@ number of values actually discarded."
 (defun discarding-if (test gen)
   "Returns a new generator function that discards values from
 generator function GEN while they satisfy TEST."
+  (declare (optimize (speed 3)))
+  (declare (type function test))
   (flet ((skip-to-next ()
            (multiple-value-bind (elt found)
                (loop
@@ -153,8 +174,8 @@ generator function GEN while they satisfy TEST."
     (multiple-value-bind (elt more)
         (skip-to-next)
       (defgenerator
-          :next (prog1
+          (more more)
+          (next (prog1
                     elt
                   (multiple-value-setq (elt more)
-                    (skip-to-next)))
-          :more more))))
+                    (skip-to-next))))))))

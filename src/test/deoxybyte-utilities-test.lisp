@@ -41,59 +41,56 @@
 (defun find-slot-reader-method (class-name generic-function)
   (find-method generic-function '() (list (find-class class-name))))
 
-(defun make-seq-iter (seq)
+(defun seq-iterator (seq)
   (let ((n (length seq))
         (i 0))
     (defgenerator
-        :next (prog1
+        (more (< i n))
+        (next (prog1
                   (elt seq i)
-                (incf i))
-        :more (< i n))))
+                (incf i))))))
 
 (addtest (deoxybyte-utilities-tests) funcall-if-fn/1
   (ensure (equal "ABCDEF" (funcall-if-fn nil "ABCDEF")))
   (ensure (equal "abcdef" (funcall-if-fn #'string-downcase "ABCDEF"))))
 
 (addtest (deoxybyte-utilities-tests) defgenerator/1
-  (let ((gen (make-seq-iter (iota 10))))
+  (let ((gen (seq-iterator (iota 10))))
     (ensure (equal (iota 10) (loop
                              while (has-more-p gen)
                              collect (next gen))))
     (ensure (not (has-more-p gen)))))
 
 (addtest (deoxybyte-utilities-tests) collect/1
-  (let ((gen (make-seq-iter (iota 10))))
+  (let ((gen (seq-iterator (iota 10))))
     (ensure (equal (iota 1) (collect gen)))
     (ensure (equal (iota 5 1) (collect gen 5)))))
 
 (addtest (deoxybyte-utilities-tests) discard/1
-  (let ((gen (make-seq-iter (iota 10))))
+  (let ((gen (seq-iterator (iota 10))))
     (ensure (= 5 (discard gen 5)))
     (ensure (= 5 (discard gen 10)))))
 
 (addtest (deoxybyte-utilities-tests) discarding-if/1
-  (let ((gen (discarding-if #'evenp (make-seq-iter (iota 1)))))
+  (let ((gen (discarding-if #'evenp (seq-iterator (iota 1)))))
     (ensure (equal '() (loop
                            while (has-more-p gen)
                            collect (next gen)))))
-  (let ((gen (discarding-if #'oddp (make-seq-iter (iota 1)))))
+  (let ((gen (discarding-if #'oddp (seq-iterator (iota 1)))))
     (ensure (equal '(0) (loop
                            while (has-more-p gen)
                            collect (next gen))))))
 
 (addtest (deoxybyte-utilities-tests) discarding-if/2
-  (let ((gen (discarding-if #'null (make-seq-iter (iota 10)))))
+  (let ((gen (discarding-if #'null (seq-iterator (iota 10)))))
     (ensure (equal (iota 10) (loop
                               while (has-more-p gen)
                               collect (next gen)))))
-  (let ((gen (discarding-if #'oddp (make-seq-iter (iota 10)))))
+  (let ((gen (discarding-if #'oddp (seq-iterator (iota 10)))))
     (ensure (equal '(0 2 4 6 8) (loop
                                    while (has-more-p gen)
                                    collect (next gen)))))
-  (let ((gen (discarding-if #'evenp (make-seq-iter (iota 10)))))
+  (let ((gen (discarding-if #'evenp (seq-iterator (iota 10)))))
     (ensure (equal '(1 3 5 7 9) (loop
                                    while (has-more-p gen)
                                    collect (next gen))))))
-
-
-

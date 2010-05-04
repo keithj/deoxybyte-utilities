@@ -27,16 +27,16 @@
   (ensure (equal '(0 -1 -2 -3 -4) (iota 5 0 -1)))
   (ensure (equal '(0 -2 -4 -6 -8) (iota 5 0 -2))))
 
-(addtest (deoxybyte-utilities-tests) make-number-gen/1
-  (let ((gen (make-number-gen)))
+(addtest (deoxybyte-utilities-tests) number-generator/1
+  (let ((gen (number-generator)))
     (ensure (equal '(0 1 2 3 4) (loop
                                    repeat 5
                                    collect (next gen)))))
-  (let ((gen (make-number-gen 10)))
+  (let ((gen (number-generator 10)))
     (ensure (equal '(10 11 12 13 14) (loop
                                         repeat 5
                                         collect (next gen)))))
-  (let ((gen (make-number-gen 0 2)))
+  (let ((gen (number-generator 0 2)))
     (ensure (equal '(0 2 4 6 8) (loop
                                    repeat 5
                                    collect (next gen))))))

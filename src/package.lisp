@@ -132,7 +132,7 @@
 
    ;; Numeric utilities
    #:iota
-   #:make-number-gen
+   #:number-generator
    #:with-numeric-selector
    #:define-categorical-binner
 
