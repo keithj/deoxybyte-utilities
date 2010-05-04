@@ -24,7 +24,7 @@
                :deoxybyte-utilities)
   :components ((:module :deoxybyte-utilities-test
                         :serial t
-                        :pathname "src/test/"
+                        :pathname "test/"
                         :components ((:file "package")
                                      (:file "deoxybyte-utilities-test")
                                      (:file "cons-utilities-test")
