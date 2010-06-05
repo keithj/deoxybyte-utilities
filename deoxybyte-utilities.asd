@@ -19,15 +19,9 @@
 
 (in-package :cl-user)
 
-(eval-when (:compile-toplevel :load-toplevel :execute)
-  (when (asdf:find-system :deoxybyte-systems nil)
-    (asdf:operate 'asdf:load-op :deoxybyte-systems)))
+(asdf:load-system :deoxybyte-systems)
 
-(defpackage :uk.co.deoxybyte-utilities-system
-  (:use :common-lisp :asdf)
-  (:import-from :deoxybyte-systems :lift-test-config :cldoc-config))
-
-(in-package :uk.co.deoxybyte-utilities-system)
+(in-package :uk.co.deoxybyte-systems)
 
 (defsystem deoxybyte-utilities
   :name "deoxybyte-utilities"
@@ -54,7 +48,7 @@
                          (:file "finite-state-machine")
                          (:file "queue")))
    (:lift-test-config :lift-tests
-                      :pathname "deoxybyte-utilities-test.config"
+                      :pathname "deoxybyte-utilities-test"
                       :target-system :deoxybyte-utilities)
    (:cldoc-config :cldoc-documentation
                   :pathname "doc/html/"
