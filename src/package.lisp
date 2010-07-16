@@ -27,10 +27,13 @@
   (:export
    ;; Conditions
    #:check-arguments
+   #:simple-text-condition
+   #:formatted-condition
    #:invalid-argument-error
    #:missing-argument-error
    #:invalid-operation-error
    #:deprecation-warning
+   #:message-of
 
    ;; Deoxybyte-utilities
    #:with-gensyms

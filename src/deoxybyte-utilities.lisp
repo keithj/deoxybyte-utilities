@@ -72,7 +72,8 @@ Rest:
        (error 'invalid-argument-error
               :parameters ',arguments
               :arguments (list ,@arguments)
-              :text (format nil ,error-message ,@message-arguments)))
+              :format-control ,error-message
+              :format-arguments (list ,@message-arguments)))
      t))
 
 (defmacro defgenerator (more-form next-form &optional current-form)

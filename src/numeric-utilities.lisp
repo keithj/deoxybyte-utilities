@@ -96,9 +96,9 @@ Key:
                      `(error 'invalid-argument-error
                        :parameters 'value
                        :arguments value
-                       :text (format nil "expected a value in the range ~a"
-                              (list ,lower-bound
-                               (1- (+ ,lower-bound ,end))))))))))
+                       :format-control "expected a value in the range ~a"
+                       :format-arguments (list ,lower-bound
+                                               (1- (+ ,lower-bound ,end)))))))))
         ,@body))))
 
 (defmacro define-categorical-binner (value &rest categories)

@@ -25,7 +25,7 @@
 
 (defsystem deoxybyte-utilities
   :name "deoxybyte-utilities"
-  :version "0.6.0"
+  :version "0.7.0"
   :author "Keith James"
   :licence "GPL v3"
   :in-order-to ((test-op (load-op :deoxybyte-utilities
