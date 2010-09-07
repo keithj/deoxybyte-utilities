@@ -77,7 +77,7 @@ optionally restricted to those classes that have SUPERCLASS."
           (push c classes))))))
 
 (defun all-external-classes (package-name
-                             &optional (superclass (find-class 't)))
+                             &optional (superclass (find-class t)))
   "Returns a list of all exported classes defined in package
 PACKAGE-NAME, optionally restricted to those classes that have
 SUPERCLASS."
@@ -96,8 +96,8 @@ SUPERCLASS."
 including, class CEILING. The class CEILING defaults to
 STANDARD-OBJECT."
    #-(or :sbcl :cmu :lispworks :ccl)
-   (error msg("ALL-SPECIALIZED-METHODS not supported"
-              "on this implementation."))
+   (error (msg "ALL-SPECIALIZED-METHODS not supported"
+               "on this implementation."))
    (apply #'append
           (mapcar #+:sbcl #'sb-mop:specializer-direct-methods
                   #+:cmu #'mop:specializer-direct-methods
@@ -112,8 +112,8 @@ STANDARD-OBJECT."
 but not including, class CEILING. The class CEILING defaults to
 STANDARD-OBJECT."
   #-(or :sbcl :cmu :lispworks :ccl)
-  (error msg("ALL-SPECIALIZED-GENERIC-FUNCTIONS not supported"
-             "on this implementation."))
+  (error (msg "ALL-SPECIALIZED-GENERIC-FUNCTIONS not supported"
+              "on this implementation."))
   (mapcar #+:sbcl #'sb-mop:method-generic-function
           #+:cmu #'mop:method-generic-function
           #+:lispworks #'clos:method-generic-function
@@ -130,3 +130,31 @@ PACKAGE-NAME."
           (when (eql 'standard-generic-function (type-of fn))
             (push fn generic-fns)))))))
 
+(defun all-slots (class)
+  "Returnd a sorted list of all slots of CLASS."
+  #-(or :sbcl :ccl)
+  (error "ALL-SLOTS not supported on this implementation.")
+  (flet ((slot-names ()
+           #+:sbcl (progn
+                     (unless (sb-mop:class-finalized-p class)
+                       (sb-mop:finalize-inheritance class))
+                     (mapcar #'sb-mop:slot-definition-name
+                             (sb-mop:compute-slots class)))
+           #+:ccl (progn
+                    (unless (ccl:class-finalized-p class)
+                      (ccl:finalize-inheritance class))
+                    (mapcar #'ccl:slot-definition-name
+                            (ccl:compute-slots class)))))
+    (stable-sort (slot-names) #'string< :key #'symbol-name)))
+
+(defun slot-documentation (slot class)
+  "Returns the documentation string for SLOT of CLASS."
+    #-(or :sbcl :ccl)
+  (error "SLOT-DOCUMENTATION not supported on this implementation.")
+  (flet ((direct-slots ()
+           #+:sbcl (sb-mop:class-direct-slots class)
+           #+:ccl (ccl:class-direct-slots class))
+         (slot-def-name (slot-def)
+           #+:sbcl (sb-mop:slot-definition-name slot-def)
+           #+:ccl (ccl:slot-definition-name slot-def)))
+    (documentation (find slot-name (direct-slots) :key #'slot-def-name) t)))

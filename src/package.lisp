@@ -70,6 +70,8 @@
    #:all-specialized-methods
    #:all-specialized-generic-functions
    #:all-external-generic-functions
+   #:all-slots
+   #:slot-documentation
 
    ;; Cons utilities
    #:assocdr
