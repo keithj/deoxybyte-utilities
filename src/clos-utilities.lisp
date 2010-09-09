@@ -131,30 +131,36 @@ PACKAGE-NAME."
             (push fn generic-fns)))))))
 
 (defun all-slots (class)
-  "Returnd a sorted list of all slots of CLASS."
+  "Returns a sorted list of all slots of CLASS."
   #-(or :sbcl :ccl)
   (error "ALL-SLOTS not supported on this implementation.")
-  (flet ((slot-names ()
-           #+:sbcl (progn
-                     (unless (sb-mop:class-finalized-p class)
-                       (sb-mop:finalize-inheritance class))
-                     (mapcar #'sb-mop:slot-definition-name
-                             (sb-mop:compute-slots class)))
-           #+:ccl (progn
-                    (unless (ccl:class-finalized-p class)
-                      (ccl:finalize-inheritance class))
-                    (mapcar #'ccl:slot-definition-name
-                            (ccl:compute-slots class)))))
-    (stable-sort (slot-names) #'string< :key #'symbol-name)))
+  (flet ((slot-def-name (slot-def)
+           #+:sbcl (sb-mop:slot-definition-name  slot-def)
+           #+:ccl (ccl:slot-definition-name slot-def)))
+    (stable-sort (mapcar #'slot-def-name (all-slot-definitions class))
+                 #'string< :key #'symbol-name)))
 
 (defun slot-documentation (slot class)
   "Returns the documentation string for SLOT of CLASS."
     #-(or :sbcl :ccl)
   (error "SLOT-DOCUMENTATION not supported on this implementation.")
-  (flet ((direct-slots ()
-           #+:sbcl (sb-mop:class-direct-slots class)
-           #+:ccl (ccl:class-direct-slots class))
-         (slot-def-name (slot-def)
+  (check-arguments (and slot class) (slot class)
+                   "neither slot nor class may be NIL")
+  (flet ((slot-def-name (slot-def)
            #+:sbcl (sb-mop:slot-definition-name slot-def)
            #+:ccl (ccl:slot-definition-name slot-def)))
-    (documentation (find slot-name (direct-slots) :key #'slot-def-name) t)))
+    (documentation (find slot (all-slot-definitions class)
+                         :key #'slot-def-name) t)))
+
+(defun all-slot-definitions (class)
+  "Returns a list of all slot definitions of CLASS."
+  #-(or :sbcl :ccl)
+  (error "ALL-SLOT-DEFINITIONS not supported on this implementation.")
+  #+:sbcl (progn
+            (unless (sb-mop:class-finalized-p class)
+              (sb-mop:finalize-inheritance class))
+            (sb-mop:compute-slots class))
+  #+:ccl (progn
+           (unless (ccl:class-finalized-p class)
+             (ccl:finalize-inheritance class))
+           (ccl:compute-slots class)))
