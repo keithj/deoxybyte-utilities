@@ -34,8 +34,8 @@ contains pointers to both the head and tail of a single list."
     (if (queue-empty-p queue)
         (setf (queue-head queue) new-tail
               (queue-tail queue) new-tail)
-      (setf (cdr (queue-tail queue)) new-tail
-            (queue-tail queue) new-tail)))
+        (setf (cdr (queue-tail queue)) new-tail
+              (queue-tail queue) new-tail)))
   queue)
 
 (defun queue-dequeue (queue)
