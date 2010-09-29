@@ -50,6 +50,7 @@
 
    ;; Type utilities
    #:octet
+   #:nibble
    #:uint8
    #:int8
    #:uint16

@@ -23,6 +23,10 @@
   "Alias for unsigned-byte 8."
   '(unsigned-byte 8))
 
+(deftype nibble ()
+  "Alias for unsigned-byte 4"
+  '(unsigned-byte 4))
+
 (deftype uint8 ()
   "Alias for unsigned-byte 8."
   '(unsigned-byte 8))
