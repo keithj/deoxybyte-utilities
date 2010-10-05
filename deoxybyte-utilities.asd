@@ -43,7 +43,7 @@
                          (:file "set-utilities")
                          (:file "vector-utilities")
                          (:file "string-utilities")
-                         (:file "byte-array-utilities")
+                         (:file "octet-vector-utilities")
                          (:file "clos-utilities")
                          (:file "finite-state-machine")
                          (:file "queue")))
