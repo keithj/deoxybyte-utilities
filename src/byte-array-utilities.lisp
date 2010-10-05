@@ -74,7 +74,7 @@ the result of calling code-char on the respective elements of
 BYTE-ARRAY."
   (declare (optimize (speed 3) (safety 1)))
   (declare (type simple-octet-vector byte-array))
-  (let ((source-end (or source-end (1- (length byte-array)))))
+  (let ((source-end (or source-end (length byte-array))))
     (declare (type fixnum source-start source-end))
     (let ((source-len (length byte-array)))
       (cond ((zerop source-len)
@@ -87,8 +87,8 @@ BYTE-ARRAY."
                (declare (type vector-index dest-length))
                (let ((string (make-string dest-length
                                           :element-type 'base-char)))
-                 (copy-array byte-array source-start source-end
-                             string 0 #'code-char)
+                 (copy-vector byte-array source-start source-end
+                              string 0 #'code-char)
                  string)))))))
 
 (defun concat-into-sb-string (byte-arrays)
@@ -109,6 +109,6 @@ of BYTE-ARRAYS."
         (declare (type simple-octet-vector byte-array)
                  (type vector-index offset))
         (unless (zerop (length byte-array))
-          (copy-array byte-array 0 (1- (length byte-array))
-                      new-str offset #'code-char)
+          (copy-vector byte-array 0 (length byte-array)
+                       new-str offset #'code-char)
           (incf offset (length byte-array)))))))

@@ -133,8 +133,8 @@ supplied, the simple-strings contained in the vector STRS."
         (declare (type simple-string str)
                  (type vector-index offset))
         (unless (zerop (length str))
-          (copy-array str 0 (1- (length str))
-                      new-str offset)
+          (copy-vector str 0 (length str)
+                       new-str offset)
           (incf offset (length str)))))))
 
 (defun txt (&rest strings)

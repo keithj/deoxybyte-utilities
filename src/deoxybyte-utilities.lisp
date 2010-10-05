@@ -33,18 +33,21 @@ returns ARG."
        (funcall ,function ,arg)
      ,arg))
 
-;;; Array copying macro
-(defmacro copy-array (source source-start source-end
-                      dest dest-start &optional key)
+;;; Vector copying macro
+(defmacro copy-vector (source source-start source-end
+                       dest dest-start &optional key)
   "Copies elements SOURCE indices SOURCE-START and SOURCE-END to DEST,
 inserting them into DEST at DEST-START onwards. If the function KEY is
 supplied, it is applied to each element of SOURCE prior to its
 insertion into DEST."
   `(loop
-      for si of-type vector-index from ,source-start to ,source-end
+      for si of-type vector-index from ,source-start below ,source-end
       for di of-type vector-index = ,dest-start
       then (the vector-index (1+ di))
-      do (setf (aref ,dest di) (funcall-if-fn ,key (aref ,source si)))))
+      do (setf (aref ,dest di) ,(if key
+                                    `(funcall ,key (aref ,source si))
+                                  `(aref ,source si)))
+      finally (return ,dest)))
 
 (defmacro check-arguments (test-form arguments &optional error-message
                            &rest message-arguments)
