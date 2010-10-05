@@ -29,7 +29,7 @@
                                      (:file "set-utilities-test")
                                      (:file "numeric-utilities-test")
                                      (:file "vector-utilities-test")
-                                     (:file "byte-array-utilities-test")
+                                     (:file "octet-vector-utilities-test")
                                      (:file "string-utilities-test")
                                      (:file "clos-utilities-test")
                                      (:file "finite-state-machine-test")
