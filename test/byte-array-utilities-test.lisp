@@ -19,56 +19,15 @@
 
 (in-package :uk.co.deoxybyte-utilities-test)
 
-(addtest (deoxybyte-utilities-tests) whitespace-bytes-p/1
-  (let ((ws (mapcar #'char-code '(#\Space #\Tab #\Return
-                                  #\Linefeed #\FormFeed)))
-        (ct (loop
-               for i from 65 to 90
-               collect i)))
-    (ensure (loop
-               for c in ws
-               always (whitespace-byte-p c)))
-    (ensure (loop
-               for c in ct
-               never (whitespace-byte-p c)))
-    (ensure (whitespace-bytes-p
-             (make-array 5 :element-type 'octet :initial-contents ws)))
-    (ensure (not (whitespace-bytes-p
-                  (make-array 26 :element-type 'octet :initial-contents ct))))))
-
-(addtest (deoxybyte-utilities-tests) content-bytes-p/1
-  (let ((ws (mapcar #'char-code '(#\Space #\Tab #\Return
-                                  #\Linefeed #\FormFeed)))
-        (ct (loop
-               for i from 65 to 90
-               collect i)))
-    (ensure (not (content-bytes-p
-                  (make-array 5 :element-type 'octet :initial-contents ws))))
-    (ensure (content-bytes-p
-             (make-array 26 :element-type 'octet :initial-contents ct)))
-    (ensure (content-bytes-p
-             (make-array 31 :element-type 'octet
-                         :initial-contents (append ws ct))))))
-
-
-(addtest (deoxybyte-utilities-tests) make-sb-string/1
-  (let ((bytes (make-array 2 :element-type 'octet :initial-contents '(65 65))))
-    (ensure (subtypep (type-of (make-sb-string bytes)) 'simple-base-string))
+(addtest (deoxybyte-utilities-tests) octets-to-string/1
+  (let ((octets (make-array 2 :element-type 'octet :initial-contents '(65 65))))
+    (ensure (subtypep (type-of (octets-to-string octets)) 'simple-base-string))
+    (ensure (equal "AA" (octets-to-string octets)))
     (ensure-error
-      (make-sb-string bytes -1))
+      (octets-to-string octets -1))
     (ensure-condition invalid-argument-error
-      (make-sb-string bytes 99))
+      (octets-to-string octets 99))
     (ensure-condition invalid-argument-error
-      (make-sb-string bytes 1 0))
-    (ensure-condition invalid-argument-error
-      (make-sb-string bytes 0 99))))
-
-(addtest (deoxybyte-utilities-tests) concat-into-sb-string/1
-  (ensure (string=
-           "AABBCC"
-           (concat-into-sb-string
-            (make-array 3 :initial-contents
-                        (loop
-                           for i from 65 to 67
-                           collect (make-array 2 :element-type 'octet
-                                               :initial-element i)))))))
+      (octets-to-string octets 1 0))
+    (ensure-error
+      (octets-to-string octets 0 99))))

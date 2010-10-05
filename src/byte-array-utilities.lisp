@@ -19,96 +19,44 @@
 
 (in-package :uk.co.deoxybyte-utilities)
 
-(defvar *whitespace-codes*
-  (make-array 5 :element-type 'octet
-              :initial-contents (mapcar #'char-code
-                                        '(#\Space #\Tab #\Return
-                                          #\Linefeed #\Page)))
-  "Character codes of whitespace characters.")
-
-;;; byte array utility functions
-(defun whitespace-byte-p (byte)
-  "Returns T if BYTE is one of the currently bound set of whitespace
-codes (defaults to codes of #\Space #\Tab #\Return #\Linefeed and
-#\FormFeed), or NIL otherwise."
-  (declare (optimize (speed 3) (safety 1)))
-  (declare (type simple-octet-vector *whitespace-codes*)
-           (type octet byte))
-  (loop for w across *whitespace-codes*
-     thereis (= w byte)))
-
-(defun whitespace-bytes-p (bytes)
-  "Returns T if all the bytes in BYTES are whitespace codes as defined
-by WHITESPACE-BYTE-P, or NIL otherwise."
-  (declare (optimize (speed 3) (safety 1)))
-  (declare (type simple-octet-vector bytes))
-  (loop for b across bytes
-     always (whitespace-byte-p b)))
-
-(defun content-bytes-p (bytes)
-  "Returns T if any of BYTES are not whitespace codes as defined by
-WHITESPACE-BYTE-P, or NIL otherwise."
-  (declare (optimize (speed 3) (safety 1)))
-  (declare (type simple-octet-vector bytes))
-  (loop for b across bytes
-     thereis (not (whitespace-byte-p b))))
-
-(defun has-byte-at-p (bytes byte index)
-  "Returns T if array BYTES has BYTE at INDEX."
-  (declare (optimize (speed 3) (safety 1)))
-  (declare (type simple-octet-vector bytes)
-           (type octet byte))
-  (and (not (zerop (length bytes)))
-       (= byte (aref bytes index))))
-
-(defun starts-with-byte-p (bytes byte)
-  "Returns T if array BYTES has BYTE at index 0."
-  (has-byte-at-p bytes byte 0))
-
-(defun make-sb-string (byte-array &optional (source-start 0) source-end)
+(defun octets-to-string (octets &optional (start 0) (end nil end-supplied-p))
   "Returns a new simple-base-string created from the values in
-BYTE-ARRAY, a simple-array of (unsigned-byte 8), between indices
-SOURCE-START and SOURCE-END, inclusive. SOURCE start defaults to 0 and
-SOURCE-END defaults to NIL. The elements of the returned string are
-the result of calling code-char on the respective elements of
-BYTE-ARRAY."
-  (declare (optimize (speed 3) (safety 1)))
-  (declare (type simple-octet-vector byte-array))
-  (let ((source-end (or source-end (length byte-array))))
-    (declare (type fixnum source-start source-end))
-    (let ((source-len (length byte-array)))
-      (cond ((zerop source-len)
-             (make-string 0 :element-type 'base-char))
-            (t
-             (check-arguments (<= 0 source-start source-end source-len)
-                              (source-start source-end)
-                              "must satisfy (<= 0 start end ~d)" source-len)
-             (let ((dest-length (1+ (- source-end source-start))))
-               (declare (type vector-index dest-length))
-               (let ((string (make-string dest-length
-                                          :element-type 'base-char)))
-                 (copy-vector byte-array source-start source-end
-                              string 0 #'code-char)
-                 string)))))))
+OCTET-VECTOR, a simple-array of (unsigned-byte 8), between indices
+START and END. The elements of the returned string are the result of
+calling code-char on the respective elements of OCTET-VECTOR."
+  (declare (optimize (speed 3)))
+  (declare (type simple-octet-vector octets))
+  (declare (type vector-index start))
+  (cond ((and (zerop start) (not end-supplied-p))
+         (map-into (make-array (length octets) :element-type 'base-char)
+                   #'code-char octets))
+        (t
+         (let ((end (or end (length octets))))
+           (declare (type vector-index end))
+           (check-arguments (<= 0 start end) (start end)
+                            "must satisfy (<= 0 start end)")
+           (let ((len (- end start)))
+             (map-into (make-array len :element-type 'base-char) #'code-char
+                       (replace (make-array len :element-type 'octet) octets
+                                :start2 start :end2 end)))))))
 
-(defun concat-into-sb-string (byte-arrays)
-  "Returns a new simple-base-string created by concatenating, in the
-order supplied, the simple-arrays of (unsigned-byte 8) contained in
-the vector BYTE-ARRAYS. The elements of the returned string are the
-result of calling code-char on the contents of the respective elements
-of BYTE-ARRAYS."
-  (declare (optimize (speed 3) (safety 0)))
-  (declare (type vector byte-arrays))
-  (let ((new-str (make-string (reduce #'+ byte-arrays :key #'length)
-                              :element-type 'base-char :initial-element #\Nul))
-        (num-arrays (length byte-arrays)))
-    (do ((i 0 (1+ i))
-         (offset 0))
-        ((= i num-arrays) new-str)
-      (let ((byte-array (aref byte-arrays i)))
-        (declare (type simple-octet-vector byte-array)
-                 (type vector-index offset))
-        (unless (zerop (length byte-array))
-          (copy-vector byte-array 0 (length byte-array)
-                       new-str offset #'code-char)
-          (incf offset (length byte-array)))))))
+(defun string-to-octets (str &optional (start 0) (end nil end-supplied-p))
+  "Returns a new vector of octets created from the simple-base-string
+STR, between indices START and END. The elements of the returned
+vector are the result of calling char-code on the respective
+characters of STR."
+  (declare (optimize (speed 3)))
+  (declare (type simple-base-string str))
+  (declare (type vector-index start))
+  (cond ((and (zerop start) (not end-supplied-p))
+         (map-into (make-array (length str) :element-type 'octet) #'char-code str))
+        (t
+         (let ((end (or end (length str))))
+           (declare (type vector-index end))
+           (check-arguments (<= 0 start end) (start end)
+                            "must satisfy (<= 0 start end)")
+           (let ((len (- end start)))
+             (map-into (make-array len :element-type 'octet) #'char-code
+                       (replace (make-array len :element-type 'base-char) str
+                                :start2 start :end2 end)))))))
+

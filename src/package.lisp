@@ -127,14 +127,9 @@
    #:string-split-indices
    #:string-split
 
-   ;; Byte array utilities
-   #:whitespace-byte-p
-   #:whitespace-bytes-p
-   #:content-bytes-p
-   #:has-byte-at-p
-   #:starts-with-byte-p
-   #:make-sb-string
-   #:concat-into-sb-string
+   ;; Octet vector utilities
+   #:octets-to-string
+   #:string-to-octets
 
    ;; Numeric utilities
    #:iota
