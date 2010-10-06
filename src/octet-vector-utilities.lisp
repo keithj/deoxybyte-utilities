@@ -28,7 +28,7 @@ calling code-char on the respective elements of OCTET-VECTOR."
   (declare (type simple-octet-vector octets))
   (declare (type vector-index start))
   (cond ((and (zerop start) (not end-supplied-p))
-         (map-into (make-array (length octets) :element-type 'character)
+         (map-into (make-array (length octets) :element-type 'base-char)
                    #'code-char octets))
         (t
          (let ((end (or end (length octets))))
@@ -36,7 +36,7 @@ calling code-char on the respective elements of OCTET-VECTOR."
            (check-arguments (<= 0 start end) (start end)
                             "must satisfy (<= 0 start end)")
            (let ((len (- end start)))
-             (map-into (make-string len :element-type 'character) #'code-char
+             (map-into (make-string len :element-type 'base-char) #'code-char
                        (replace (make-array len :element-type 'octet) octets
                                 :start2 start :end2 end)))))))
 
@@ -61,7 +61,7 @@ characters of STR."
                      (check-arguments (<= 0 start end) (start end)
                                       "must satisfy (<= 0 start end)")
                      (let* ((len (- end start))
-                            (tmp (make-string len :element-type 'character)))
+                            (tmp (make-string len :element-type 'base-char)))
                        (map-into
                         (make-array len :element-type 'octet)
                         #'char-code
