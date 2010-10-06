@@ -38,7 +38,7 @@
    ;; Deoxybyte-utilities
    #:with-gensyms
    #:funcall-if-fn
-   #:copy-array   
+   #:copy-vector
    #:defgenerator
    #:current
    #:next
