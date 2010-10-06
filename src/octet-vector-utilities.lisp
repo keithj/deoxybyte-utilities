@@ -28,7 +28,7 @@ calling code-char on the respective elements of OCTET-VECTOR."
   (declare (type simple-octet-vector octets))
   (declare (type vector-index start))
   (cond ((and (zerop start) (not end-supplied-p))
-         (map-into (make-array (length octets) :element-type 'base-char)
+         (map-into (make-array (length octets) :element-type 'character)
                    #'code-char octets))
         (t
          (let ((end (or end (length octets))))
@@ -36,27 +36,36 @@ calling code-char on the respective elements of OCTET-VECTOR."
            (check-arguments (<= 0 start end) (start end)
                             "must satisfy (<= 0 start end)")
            (let ((len (- end start)))
-             (map-into (make-array len :element-type 'base-char) #'code-char
+             (map-into (make-string len :element-type 'character) #'code-char
                        (replace (make-array len :element-type 'octet) octets
                                 :start2 start :end2 end)))))))
 
 (defun string-to-octets (str &optional (start 0) (end nil end-supplied-p))
-  "Returns a new vector of octets created from the simple-base-string
+  "Returns a new vector of octets created from the simple-string
 STR, between indices START and END. The elements of the returned
 vector are the result of calling char-code on the respective
 characters of STR."
   (declare (optimize (speed 3)))
-  (declare (type simple-base-string str))
   (declare (type vector-index start))
-  (cond ((and (zerop start) (not end-supplied-p))
-         (map-into (make-array (length str) :element-type 'octet) #'char-code str))
-        (t
-         (let ((end (or end (length str))))
-           (declare (type vector-index end))
-           (check-arguments (<= 0 start end) (start end)
-                            "must satisfy (<= 0 start end)")
-           (let ((len (- end start)))
-             (map-into (make-array len :element-type 'octet) #'char-code
-                       (replace (make-array len :element-type 'base-char) str
-                                :start2 start :end2 end)))))))
-
+  ;; This is here because we can get a significant speed boost for the
+  ;; cases where we can determine that a string is a simple-base-string
+  (macrolet
+      ((map-string (type s)
+         `(locally (declare (type ,type ,s))
+            (cond ((and (zerop start) (not end-supplied-p))
+                   (map-into (make-array (length ,s) :element-type 'octet)
+                             #'char-code ,s))
+                  (t
+                   (let ((end (or end (length ,s))))
+                     (declare (type vector-index end))
+                     (check-arguments (<= 0 start end) (start end)
+                                      "must satisfy (<= 0 start end)")
+                     (let* ((len (- end start))
+                            (tmp (make-string len :element-type 'character)))
+                       (map-into
+                        (make-array len :element-type 'octet)
+                        #'char-code
+                        (replace tmp ,s :start2 start :end2 end)))))))))
+    (etypecase str
+      (simple-base-string (map-string simple-base-string str))
+      (simple-string (map-string simple-string str)))))
