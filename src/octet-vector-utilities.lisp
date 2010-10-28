@@ -68,4 +68,4 @@ characters of STR."
                         (replace tmp ,s :start2 start :end2 end)))))))))
     (etypecase str
       (simple-base-string (map-string simple-base-string str))
-      (simple-string (map-string simple-string str)))))
+      (simple-string (map-string (simple-array character (*)) str)))))

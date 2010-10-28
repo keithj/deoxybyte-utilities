@@ -20,9 +20,8 @@
 (in-package :uk.co.deoxybyte-utilities)
 
 (defvar *whitespace-chars*
-  (make-array 5 :element-type 'character
-              :initial-contents '(#\Space #\Tab #\Return
-                                  #\Linefeed #\Page))
+  (make-array 5 :element-type 'base-char
+              :initial-contents '(#\Space #\Tab #\Return #\Linefeed #\Page))
   "Whitespace characters.")
 
 (defun control-char-p (char)
@@ -37,7 +36,7 @@ otherwise."
 characters (defaults to #\Space #\Tab #\Return #\Linefeed and
 #\FormFeed), or NIL otherwise."
   (declare (optimize (speed 3) (safety 1)))
-  (declare (type simple-string *whitespace-chars*)
+  (declare (type simple-base-string *whitespace-chars*)
            (type character char))
   (find char *whitespace-chars*))
 
@@ -54,8 +53,10 @@ WHITESPACE-CHAR-P, or NIL otherwise."
   "Returns T if any of the characters in STR are not whitespace as
 defined by WHITESPACE-CHAR-P, or NIL otherwise."
   (declare (optimize (speed 3) (safety 1)))
-  (declare (type simple-string str))
-  (find-if (complement #'whitespace-char-p) str))
+  (declare (type (simple-array character (*)) str))
+  (flet ((fn (c)
+           (not (whitespace-char-p c))))
+    (find-if #'fn str)))
 
 (defun empty-string-p (str)
   "Returns T if STR is a zero-length string or contains only

@@ -58,7 +58,7 @@
               :documentation "The invalid arguments."))
   (:report (lambda (condition stream)
              (format stream
-                     "Invalid ~a argument~:[s~;~] ~@[~a~]~@[: ~a~]."
+                     "invalid ~a argument~:[s~;~] ~@[~a~]~@[: ~a~]"
                      (parameters-of condition)
                      (or (atom (parameters-of condition))
                          (endp (rest (parameters-of condition))))
@@ -74,7 +74,7 @@ passed to a function."))
                :documentation "The invalid parameters."))
   (:report (lambda (condition stream)
              (format stream
-                     "Missing ~a argument~:[s~;~]~@[: ~a~]."
+                     "missing ~a argument~:[s~;~]~@[: ~a~]"
                      (parameters-of condition)
                      (atom (parameters-of condition))
                      (message-of condition))))
@@ -84,7 +84,7 @@ not passed to a function."))
 (define-condition invalid-operation-error (error formatted-condition)
   ()
   (:report (lambda (condition stream)
-             (format stream "Invalid operation~@[: ~a~]."
+             (format stream "invalid operation~@[: ~a~]"
                      (message-of condition))))
   (:documentation "An error that is raised when an invalid operation
 is attempted."))
@@ -97,7 +97,7 @@ is attempted."))
               :initarg :in-favour
               :reader in-favour-of))
   (:report (lambda (condition stream)
-             (format stream "~a is deprecated~@[ in favour of ~a~]."
+             (format stream "~a is deprecated~@[ in favour of ~a~]"
                      (feature-of condition) (in-favour-of condition))))
   (:documentation "A warning that is raised when a deprecated feature
 is used."))
