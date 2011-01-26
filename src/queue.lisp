@@ -70,6 +70,16 @@ argument is the same as for C:DELETE-IF."
                        (queue-tail queue) (last pass))
                  (return (values queue fail))))))
 
+(defun queue-append (queue &rest lists)
+  "Inserts LISTS of items at the end of QUEUE and returns QUEUE."
+  (let ((new-tail (apply #'concatenate 'list lists)))
+    (if (queue-empty-p queue)
+        (setf (queue-head queue) new-tail
+              (queue-tail queue) new-tail)
+        (setf (cdr (queue-tail queue)) new-tail
+              (queue-tail queue) new-tail)))
+  queue)
+
 (defun queue-clear (queue)
   "Removes all items from queue, returning two values, the queue and a
   list of all the items that were in the queue."

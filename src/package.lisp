@@ -156,7 +156,8 @@
    #:queue-last
    #:queue-nth
    #:queue-empty-p
-   #:queue-delete)
+   #:queue-delete
+   #:queue-append)
   (:documentation "The deoxybyte-utilities system provides general
 purpose utilities. These are for the most part simple, standalone
 functions and macros. Once a particular function or macro has been
