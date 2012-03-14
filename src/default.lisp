@@ -24,22 +24,22 @@
 ;;; Introspection utility functions
 (defun has-superclass-p (class superclass)
   "Returns T if CLASS has SUPERCLASS, or NIL otherwise."
-  (error "IS-SUPERCLASS-P not supported on this implementation."))
+  (error "IS-SUPERCLASS-P not supported on this Lisp implementation."))
 
 (defun direct-superclasses (class)
   "Returns a list of the direct superclasses of CLASS."
-  (error "DIRECT-SUPERCLASSES not supported on this implementation."))
+  (error "DIRECT-SUPERCLASSES not supported on this Lisp implementation."))
 
 (defun direct-subclasses (class)
   "Returns a list of the direct subclasses of CLASS."
-  (error "DIRECT-SUBCLASSES not supported on this implementation."))
+  (error "DIRECT-SUBCLASSES not supported on this Lisp implementation."))
 
 (defun all-superclasses (class &optional
                          (ceiling (find-class 'standard-object)))
   "Returns a list of all superclasses of CLASS, up to, but not
 including, class CEILING. The class CEILING defaults to
 STANDARD-OBJECT."
-  (error "ALL-SUPERCLASSES not supported on this implementation."))
+  (error "ALL-SUPERCLASSES not supported on this Lisp implementation."))
 
 (defun all-specialized-methods (class &optional
                                 (ceiling (find-class 'standard-object)))
@@ -47,7 +47,7 @@ STANDARD-OBJECT."
 including, class CEILING. The class CEILING defaults to
 STANDARD-OBJECT."
    (error (msg "ALL-SPECIALIZED-METHODS not supported"
-               "on this implementation.")))
+               "on this Lisp implementation.")))
 
 (defun all-specialized-generic-functions (class &optional
                                           (ceiling (find-class
@@ -56,16 +56,16 @@ STANDARD-OBJECT."
 but not including, class CEILING. The class CEILING defaults to
 STANDARD-OBJECT."
   (error (msg "ALL-SPECIALIZED-GENERIC-FUNCTIONS not supported"
-              "on this implementation.")))
+              "on this Lisp implementation.")))
 
 (defun all-slots (class)
   "Returns a sorted list of all slots of CLASS."
-  (error "ALL-SLOTS not supported on this implementation."))
+  (error "ALL-SLOTS not supported on this Lisp implementation."))
 
 (defun slot-documentation (slot class)
   "Returns the documentation string for SLOT of CLASS."
-  (error "SLOT-DOCUMENTATION not supported on this implementation."))
+  (error "SLOT-DOCUMENTATION not supported on this Lisp implementation."))
 
 (defun all-slot-definitions (class)
   "Returns a list of all slot definitions of CLASS."
-  (error "ALL-SLOT-DEFINITIONS not supported on this implementation."))
+  (error "ALL-SLOT-DEFINITIONS not supported on this Lisp implementation."))
