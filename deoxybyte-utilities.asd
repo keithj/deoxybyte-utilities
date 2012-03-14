@@ -25,7 +25,7 @@
 
 (defsystem deoxybyte-utilities
   :name "deoxybyte-utilities"
-  :version "0.9.3"
+  :version "0.10.0"
   :author "Keith James"
   :licence "GPL v3"
   :in-order-to ((test-op (load-op :deoxybyte-utilities
@@ -46,7 +46,10 @@
                          (:file "octet-vector-utilities")
                          (:file "clos-utilities")
                          (:file "finite-state-machine")
-                         (:file "queue")))
+                         (:file "queue")
+                         #+:sbcl(:file "sbcl")
+                         #+:ccl (:file "ccl")
+                         #-(or :sbcl :ccl) (:file "default")))
    (:lift-test-config :lift-tests
                       :pathname "deoxybyte-utilities-test"
                       :target-system :deoxybyte-utilities)
