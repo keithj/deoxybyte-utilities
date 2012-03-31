@@ -5,21 +5,18 @@ utilities. These are for the most part simple, standalone functions
 and macros. Once a particular function or macro has been written more
 than once or twice in other systems, it normally gets moved here.
 
-Given the fluid nature of the contents of this system, its packages'
-exported symbols are intended primarily for use by other deoxybyte
-packages.
+Given the fluid nature of the contents of this system, its exported
+symbols are intended primarily for use by other deoxybyte packages.
 
 
 Installation
 
-deoxybyte-utilities uses ASDF for system definition. Copy or symlink
-deoxybyte-utilities.asd (and optionally deoxybyte-utilities-test.asd)
-to your asdf:*central-registry* and load deoxybyte-utilities with the
-asdf:operate function:
+deoxybyte-utilities uses ASDF for system definition. Install as
+described in the ASDF documentation and then load:
 
- (asdf:operate 'asdf:load-op :deoxybyte-utilities)
+ (asdf:load-system :deoxybyte-utilities)
 
-or with the equivalent deoxybyte-systems:load-system function:
+Alternatively, use the equivalent deoxybyte-systems:load-system function:
 
  (dxs:load-system :deoxybyte-utilities)
 
@@ -27,11 +24,11 @@ or with the equivalent deoxybyte-systems:load-system function:
 Tests
 
 To run the unit and regression tests you need to have LIFT
-installed. Run the tests with the asdf:operate function:
+installed. Run the tests:
 
- (asdf:operate 'asdf:test-op :deoxybyte-utilities)
+ (asdf:test-system :deoxybyte-utilities)
 
-or with the equivalent deoxybyte-systems:test-system function:
+Alternatively, use the equivalent deoxybyte-systems:test-system function:
 
  (dxs:test-system :deoxybyte-utilities)
 

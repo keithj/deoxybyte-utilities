@@ -25,7 +25,8 @@
   (ensure (equal '(10 11 12 13 14) (iota 5 10)))
   (ensure (equal '(0 2 4 6 8) (iota 5 0 2)))
   (ensure (equal '(0 -1 -2 -3 -4) (iota 5 0 -1)))
-  (ensure (equal '(0 -2 -4 -6 -8) (iota 5 0 -2))))
+  (ensure (equal '(0 -2 -4 -6 -8) (iota 5 0 -2)))
+  (ensure (equal '(1 1 1 1 1) (iota 5 1 0))))
 
 (addtest (deoxybyte-utilities-tests) number-generator/1
   (let ((gen (number-generator)))

@@ -25,7 +25,7 @@ subsequent integers STEP (defaults to 1) greater than the last, or
 less, if a negative STEP is given."
   (cond ((zerop step)
          (loop repeat count
-            collect 0))
+            collect start))
         ((minusp step)
          (loop repeat count
             for i downfrom start by (abs step)
