@@ -107,6 +107,9 @@ INDICES and returns T if all those characters match TEST."
 (defun starts-with-string-p (str1 str2 &key (test #'string=))
   "Returns T if STR1 starts with STR2, determined by TEST (defaults to
 STRING=), or NIL otherwise."
+  (declare (optimize (speed 3)))
+  (declare (type simple-string str1 str2)
+           (type function test))
   (let ((len2 (length str2)))
     (and (>= (length str1) len2)
          (funcall test str1 str2 :end1 len2))))
@@ -114,6 +117,9 @@ STRING=), or NIL otherwise."
 (defun ends-with-string-p (str1 str2 &key (test #'string=))
   "Returns T if STR1 ends with STR2, determined by TEST (defaults to
 STRING=), or NIL otherwise."
+  (declare (optimize (speed 3)))
+  (declare (type simple-string str1 str2)
+           (type function test))
   (let ((len1 (length str1))
         (len2 (length str2)))
     (and (>= len1 len2)

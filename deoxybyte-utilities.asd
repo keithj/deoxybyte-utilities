@@ -1,5 +1,5 @@
 ;;;
-;;; Copyright (c) 2007-2012 Keith James. All rights reserved.
+;;; Copyright (c) 2007-2013 Keith James. All rights reserved.
 ;;;
 ;;; This file is part of deoxybyte-utilities.
 ;;;
@@ -25,11 +25,14 @@
 
 (defsystem deoxybyte-utilities
   :name "deoxybyte-utilities"
-  :version "0.10.1"
+  :version "0.11.0"
   :author "Keith James"
   :licence "GPL v3"
   :in-order-to ((test-op (load-op :deoxybyte-utilities
-                                  :deoxybyte-utilities-test)))
+                                  :deoxybyte-utilities-test))
+                (doc-op (load-op :deoxybyte-utilities
+                                 :cldoc)))
+  :depends-on ((:version :deoxybyte-systems "1.0.0"))
   :components
   ((:module :deoxybyte-utilities
             :serial t
@@ -49,10 +52,9 @@
                          (:file "queue")
                          #+:sbcl(:file "sbcl")
                          #+:ccl (:file "ccl")
-                         #-(or :sbcl :ccl) (:file "default")))
-   (:lift-test-config :lift-tests
-                      :pathname "deoxybyte-utilities-test"
-                      :target-system :deoxybyte-utilities)
-   (:cldoc-config :cldoc-documentation
-                  :pathname "doc/html/"
-                  :target-system :deoxybyte-utilities)))
+                         #-(or :sbcl :ccl) (:file "default"))))
+  :perform (test-op :after (op c)
+                    (maybe-run-lift-tests :deoxybyte-utilities
+                                          "deoxybyte-utilities-test.config"))
+  :perform (doc-op :after (op c)
+                   (maybe-build-cldoc-docs :deoxybyte-utilities "doc/html")))
